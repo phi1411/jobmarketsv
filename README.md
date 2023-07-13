@@ -33,7 +33,6 @@ This is a job marketplace platform that facilitates the connection between compa
 ## Technologies Used
 
 - Backend: PHP 8.2
-- Framework: Laravel
 - Database: MySQL
 - Authentication: [INSERT AUTHENTICATION LIBRARY NAME]
 - Other dependencies: [INSERT OTHER RELEVANT DEPENDENCIES]
