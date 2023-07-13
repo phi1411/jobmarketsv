@@ -61,6 +61,101 @@ We welcome contributions to enhance the job marketplace platform. If you'd like 
 - Open a pull request explaining your changes.
 - Please ensure that your code follows the established coding guidelines and passes any existing tests. Also, consider writing new tests to cover your changes.
 
+## Routes
+
+### Companies:
+
+- `GET /companies`: Retrieve a list of all companies
+- `POST /companies`: Create a new company
+- `GET /companies/{id}`: Retrieve a specific company by ID
+- `PUT /companies/{id}`: Update a specific company by ID
+- `DELETE /companies/{id}`: Delete a specific company by ID
+
+### Jobs:
+
+- `GET /jobs`: Retrieve a list of all jobs
+- `POST /jobs`: Create a new job
+- `GET /jobs/{id}`: Retrieve a specific job by ID
+- `PUT /jobs/{id}`: Update a specific job by ID
+- `DELETE /jobs/{id}`: Delete a specific job by ID
+
+### Applications:
+
+- `GET /jobs/{id}/applications`: Retrieve all applications for a specific job
+- `POST /jobs/{id}/applications`: Create a new application for a specific job
+- `GET /applications/{id}`: Retrieve a specific application by ID
+- `PUT /applications/{id}`: Update a specific application by ID
+- `DELETE /applications/{id}`: Delete a specific application by ID
+
+### Developers:
+
+- `GET /developers`: Retrieve a list of all developers
+- `POST /developers`: Create a new developer
+- `GET /developers/{id}`: Retrieve a specific developer by ID
+- `PUT /developers/{id}`: Update a specific developer by ID
+- `DELETE /developers/{id}`: Delete a specific developer by ID
+
+### Authentication:
+
+- `POST /register`: Register a new user (developer or company)
+- `POST /login`: Authenticate a user and obtain an access token
+- `POST /logout`: Logout the user and invalidate the access token
+
+### Profile:
+
+- `GET /profile`: Retrieve the user's profile information
+- `PUT /profile`: Update the user's profile information
+- `PUT /profile/password`: Update the user's password
+
+### Skills:
+
+- `GET /skills`: Retrieve a list of all available skills
+- `POST /skills`: Create a new skill
+- `GET /skills/{id}`: Retrieve a specific skill by ID
+- `PUT /skills/{id}`: Update a specific skill by ID
+- `DELETE /skills/{id}`: Delete a specific skill by ID
+
+### Favorites:
+
+- `GET /favorites/jobs`: Retrieve a list of favorited jobs by the user
+- `POST /favorites/jobs/{id}`: Add a job to the user's favorites
+- `DELETE /favorites/jobs/{id}`: Remove a job from the user's favorites
+
+### Saved Searches:
+
+- `GET /saved-searches`: Retrieve a list of saved searches by the user
+- `POST /saved-searches`: Save a search with specified criteria
+- `DELETE /saved-searches/{id}`: Delete a saved search by ID
+
+### Categories:
+
+- `GET /categories`: Retrieve a list of all job categories
+- `POST /categories`: Create a new job category
+- `GET /categories/{id}`: Retrieve a specific job category by ID
+- `PUT /categories/{id}`: Update a specific job category by ID
+- `DELETE /categories/{id}`: Delete a specific job category by ID
+
+### Locations:
+
+- `GET /locations`: Retrieve a list of all available locations
+- `POST /locations`: Create a new location
+- `GET /locations/{id}`: Retrieve a specific location by ID
+- `PUT /locations/{id}`: Update a specific location by ID
+- `DELETE /locations/{id}`: Delete a specific location by ID
+
+### Reviews:
+
+- `GET /companies/{id}/reviews`: Retrieve all reviews for a specific company
+- `POST /companies/{id}/reviews`: Create a new review for a specific company
+- `GET /reviews/{id}`: Retrieve a specific review by ID
+- `PUT /reviews/{id}`: Update a specific review by ID
+- `DELETE /reviews/{id}`: Delete a specific review by ID
+
+### Statistics:
+
+- `GET /statistics/jobs`: Retrieve statistical data related to jobs (e.g., total jobs, top categories)
+- `GET /statistics/companies`: Retrieve statistical data related to companies (e.g., total companies, top locations)
+
 ## License
 
 The job marketplace platform is open-source software licensed under the GPL-3.0 License.
