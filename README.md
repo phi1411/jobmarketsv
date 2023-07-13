@@ -43,13 +43,13 @@ This is a job marketplace platform that facilitates the connection between compa
 
 To run the job marketplace platform locally, follow these steps:
 
-- Clone the repository: git clone https://github.com/your-repository.git
-- Install dependencies: composer install
+- Clone the repository: `git clone https://github.com/basemax/JobMarketplaceDDDPHP.git`
+- Install dependencies: `composer install`
 - Set up the database and update the database configuration.
-- Run migrations: php artisan migrate
-- Seed the database with initial data if necessary: php artisan db:seed
+- Run migrations: `php migrate.php`
+- Seed the database with initial data if necessary: `php seeder.php`
 - Start the development server: php artisan serve
-- Access the platform in your browser at http://localhost:8000
+- Access the platform in your browser at `http://localhost:8000`
 
 ## Contributing
 
