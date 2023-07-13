@@ -158,11 +158,11 @@ We welcome contributions to enhance the job marketplace platform. If you'd like 
 
 ### Notifications:
 
-- `GET /notifications: Retrieve a list of notifications for the authenticated user
-- `POST /notifications: Create a new notification for the authenticated user
-- `GET /notifications/{id}: Retrieve a specific notification by ID
-- `PUT /notifications/{id}: Update a specific notification by ID
-- `DELETE /notifications/{id}: Delete a specific notification by ID
+- `GET /notifications`: Retrieve a list of notifications for the authenticated user
+- `POST /notifications`: Create a new notification for the authenticated user
+- `GET /notifications/{id}`: Retrieve a specific notification by ID
+- `PUT /notifications/{id}`: Update a specific notification by ID
+- `DELETE /notifications/{id}`: Delete a specific notification by ID
 
 ### Subscriptions:
 
