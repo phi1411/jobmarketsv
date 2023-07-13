@@ -156,6 +156,32 @@ We welcome contributions to enhance the job marketplace platform. If you'd like 
 - `GET /statistics/jobs`: Retrieve statistical data related to jobs (e.g., total jobs, top categories)
 - `GET /statistics/companies`: Retrieve statistical data related to companies (e.g., total companies, top locations)
 
+### Notifications:
+
+- `GET /notifications: Retrieve a list of notifications for the authenticated user
+- `POST /notifications: Create a new notification for the authenticated user
+- `GET /notifications/{id}: Retrieve a specific notification by ID
+- `PUT /notifications/{id}: Update a specific notification by ID
+- `DELETE /notifications/{id}: Delete a specific notification by ID
+
+### Subscriptions:
+
+- `POST /subscriptions/jobs`: Subscribe to receive notifications for new job postings based on specific criteria
+- `DELETE /subscriptions/jobs/{id}`: Unsubscribe from notifications for a specific job subscription
+
+### Reports:
+
+- `GET /reports/jobs`: Generate a report of job postings based on various criteria (e.g., date range, category)
+- `GET /reports/companies`: Generate a report of companies based on various criteria (e.g., location, industry)
+
+### Admin:
+
+- `GET /admin/jobs`: Retrieve a list of all job postings (admin access)
+- `GET /admin/companies`: Retrieve a list of all companies (admin access)
+- `GET /admin/users`: Retrieve a list of all users (admin access)
+- `PUT /admin/users/{id}`: Update a user's profile or permissions (admin access)
+- `DELETE /admin/users/{id}`: Delete a user's account (admin access)
+
 ## License
 
 The job marketplace platform is open-source software licensed under the GPL-3.0 License.
