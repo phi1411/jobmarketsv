@@ -9,7 +9,7 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         return [
-            "data" => "is here"
+            "status" => "Ok"
         ];
     }
 }
