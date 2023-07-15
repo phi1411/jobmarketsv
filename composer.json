@@ -1,0 +1,22 @@
+{
+    "name": "max/job-marketplace-dddphp",
+    "autoload": {
+        "psr-4": {
+            "JobMarket\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ali Ahmadi",
+            "email": "aliahmadi.github@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.5",
+        "hybridauth/hybridauth": "^3.9",
+        "nikic/fast-route": "^1.3"
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^6.3"
+    }
+}
