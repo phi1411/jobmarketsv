@@ -1,6 +1,6 @@
 <?php
 
-namespace JobMarket\Http\Facades;
+namespace JobMarket\Facades;
 
 class Facade
 {
