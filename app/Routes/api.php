@@ -30,13 +30,13 @@ return [
     ["POST", "/companies", [CompanyController::class, "store"]],
 
     // Retrieve a specific company by ID
-    ["GET", "/companies/{id:\d+}", [CompanyController::class, "show"]],
+    ["GET", "/companies/{id:[0-9a-zA-Z]+}", [CompanyController::class, "show"]],
 
     // Update a specific company by ID
-    ["PUT", "/companies/{id:\d+}", [CompanyController::class, "update"]],
+    ["PUT", "/companies/{id:[0-9a-zA-Z]+}", [CompanyController::class, "update"]],
 
     // Delete a specific company by ID
-    ["DELETE", "/companies/{id:\d+}", [CompanyController::class, "destroy"]],
+    ["DELETE", "/companies/{id:[0-9a-zA-Z]+}", [CompanyController::class, "destroy"]],
 
     // Retrieve a list of all jobs
     ["GET", "/jobs", [JobController::class, "index"]],
@@ -45,28 +45,28 @@ return [
     ["POST", "/jobs", [JobController::class, "store"]],
 
     // Retrieve a specific job by ID
-    ["GET", "/jobs/{id:\d+}", [JobController::class, "show"]],
+    ["GET", "/jobs/{id:[0-9a-zA-Z]+}", [JobController::class, "show"]],
 
     // Update a specific job by ID
-    ["PUT", "/jobs/{id:\d+}", [JobController::class, "update"]],
+    ["PUT", "/jobs/{id:[0-9a-zA-Z]+}", [JobController::class, "update"]],
 
     // Delete a specific job by ID
-    ["DELETE", "/jobs/{id:\d+}", [JobController::class, "destroy"]],
+    ["DELETE", "/jobs/{id:[0-9a-zA-Z]+}", [JobController::class, "destroy"]],
 
     // Retrieve all applications for a specific job
-    ["GET", "/jobs/{id:\d+}/applications", [ApplicationController::class, "index"]],
+    ["GET", "/jobs/{id:[0-9a-zA-Z]+}/applications", [ApplicationController::class, "index"]],
 
     // Create a new application for a specific job
-    ["POST", "/jobs/{id:\d+}/applications", [ApplicationController::class, "store"]],
+    ["POST", "/jobs/{id:[0-9a-zA-Z]+}/applications", [ApplicationController::class, "store"]],
 
     // Retrieve a specific application by ID
-    ["GET", "/applications/{id:\d+}", [ApplicationController::class, "show"]],
+    ["GET", "/applications/{id:[0-9a-zA-Z]+}", [ApplicationController::class, "show"]],
 
     // Update a specific application by ID
-    ["PUT", "/applications/{id:\d+}", [ApplicationController::class, "update"]],
+    ["PUT", "/applications/{id:[0-9a-zA-Z]+}", [ApplicationController::class, "update"]],
 
     // Delete a specific application by ID
-    ["DELETE", "/applications/{id:\d+}", [ApplicationController::class, "destroy"]],
+    ["DELETE", "/applications/{id:[0-9a-zA-Z]+}", [ApplicationController::class, "destroy"]],
 
     // Retrieve a list of all developers
     ["GET", "/developers", [DeveloperController::class, "index"]],
@@ -75,13 +75,13 @@ return [
     ["POST", "/developers", [DeveloperController::class, "store"]],
 
     // Retrieve a specific developer by ID
-    ["GET", "/developers/{id:\d+}", [DeveloperController::class, "show"]],
+    ["GET", "/developers/{id:[0-9a-zA-Z]+}", [DeveloperController::class, "show"]],
 
     // Update a specific developer by ID
-    ["PUT", "/developers/{id:\d+}", [DeveloperController::class, "update"]],
+    ["PUT", "/developers/{id:[0-9a-zA-Z]+}", [DeveloperController::class, "update"]],
 
     // Delete a specific developer by ID
-    ["DELETE", "/developers/{id:\d+}", [DeveloperController::class, "destroy"]],
+    ["DELETE", "/developers/{id:[0-9a-zA-Z]+}", [DeveloperController::class, "destroy"]],
 
     // Register a new user (developer or company)
     ["POST", "/register", [AuthenticationController::class, "register"]],
@@ -108,22 +108,22 @@ return [
     ["POST", "/skills", [SkillController::class, "store"]],
 
     // Retrieve a specific skill by ID
-    ["GET", "/skills/{id:\d+}", [SkillController::class, "show"]],
+    ["GET", "/skills/{id:[0-9a-zA-Z]+}", [SkillController::class, "show"]],
 
     // Update a specific skill by ID
-    ["PUT", "/skills/{id:\d+}", [SkillController::class, "update"]],
+    ["PUT", "/skills/{id:[0-9a-zA-Z]+}", [SkillController::class, "update"]],
 
     // Delete a specific skill by ID
-    ["DELETE", "/skills/{id:\d+}", [SkillController::class, "destroy"]],
+    ["DELETE", "/skills/{id:[0-9a-zA-Z]+}", [SkillController::class, "destroy"]],
 
     // Retrieve a list of favorited jobs by the user
     ["GET", "/favorites/jobs", [FavoriteController::class, "index"]],
 
     // Add a job to the user's favorites
-    ["POST", "/favorites/jobs/{id:\d+}", [FavoriteController::class, "store"]],
+    ["POST", "/favorites/jobs/{id:[0-9a-zA-Z]+}", [FavoriteController::class, "store"]],
 
     // Remove a job from the user's favorites
-    ["DELETE", "/favorites/jobs/{id:\d+}", [FavoriteController::class, "destroy"]],
+    ["DELETE", "/favorites/jobs/{id:[0-9a-zA-Z]+}", [FavoriteController::class, "destroy"]],
 
     // Retrieve a list of saved searches by the user
     ["GET", "/saved-searches", [SearchController::class, "index"]],
@@ -132,7 +132,7 @@ return [
     ["POST", "/saved-searches", [SearchController::class, "store"]],
 
     // Delete a saved search by ID
-    ["DELETE", "/saved-searches/{id:\d+}", [SearchController::class, "destroy"]],
+    ["DELETE", "/saved-searches/{id:[0-9a-zA-Z]+}", [SearchController::class, "destroy"]],
 
     // Retrieve a list of all job categories
     ["GET", "/categories", [CategoryController::class, "index"]],
@@ -141,13 +141,13 @@ return [
     ["POST", "/categories", [CategoryController::class, "store"]],
 
     // Retrieve a specific job category by ID
-    ["GET", "/categories/{id:\d+}", [CategoryController::class, "show"]],
+    ["GET", "/categories/{id:[0-9a-zA-Z]+}", [CategoryController::class, "show"]],
 
     // Update a specific job category by ID
-    ["PUT", "/categories/{id:\d+}", [CategoryController::class, "update"]],
+    ["PUT", "/categories/{id:[0-9a-zA-Z]+}", [CategoryController::class, "update"]],
 
     // Delete a specific job category by ID
-    ["DELETE", "/categories/{id:\d+}", [CategoryController::class, "destory"]],
+    ["DELETE", "/categories/{id:[0-9a-zA-Z]+}", [CategoryController::class, "destory"]],
 
     // Retrieve a list of all available locations
     ["GET", "/locations", [LocationController::class, "index"]],
@@ -156,28 +156,28 @@ return [
     ["POST", "/locations", [LocationController::class, "store"]],
 
     // Retrieve a specific location by ID
-    ["GET", "/locations/{id:\d+}", [LocationController::class, "show"]],
+    ["GET", "/locations/{id:[0-9a-zA-Z]+}", [LocationController::class, "show"]],
 
     // Update a specific location by ID
-    ["PUT", "/locations/{id:\d+}", [LocationController::class, "update"]],
+    ["PUT", "/locations/{id:[0-9a-zA-Z]+}", [LocationController::class, "update"]],
 
     // Delete a specific location by ID
-    ["DELETE", "/locations/{id:\d+}", [LocationController::class, "destroy"]],
+    ["DELETE", "/locations/{id:[0-9a-zA-Z]+}", [LocationController::class, "destroy"]],
 
     // Retrieve all reviews for a specific company
-    ["GET", "/companies/{id:\d+}/reviews", [ReviewController::class, "index"]],
+    ["GET", "/companies/{id:[0-9a-zA-Z]+}/reviews", [ReviewController::class, "index"]],
 
     // Create a new review for a specific company
-    ["POST", "/companies/{id:\d+}/reviews", [ReviewController::class, "store"]],
+    ["POST", "/companies/{id:[0-9a-zA-Z]+}/reviews", [ReviewController::class, "store"]],
 
     // Retrieve a specific review by ID
-    ["GET", "/reviews/{id:\d+}", [ReviewController::class, "show"]],
+    ["GET", "/reviews/{id:[0-9a-zA-Z]+}", [ReviewController::class, "show"]],
 
     // Update a specific review by ID
-    ["PUT", "/reviews/{id:\d+}", [ReviewController::class, "update"]],
+    ["PUT", "/reviews/{id:[0-9a-zA-Z]+}", [ReviewController::class, "update"]],
 
     // Delete a specific review by ID
-    ["DELETE", "/reviews/{id:\d+}", [ReviewController::class, "destroy"]],
+    ["DELETE", "/reviews/{id:[0-9a-zA-Z]+}", [ReviewController::class, "destroy"]],
 
     // Retrieve statistical data related to jobs (e.g., total jobs, top categories)
     ["GET", "/statistics/jobs", [StatisticController::class, "jobs"]],
@@ -192,19 +192,19 @@ return [
     ["POST", "/notifications", [NotificationController::class, "store"]],
 
     // Retrieve a specific notification by ID
-    ["GET", "/notifications/{id:\d+}", [NotificationController::class, "show"]],
+    ["GET", "/notifications/{id:[0-9a-zA-Z]+}", [NotificationController::class, "show"]],
 
     // Update a specific notification by ID
-    ["PUT", "/notifications/{id:\d+}", [NotificationController::class, "update"]],
+    ["PUT", "/notifications/{id:[0-9a-zA-Z]+}", [NotificationController::class, "update"]],
 
     // Delete a specific notification by ID
-    ["DELETE", "/notifications/{id:\d+}", [NotificationController::class, "destroy"]],
+    ["DELETE", "/notifications/{id:[0-9a-zA-Z]+}", [NotificationController::class, "destroy"]],
 
     // Subscribe to receive notifications for new job postings based on specific criteria
     ["POST", "/subscriptions/jobs", [SubscriptionController::class, "store"]],
 
     // Unsubscribe from notifications for a specific job subscription
-    ["DELETE", "/subscriptions/jobs/{id:\d+}", [SubscriptionController::class, "destroy"]],
+    ["DELETE", "/subscriptions/jobs/{id:[0-9a-zA-Z]+}", [SubscriptionController::class, "destroy"]],
 
     // Generate a report of job postings based on various criteria (e.g., date range, category)
     ["GET", "/reports/jobs", [ReportController::class, "jobs"]],
@@ -222,8 +222,8 @@ return [
     ["GET", "/admin/users", [AdminController::class, "users"]],
 
     // Update a user's profile or permissions (admin access)
-    ["PUT", "/admin/users/{id:\d+}", [AdminController::class, "update"]],
+    ["PUT", "/admin/users/{id:[0-9a-zA-Z]+}", [AdminController::class, "update"]],
 
     // Delete a user's account (admin access)
-    ["DELETE", "/admin/users/{id:\d+}", [AdminController::class, "destroy"]]
+    ["DELETE", "/admin/users/{id:[0-9a-zA-Z]+}", [AdminController::class, "destroy"]]
 ];

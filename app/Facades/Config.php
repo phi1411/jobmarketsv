@@ -13,4 +13,9 @@ class Config extends Facade
             "host"     => $_ENV["DB_HOST"]
         ];
     }
+
+    public static function secret(): string
+    {
+        return $_ENV["SECRET"] ?? "1234";
+    }
 }
