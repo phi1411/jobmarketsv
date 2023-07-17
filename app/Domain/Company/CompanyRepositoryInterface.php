@@ -2,7 +2,7 @@
 
 namespace JobMarket\Domain\Company;
 
-class CompanyRepositoryInterface
+interface CompanyRepositoryInterface
 {
-    
+
 }

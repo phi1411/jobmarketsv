@@ -2,7 +2,7 @@
 
 namespace JobMarket\Domain\Authentication;
 
-class AuthenticationRepositoryInterface
+interface AuthenticationRepositoryInterface
 {
 
 }

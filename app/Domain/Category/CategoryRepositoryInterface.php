@@ -2,7 +2,7 @@
 
 namespace JobMarket\Domain\Category;
 
-class CategoryRepositoryInterface
+interface CategoryRepositoryInterface
 {
 
 }

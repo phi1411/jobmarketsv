@@ -2,7 +2,7 @@
 
 namespace JobMarket\Domain\Developer;
 
-class DeveloperRepositoryInterface
+interface DeveloperRepositoryInterface
 {
-    
+
 }
