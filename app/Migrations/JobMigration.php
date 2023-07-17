@@ -14,8 +14,8 @@ class JobMigration extends Migration
     {
         $stmt = $this->getDB()->prepare(
             "CREATE TABLE IF NOT EXISTS `" .  $this->getTableName() . "` (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                company_id INT NOT NULL,
+                id VARCHAR(255) PRIMARY KEY,
+                company_id VARCHAR(255) NOT NULL,
                 title VARCHAR(255) NOT NULL,
                 description TEXT,
                 requirements TEXT,

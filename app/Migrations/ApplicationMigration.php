@@ -14,9 +14,9 @@ class ApplicationMigration extends Migration
     {
         $stmt = $this->getDB()->prepare(
             "CREATE TABLE IF NOT EXISTS `" .  $this->getTableName() . "` (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                job_id INT NOT NULL,
-                developer_id INT NOT NULL,
+                id VARCHAR(255) PRIMARY KEY,
+                job_id VARCHAR(255) NOT NULL,
+                developer_id VARCHAR(255) NOT NULL,
                 cover_letter TEXT,
                 resume VARCHAR(255),
                 status ENUM('pending', 'reviewed', 'accepted', 'rejected') NOT NULL,

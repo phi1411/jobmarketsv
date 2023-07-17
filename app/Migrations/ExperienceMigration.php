@@ -14,8 +14,8 @@ class ExperienceMigration extends Migration
     {
         $stmt = $this->getDB()->prepare(
             "CREATE TABLE IF NOT EXISTS `" .  $this->getTableName() . "` (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                developer_id INT NOT NULL,
+                id VARCHAR(255) PRIMARY KEY,
+                developer_id VARCHAR(255) NOT NULL,
                 company VARCHAR(255),
                 position VARCHAR(255),
                 start_date DATE,

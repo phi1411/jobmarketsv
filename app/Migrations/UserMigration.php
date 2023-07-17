@@ -14,7 +14,7 @@ class UserMigration extends Migration
     {
         $stmt = $this->getDB()->prepare(
             "CREATE TABLE IF NOT EXISTS `" .  $this->getTableName() . "` (
-                id INT PRIMARY KEY AUTO_INCREMENT,
+                id VARCHAR(255) PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 email VARCHAR(255) NOT NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,

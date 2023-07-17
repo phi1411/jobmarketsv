@@ -14,9 +14,9 @@ class PaymentMigration extends Migration
     {
         $stmt = $this->getDB()->prepare(
             "CREATE TABLE IF NOT EXISTS `" .  $this->getTableName() . "` (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                user_id INT NOT NULL,
-                job_id INT NOT NULL,
+                id VARCHAR(255) PRIMARY KEY,
+                user_id VARCHAR(255) NOT NULL,
+                job_id VARCHAR(255) NOT NULL,
                 amount DECIMAL(10, 2) NOT NULL,
                 status ENUM('pending', 'success', 'failed') NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

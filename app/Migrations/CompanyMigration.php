@@ -14,8 +14,8 @@ class CompanyMigration extends Migration
     {
         $stmt = $this->getDB()->prepare(
             "CREATE TABLE IF NOT EXISTS `" .  $this->getTableName() . "` (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                user_id INT NOT NULL,
+                id VARCHAR(255) PRIMARY KEY,
+                user_id VARCHAR(255) NOT NULL,
                 name VARCHAR(255) NOT NULL,
                 description TEXT,
                 location VARCHAR(255),

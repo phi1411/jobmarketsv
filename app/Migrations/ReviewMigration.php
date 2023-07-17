@@ -14,9 +14,9 @@ class ReviewMigration extends Migration
     {
         $stmt = $this->getDB()->prepare(
             "CREATE TABLE IF NOT EXISTS `" .  $this->getTableName() . "` (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                company_id INT NOT NULL,
-                user_id INT NOT NULL,
+                id VARCHAR(255) PRIMARY KEY,
+                company_id VARCHAR(255) NOT NULL,
+                user_id VARCHAR(255) NOT NULL,
                 rating INT NOT NULL,
                 comment TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

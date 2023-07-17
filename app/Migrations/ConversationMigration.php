@@ -14,9 +14,9 @@ class ConversationMigration extends Migration
     {
         $stmt = $this->getDB()->prepare(
             "CREATE TABLE IF NOT EXISTS `" .  $this->getTableName() . "` (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                sender_id INT NOT NULL,
-                recipient_id INT NOT NULL,
+                id VARCHAR(255) PRIMARY KEY,
+                sender_id VARCHAR(255) NOT NULL,
+                recipient_id VARCHAR(255) NOT NULL,
                 subject VARCHAR(255),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
