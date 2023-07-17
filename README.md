@@ -437,6 +437,40 @@ CREATE TABLE reviews_developers (
 );
 ```
 
+## Examples
+
+Registration:
+```curl
+curl --location 'http://localhost:2323/register' \
+--header 'Content-Type: application/json' \
+--form 'name="AliAhmadi"' \
+--form 'email="AliAhmadi@gmail.com"' \
+--form 'password="1234"' \
+--form 'role="developer"'
+```
+Response:
+```json
+{
+    "status": "user registration successful"
+}
+```
+
+if url does not exist:
+```json
+{
+    "status": "Not Found"
+}
+```
+
+if method not allowed:
+```json
+{
+    "message": "method not allowed",
+    "allowed methods": [
+        "POST"
+    ]
+}
+```
 ## License
 
 The job marketplace platform is open-source software licensed under the GPL-3.0 License.
