@@ -57,7 +57,8 @@ class Kernel
             return $response;
         } catch (Exception $e) {
             return new Response([
-                "status" => Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR]
+                "status" => Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR],
+                "message" => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
