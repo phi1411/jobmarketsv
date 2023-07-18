@@ -21,7 +21,7 @@ use JobMarket\Http\Controllers\SubscriptionController;
 
 return [
     // testing
-    ["GET", "/", [HomeController::class, "index"]],
+    ["GET", "/", [HomeController::class, "index"]], //
 
     // Retrieve a list of all companies
     ["GET", "/companies", [CompanyController::class, "index"]],
