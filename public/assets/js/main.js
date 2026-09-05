@@ -41,36 +41,36 @@ function updateNavbarAuthState() {
         let dashboardLink = "#";
 
         if (user.role === "student" || user.role === "developer") {
-            roleBadge = `<a href="/student/dashboard" style="text-decoration:none;"><span class="badge badge-shift" style="cursor:pointer;">🎓 Cổng Sinh viên</span></a>`;
+            roleBadge = `<a href="/student/dashboard" style="text-decoration:none;"><span class="status-badge status-badge--info" style="cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Cổng Sinh viên</span></a>`;
             dashboardLink = "/student/dashboard";
             fetchUnreadCount();
         } else if (user.role === "company") {
-            roleBadge = `<a href="/company/dashboard" style="text-decoration:none;"><span class="badge badge-salary" style="cursor:pointer;">🏢 Cổng Tuyển Dụng</span></a>`;
+            roleBadge = `<a href="/company/dashboard" style="text-decoration:none;"><span class="status-badge status-badge--success" style="cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Cổng Tuyển Dụng</span></a>`;
             dashboardLink = "/company/dashboard";
             fetchUnreadCount();
         } else if (user.role === "admin") {
-            roleBadge = `<a href="/admin/dashboard" style="text-decoration:none;"><span class="badge" style="background:#fee2e2;color:#b91c1c;cursor:pointer;">🛡️ Quản trị</span></a>`;
+            roleBadge = `<a href="/admin/dashboard" style="text-decoration:none;"><span class="status-badge status-badge--danger" style="cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Quản trị</span></a>`;
             dashboardLink = "/admin/dashboard";
         }
 
         navActions.innerHTML = `
             <div style="display:flex;align-items:center;gap:0.75rem;">
                 ${(user.role === "student" || user.role === "developer") ? `
-                    <a href="/student/notifications" style="position:relative;display:inline-flex;align-items:center;font-size:1.25rem;text-decoration:none;padding:0.25rem;" title="Thông báo">
-                        🔔
+                    <a href="/student/notifications" style="position:relative;display:inline-flex;align-items:center;color:var(--text);text-decoration:none;padding:0.35rem;" title="Thông báo">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                         <span id="nav-unread-badge" style="display:none;position:absolute;top:-2px;right:-4px;background:var(--danger);color:#fff;font-size:0.7rem;font-weight:800;border-radius:10px;padding:0.1rem 0.35rem;line-height:1;">0</span>
                     </a>
                     <a href="/student/dashboard" class="btn btn-outline btn-sm" style="font-weight:600;">Cổng Sinh Viên</a>
                 ` : ''}
                 ${(user.role === "company") ? `
-                    <a href="/company/notifications" style="position:relative;display:inline-flex;align-items:center;font-size:1.25rem;text-decoration:none;padding:0.25rem;" title="Thông báo">
-                        🔔
+                    <a href="/company/notifications" style="position:relative;display:inline-flex;align-items:center;color:var(--text);text-decoration:none;padding:0.35rem;" title="Thông báo">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                         <span id="nav-unread-badge" style="display:none;position:absolute;top:-2px;right:-4px;background:var(--danger);color:#fff;font-size:0.7rem;font-weight:800;border-radius:10px;padding:0.1rem 0.35rem;line-height:1;">0</span>
                     </a>
                     <a href="/company/dashboard" class="btn btn-outline btn-sm" style="font-weight:600;">Cổng Tuyển Dụng</a>
                 ` : ''}
                 ${(user.role === "admin") ? `
-                    <a href="/admin/dashboard" class="btn btn-outline btn-sm" style="font-weight:600;border-color:#fca5a5;color:#991b1b;">🛡️ Cổng Quản Trị</a>
+                    <a href="/admin/dashboard" class="btn btn-outline btn-sm" style="font-weight:600;border-color:#fca5a5;color:#991b1b;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Cổng Quản Trị</a>
                 ` : ''}
                 <div style="text-align:right;line-height:1.2;">
                     <div style="font-weight:700;font-size:0.9rem;color:var(--dark);">${escapeHtml(user.name || user.email)}</div>

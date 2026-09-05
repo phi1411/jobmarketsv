@@ -1,43 +1,55 @@
 <?php
 $tab = $activeTab ?? "dashboard";
 ?>
-<div class="student-header" style="background:#fff;border-bottom:1px solid var(--border);padding:1.5rem 0 0;margin-bottom:2rem;">
+<div class="portal-header student-header">
     <div class="container">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
-            <div>
-                <h1 style="font-size:1.6rem;font-weight:800;color:var(--dark);margin-bottom:0.25rem;">
-                    🎓 Cổng Thông Tin Sinh Viên
-                </h1>
-                <p style="color:var(--text-muted);font-size:0.92rem;margin:0;">
+        <div class="portal-header-top">
+            <div class="portal-header-content">
+                <div class="portal-eyebrow">Sinh Viên</div>
+                <div class="portal-title-row">
+                    <h1 class="portal-title">
+                        <svg class="portal-title-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        <span>Cổng Thông Tin Sinh Viên</span>
+                    </h1>
+                </div>
+                <p class="portal-desc">
                     Quản lý hồ sơ, theo dõi trạng thái ứng tuyển và tìm kiếm cơ hội việc làm part-time.
                 </p>
             </div>
-            <div style="display:flex;gap:0.75rem;">
+            <div class="portal-actions">
                 <a href="/viec-lam" class="btn btn-primary btn-sm">
-                    🔍 Tìm Việc Làm Mới
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <span>Tìm Việc Làm Mới</span>
                 </a>
             </div>
         </div>
 
-        <div class="student-nav-tabs" style="display:flex;gap:0.5rem;overflow-x:auto;border-bottom:2px solid transparent;">
-            <a href="/student/dashboard" class="student-tab <?= $tab === 'dashboard' ? 'active' : '' ?>">
-                📊 Tổng Quan
+        <nav class="portal-nav-rail student-nav-tabs" aria-label="Điều hướng cổng sinh viên">
+            <a href="/student/dashboard" class="portal-tab student-tab <?= $tab === 'dashboard' ? 'active' : '' ?>">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                <span>Tổng Quan</span>
             </a>
-            <a href="/student/profile" class="student-tab <?= $tab === 'profile' ? 'active' : '' ?>">
-                👤 Hồ Sơ Cá Nhân
+            <a href="/student/profile" class="portal-tab student-tab <?= $tab === 'profile' ? 'active' : '' ?>">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>Hồ Sơ Cá Nhân</span>
             </a>
-            <a href="/student/applications" class="student-tab <?= $tab === 'applications' ? 'active' : '' ?>">
-                📝 Đơn Ứng Tuyển
+            <a href="/student/applications" class="portal-tab student-tab <?= $tab === 'applications' ? 'active' : '' ?>">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span>Đơn Ứng Tuyển</span>
             </a>
-            <a href="/student/favorites" class="student-tab <?= $tab === 'favorites' ? 'active' : '' ?>">
-                ⭐ Việc Đã Lưu
+            <a href="/student/favorites" class="portal-tab student-tab <?= $tab === 'favorites' ? 'active' : '' ?>">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span>Việc Đã Lưu</span>
             </a>
-            <a href="/student/saved-searches" class="student-tab <?= $tab === 'saved_searches' ? 'active' : '' ?>">
-                🔍 Tìm Kiếm Đã Lưu
+            <a href="/student/saved-searches" class="portal-tab student-tab <?= $tab === 'saved_searches' ? 'active' : '' ?>">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <span>Tìm Kiếm Đã Lưu</span>
             </a>
-            <a href="/student/notifications" class="student-tab <?= $tab === 'notifications' ? 'active' : '' ?>">
-                🔔 Thông Báo <span id="nav-student-notif-badge" class="badge badge-primary" style="display:none;font-size:0.75rem;padding:0.15rem 0.4rem;border-radius:10px;">0</span>
+            <a href="/student/notifications" class="portal-tab student-tab <?= $tab === 'notifications' ? 'active' : '' ?>">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span>Thông Báo</span>
+                <span id="nav-student-notif-badge" class="portal-tab-badge" style="display:none;">0</span>
             </a>
-        </div>
+        </nav>
     </div>
 </div>

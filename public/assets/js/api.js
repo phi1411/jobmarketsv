@@ -164,3 +164,41 @@ function getWorkTypeLabel(type) {
     };
     return map[type] || type || "Part-time";
 }
+
+// 6. Semantic Status Badge Helpers (UI-P0-03)
+function getAppStatusBadge(status) {
+    const map = {
+        "pending":     { label: "Chờ xem xét", modifier: "status-badge--warning" },
+        "viewed":      { label: "Đã xem", modifier: "status-badge--info" },
+        "shortlisted": { label: "Phù hợp", modifier: "status-badge--info" },
+        "accepted":    { label: "Trúng tuyển", modifier: "status-badge--success" },
+        "rejected":    { label: "Chưa phù hợp", modifier: "status-badge--danger" },
+        "withdrawn":   { label: "Đã rút đơn", modifier: "status-badge--neutral" }
+    };
+    const s = map[status] || { label: status || "Không rõ", modifier: "status-badge--neutral" };
+    return `<span class="status-badge ${s.modifier}"><span class="status-dot"></span>${escapeHtml(s.label)}</span>`;
+}
+
+function getJobStatusBadge(status) {
+    const map = {
+        "published":        { label: "Đang hiển thị", modifier: "status-badge--success" },
+        "draft":            { label: "Bản nháp", modifier: "status-badge--neutral" },
+        "pending_approval": { label: "Chờ duyệt", modifier: "status-badge--warning" },
+        "hidden":           { label: "Tạm ẩn", modifier: "status-badge--neutral" },
+        "closed":           { label: "Đã đóng", modifier: "status-badge--neutral" },
+        "expired":          { label: "Hết hạn", modifier: "status-badge--neutral" },
+        "rejected":         { label: "Bị từ chối", modifier: "status-badge--danger" }
+    };
+    const s = map[status] || { label: status || "Không rõ", modifier: "status-badge--neutral" };
+    return `<span class="status-badge ${s.modifier}"><span class="status-dot"></span>${escapeHtml(s.label)}</span>`;
+}
+
+function getVerificationBadge(status) {
+    const map = {
+        "verified": { label: "Đã xác thực", modifier: "status-badge--success" },
+        "pending":  { label: "Chờ xác minh", modifier: "status-badge--warning" },
+        "rejected": { label: "Bị từ chối", modifier: "status-badge--danger" }
+    };
+    const s = map[status] || { label: status || "Chưa xác minh", modifier: "status-badge--neutral" };
+    return `<span class="status-badge ${s.modifier}"><span class="status-dot"></span>${escapeHtml(s.label)}</span>`;
+}

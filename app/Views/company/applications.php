@@ -149,18 +149,7 @@ async function loadCompanyJobsFilter(selectedJobId) {
     }
 }
 
-function getAppStatusBadge(status) {
-    const map = {
-        "pending":     { label: "⏳ Chờ duyệt", bg: "#fef3c7", color: "#92400e" },
-        "viewed":      { label: "👀 Đã xem", bg: "#dbeafe", color: "#1e40af" },
-        "shortlisted": { label: "🌟 Phù hợp / PV", bg: "#d1fae5", color: "#065f46" },
-        "accepted":    { label: "🎉 Trúng tuyển", bg: "#bbf7d0", color: "#166534" },
-        "rejected":    { label: "❌ Từ chối", bg: "#fee2e2", color: "#991b1b" },
-        "withdrawn":   { label: "↩️ Sinh viên đã rút", bg: "#f1f5f9", color: "#475569" }
-    };
-    const s = map[status] || { label: status, bg: "#f1f5f9", color: "#475569" };
-    return `<span class="badge" style="background:${s.bg};color:${s.color};font-size:0.8rem;padding:0.25rem 0.65rem;border-radius:20px;font-weight:700;">${escapeHtml(s.label)}</span>`;
-}
+// Inherit getAppStatusBadge(status) from api.js
 
 async function loadCompanyApplications(page = 1) {
     currentAppPage = page;
@@ -224,13 +213,13 @@ async function loadCompanyApplications(page = 1) {
                 </div>
 
                 <!-- Applicant Academic & Contact Info -->
-                <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:0.75rem;padding:0.85rem;background:#f8fafc;border-radius:var(--radius);font-size:0.85rem;margin-bottom:0.85rem;">
-                    <div>🎓 <strong>Trường:</strong> ${escapeHtml(app.student_university || "Chưa cập nhật")}</div>
-                    <div>📚 <strong>Ngành:</strong> ${escapeHtml(app.student_major || "Chưa cập nhật")}</div>
-                    <div>📞 <strong>SĐT:</strong> ${escapeHtml(app.student_phone || "Chưa cập nhật")}</div>
-                    <div>✉️ <strong>Email:</strong> ${escapeHtml(app.student_email || "Chưa cập nhật")}</div>
-                    <div>⏰ <strong>Ca mong muốn:</strong> <strong>${getShiftLabel(app.preferred_shift)}</strong></div>
-                    <div>📎 <strong>CV:</strong> ${app.cv_url_snapshot ? `<a href="${escapeHtml(app.cv_url_snapshot)}" target="_blank" style="color:var(--primary);text-decoration:underline;">Xem liên kết CV</a>` : '<span style="color:var(--text-muted)">Không có</span>'}</div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.75rem;padding:0.85rem;background:#f8fafc;border-radius:var(--radius);font-size:0.85rem;margin-bottom:0.85rem;">
+                    <div style="min-width:0;overflow-wrap:anywhere;">🎓 <strong>Trường:</strong> ${escapeHtml(app.student_university || "Chưa cập nhật")}</div>
+                    <div style="min-width:0;overflow-wrap:anywhere;">📚 <strong>Ngành:</strong> ${escapeHtml(app.student_major || "Chưa cập nhật")}</div>
+                    <div style="min-width:0;overflow-wrap:anywhere;">📞 <strong>SĐT:</strong> ${escapeHtml(app.student_phone || "Chưa cập nhật")}</div>
+                    <div style="min-width:0;word-break:break-all;overflow-wrap:anywhere;">✉️ <strong>Email:</strong> ${escapeHtml(app.student_email || "Chưa cập nhật")}</div>
+                    <div style="min-width:0;overflow-wrap:anywhere;">⏰ <strong>Ca mong muốn:</strong> <strong>${getShiftLabel(app.preferred_shift)}</strong></div>
+                    <div style="min-width:0;overflow-wrap:anywhere;">📎 <strong>CV:</strong> ${app.cv_url_snapshot ? `<a href="${escapeHtml(app.cv_url_snapshot)}" target="_blank" style="color:var(--primary);text-decoration:underline;">Xem liên kết CV</a>` : '<span style="color:var(--text-muted)">Không có</span>'}</div>
                 </div>
 
                 <!-- Cover Letter -->

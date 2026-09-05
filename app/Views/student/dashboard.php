@@ -40,46 +40,54 @@
         </div>
 
         <!-- 4 Metric Cards -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:1rem;margin-bottom:2rem;">
-            <div class="job-card" style="padding:1.25rem;border-left:4px solid var(--primary);margin:0;">
-                <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <span style="font-size:0.85rem;color:var(--text-muted);font-weight:600;">Tổng Đơn Đã Nộp</span>
-                    <span style="font-size:1.4rem;">📝</span>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background:var(--primary-light);color:var(--primary);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                 </div>
-                <div id="stat-total-apps" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-top:0.5rem;">0</div>
-                <span style="font-size:0.75rem;color:var(--text-muted);">Tất cả các vị trí đã apply</span>
+                <div class="stat-card-body">
+                    <div class="stat-card-label">Tổng Đơn Đã Nộp</div>
+                    <div id="stat-total-apps" class="stat-card-value">0</div>
+                    <div class="stat-card-subtext">Tất cả các vị trí đã apply</div>
+                </div>
             </div>
 
-            <div class="job-card" style="padding:1.25rem;border-left:4px solid #f59e0b;margin:0;">
-                <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <span style="font-size:0.85rem;color:var(--text-muted);font-weight:600;">Đang Chờ Duyệt</span>
-                    <span style="font-size:1.4rem;">⏳</span>
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background:var(--warning-light);color:var(--warning-text);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 </div>
-                <div id="stat-pending-apps" style="font-size:1.8rem;font-weight:800;color:#d97706;margin-top:0.5rem;">0</div>
-                <span style="font-size:0.75rem;color:var(--text-muted);">Nhà tuyển dụng chưa xem</span>
+                <div class="stat-card-body">
+                    <div class="stat-card-label">Đang Chờ Duyệt</div>
+                    <div id="stat-pending-apps" class="stat-card-value" style="color:var(--warning-text);">0</div>
+                    <div class="stat-card-subtext">Nhà tuyển dụng chưa xem</div>
+                </div>
             </div>
 
-            <div class="job-card" style="padding:1.25rem;border-left:4px solid var(--success);margin:0;">
-                <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <span style="font-size:0.85rem;color:var(--text-muted);font-weight:600;">Được Chọn / Phù Hợp</span>
-                    <span style="font-size:1.4rem;">🎉</span>
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background:var(--success-light);color:var(--success-text);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                 </div>
-                <div id="stat-shortlisted-apps" style="font-size:1.8rem;font-weight:800;color:var(--success);margin-top:0.5rem;">0</div>
-                <span style="font-size:0.75rem;color:var(--text-muted);">Đã vào vòng phỏng vấn / nhận việc</span>
+                <div class="stat-card-body">
+                    <div class="stat-card-label">Được Chọn / Phù Hợp</div>
+                    <div id="stat-shortlisted-apps" class="stat-card-value" style="color:var(--success-text);">0</div>
+                    <div class="stat-card-subtext">Đã vào vòng phỏng vấn / nhận việc</div>
+                </div>
             </div>
 
-            <div class="job-card" style="padding:1.25rem;border-left:4px solid #8b5cf6;margin:0;">
-                <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <span style="font-size:0.85rem;color:var(--text-muted);font-weight:600;">Thông Báo Mới</span>
-                    <span style="font-size:1.4rem;">🔔</span>
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background:#f3e8ff;color:#7c3aed;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                 </div>
-                <div id="stat-unread-notifs" style="font-size:1.8rem;font-weight:800;color:#7c3aed;margin-top:0.5rem;">0</div>
-                <span style="font-size:0.75rem;color:var(--text-muted);"><a href="/student/notifications" style="color:#7c3aed;text-decoration:underline;">Xem thông báo</a></span>
+                <div class="stat-card-body">
+                    <div class="stat-card-label">Thông Báo Mới</div>
+                    <div id="stat-unread-notifs" class="stat-card-value" style="color:#7c3aed;">0</div>
+                    <div class="stat-card-subtext"><a href="/student/notifications" style="color:#7c3aed;text-decoration:underline;">Xem thông báo</a></div>
+                </div>
             </div>
         </div>
 
         <!-- Application Status Pipeline -->
-        <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem;margin-bottom:2rem;">
+        <div class="surface-card" style="margin-bottom:2rem;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
                 <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:0;">
                     📊 Tiến Trình Đơn Ứng Tuyển
@@ -90,29 +98,29 @@
             </div>
 
             <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:0.75rem;text-align:center;">
-                <div style="padding:0.75rem;border-radius:var(--radius);background:#f8fafc;">
+                <div style="padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg);">
                     <div style="font-size:0.8rem;color:var(--text-muted);">Chờ duyệt</div>
-                    <div id="pipe-pending" style="font-size:1.3rem;font-weight:700;color:#d97706;">0</div>
+                    <div id="pipe-pending" style="font-size:1.3rem;font-weight:700;color:var(--warning-text);">0</div>
                 </div>
-                <div style="padding:0.75rem;border-radius:var(--radius);background:#f8fafc;">
+                <div style="padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg);">
                     <div style="font-size:0.8rem;color:var(--text-muted);">Đã xem</div>
-                    <div id="pipe-viewed" style="font-size:1.3rem;font-weight:700;color:#2563eb;">0</div>
+                    <div id="pipe-viewed" style="font-size:1.3rem;font-weight:700;color:var(--primary);">0</div>
                 </div>
-                <div style="padding:0.75rem;border-radius:var(--radius);background:#f8fafc;">
+                <div style="padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg);">
                     <div style="font-size:0.8rem;color:var(--text-muted);">Phù hợp</div>
-                    <div id="pipe-shortlisted" style="font-size:1.3rem;font-weight:700;color:#059669;">0</div>
+                    <div id="pipe-shortlisted" style="font-size:1.3rem;font-weight:700;color:var(--secondary);">0</div>
                 </div>
-                <div style="padding:0.75rem;border-radius:var(--radius);background:#f8fafc;">
+                <div style="padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg);">
                     <div style="font-size:0.8rem;color:var(--text-muted);">Trúng tuyển</div>
-                    <div id="pipe-accepted" style="font-size:1.3rem;font-weight:700;color:#10b981;">0</div>
+                    <div id="pipe-accepted" style="font-size:1.3rem;font-weight:700;color:var(--success);">0</div>
                 </div>
-                <div style="padding:0.75rem;border-radius:var(--radius);background:#f8fafc;">
+                <div style="padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg);">
                     <div style="font-size:0.8rem;color:var(--text-muted);">Từ chối</div>
-                    <div id="pipe-rejected" style="font-size:1.3rem;font-weight:700;color:#ef4444;">0</div>
+                    <div id="pipe-rejected" style="font-size:1.3rem;font-weight:700;color:var(--danger);">0</div>
                 </div>
-                <div style="padding:0.75rem;border-radius:var(--radius);background:#f8fafc;">
+                <div style="padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg);">
                     <div style="font-size:0.8rem;color:var(--text-muted);">Đã rút</div>
-                    <div id="pipe-withdrawn" style="font-size:1.3rem;font-weight:700;color:#64748b;">0</div>
+                    <div id="pipe-withdrawn" style="font-size:1.3rem;font-weight:700;color:var(--neutral-text);">0</div>
                 </div>
             </div>
         </div>
@@ -120,7 +128,7 @@
         <!-- 2 Columns: Expiring Favorites & Recent Notifications -->
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1.5rem;">
             <!-- Expiring Favorites -->
-            <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem;">
+            <div class="surface-card">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
                     <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:0;">
                         ⭐ Việc Đã Lưu Sắp Hết Hạn
@@ -135,7 +143,7 @@
             </div>
 
             <!-- Recent Notifications -->
-            <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem;">
+            <div class="surface-card">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
                     <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:0;">
                         🔔 Thông Báo Gần Đây

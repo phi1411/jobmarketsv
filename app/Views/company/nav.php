@@ -1,44 +1,53 @@
 <?php
 $tab = $activeTab ?? "dashboard";
 ?>
-<div class="company-header" style="background:#fff;border-bottom:1px solid var(--border);padding:1.5rem 0 0;margin-bottom:2rem;">
+<div class="portal-header company-header">
     <div class="container">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
-            <div>
-                <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.25rem;">
-                    <h1 style="font-size:1.6rem;font-weight:800;color:var(--dark);margin:0;">
-                        🏢 Cổng Nhà Tuyển Dụng
+        <div class="portal-header-top">
+            <div class="portal-header-content">
+                <div class="portal-eyebrow">Nhà Tuyển Dụng</div>
+                <div class="portal-title-row">
+                    <h1 class="portal-title">
+                        <svg class="portal-title-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                        <span>Cổng Nhà Tuyển Dụng</span>
                     </h1>
-                    <span id="nav-company-verify-badge" class="badge" style="display:none;font-size:0.8rem;padding:0.25rem 0.6rem;border-radius:20px;font-weight:700;"></span>
+                    <span id="nav-company-verify-badge" class="status-badge" style="display:none;"></span>
                 </div>
-                <p style="color:var(--text-muted);font-size:0.92rem;margin:0;">
+                <p class="portal-desc">
                     Đăng tin part-time, quản lý ứng viên sinh viên và theo dõi hoạt động tuyển dụng.
                 </p>
             </div>
-            <div style="display:flex;gap:0.75rem;">
+            <div class="portal-actions">
                 <a href="/company/jobs/create" class="btn btn-primary btn-sm">
-                    ➕ Đăng Tin Tuyển Dụng
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span>Đăng Tin Tuyển Dụng</span>
                 </a>
             </div>
         </div>
 
-        <div class="student-nav-tabs" style="display:flex;gap:0.5rem;overflow-x:auto;border-bottom:2px solid transparent;">
-            <a href="/company/dashboard" class="student-tab <?= $tab === 'dashboard' ? 'active' : '' ?>">
-                📊 Tổng Quan
+        <nav class="portal-nav-rail student-nav-tabs" aria-label="Điều hướng cổng nhà tuyển dụng">
+            <a href="/company/dashboard" class="portal-tab student-tab <?= $tab === 'dashboard' ? 'active' : '' ?>">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                <span>Tổng Quan</span>
             </a>
-            <a href="/company/profile" class="student-tab <?= $tab === 'profile' ? 'active' : '' ?>">
-                🏢 Hồ Sơ Công Ty
+            <a href="/company/profile" class="portal-tab student-tab <?= $tab === 'profile' ? 'active' : '' ?>">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="22.01"/><line x1="15" y1="22" x2="15" y2="22.01"/><line x1="9" y1="6" x2="9" y2="6.01"/><line x1="15" y1="6" x2="15" y2="6.01"/><line x1="9" y1="10" x2="9" y2="10.01"/><line x1="15" y1="10" x2="15" y2="10.01"/><line x1="9" y1="14" x2="9" y2="14.01"/><line x1="15" y1="14" x2="15" y2="14.01"/><line x1="9" y1="18" x2="9" y2="18.01"/><line x1="15" y1="18" x2="15" y2="18.01"/></svg>
+                <span>Hồ Sơ Công Ty</span>
             </a>
-            <a href="/company/jobs" class="student-tab <?= $tab === 'jobs' ? 'active' : '' ?>">
-                📋 Tin Tuyển Dụng
+            <a href="/company/jobs" class="portal-tab student-tab <?= $tab === 'jobs' ? 'active' : '' ?>">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                <span>Tin Tuyển Dụng</span>
             </a>
-            <a href="/company/applications" class="student-tab <?= $tab === 'applications' ? 'active' : '' ?>">
-                👥 Đơn Ứng Tuyển
+            <a href="/company/applications" class="portal-tab student-tab <?= $tab === 'applications' ? 'active' : '' ?>">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>Đơn Ứng Tuyển</span>
             </a>
-            <a href="/company/notifications" class="student-tab <?= $tab === 'notifications' ? 'active' : '' ?>">
-                🔔 Thông Báo <span id="nav-company-notif-badge" class="badge badge-primary" style="display:none;font-size:0.75rem;padding:0.15rem 0.4rem;border-radius:10px;">0</span>
+            <a href="/company/notifications" class="portal-tab student-tab <?= $tab === 'notifications' ? 'active' : '' ?>">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span>Thông Báo</span>
+                <span id="nav-company-notif-badge" class="portal-tab-badge" style="display:none;">0</span>
             </a>
-        </div>
+        </nav>
     </div>
 </div>
 
@@ -55,19 +64,16 @@ $tab = $activeTab ?? "dashboard";
             const badge = document.getElementById("nav-company-verify-badge");
             if (!badge) return;
             const status = res.data.verification_status || "pending";
-            badge.style.display = "inline-block";
+            badge.style.display = "inline-flex";
             if (status === "verified") {
-                badge.style.background = "#dcfce7";
-                badge.style.color = "#166534";
-                badge.innerHTML = "✓ Đã Xác Minh";
+                badge.className = "status-badge status-badge--success";
+                badge.innerHTML = '<span class="status-dot"></span> Đã Xác Minh';
             } else if (status === "rejected") {
-                badge.style.background = "#fee2e2";
-                badge.style.color = "#991b1b";
-                badge.innerHTML = "✗ Bị Từ Chối";
+                badge.className = "status-badge status-badge--danger";
+                badge.innerHTML = '<span class="status-dot"></span> Bị Từ Chối';
             } else {
-                badge.style.background = "#fef3c7";
-                badge.style.color = "#92400e";
-                badge.innerHTML = "⏳ Chờ Xác Minh";
+                badge.className = "status-badge status-badge--warning";
+                badge.innerHTML = '<span class="status-dot"></span> Chờ Xác Minh';
             }
         }
     } catch (_) {}
