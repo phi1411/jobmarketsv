@@ -13,6 +13,7 @@ class Authentication
     private $role;
     private $token;
     private $token_expires_at;
+    private ?string $rawPassword = null;
 
     public function __construct(
         string $name,
@@ -23,13 +24,18 @@ class Authentication
         $this->id = uniqid();
         $this->name = $name;
         $this->email = $email;
+        $this->rawPassword = $password;
         $this->password = password_hash($password, PASSWORD_DEFAULT);
         $this->role = $role;
         $this->token = JWT::encode([
-            "email"    => $this->email,
-            "password" => $this->password
+            "email"    => $this->email
         ]);
         $this->token_expires_at = time() + (1 * 30 * 24 * 3600);
+    }
+
+    public function getRawPassword(): ?string
+    {
+        return $this->rawPassword;
     }
 
     public static function create(
@@ -90,6 +96,7 @@ class Authentication
 
     public function setPassword(string $password): self
     {
+        $this->rawPassword = $password;
         $this->password = password_hash($password, PASSWORD_DEFAULT);
         return $this;
     }

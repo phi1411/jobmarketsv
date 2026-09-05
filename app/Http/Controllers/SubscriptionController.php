@@ -11,7 +11,7 @@ class SubscriptionController extends Controller
 
     }
 
-    public function destroy(Request $request, int $id)
+    public function destroy(Request $request, string $id)
     {
         
     }

@@ -2,9 +2,13 @@
 
 namespace JobMarket\Domain\Favorite;
 
+use JobMarket\Support\Pagination;
+
 interface FavoriteRepositoryInterface
 {
-    public function getAll(string $user_id): array;
-    public function create(Favorite $favorite): void;
-    public function delete(string $id): void;
+    public function add(string $userId, string $jobId): string;
+    public function remove(string $userId, string $jobId): void;
+    public function isFavorited(string $userId, string $jobId): bool;
+    public function getByUser(string $userId, ?Pagination $pagination = null): array;
+    public function countByUser(string $userId): int;
 }

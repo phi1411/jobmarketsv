@@ -44,7 +44,7 @@ class LocationRepository implements LocationRepositoryInterface
             "SELECT * FROM locations WHERE id = ?"
         );
         $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
     }
     public function update(Location $location): void
     {

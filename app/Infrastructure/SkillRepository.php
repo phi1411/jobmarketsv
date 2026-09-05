@@ -44,7 +44,7 @@ class SkillRepository implements SkillRepositoryInterface
             "SELECT * FROM skills WHERE id = ?"
         );
         $stmt->execute([$id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
     }
     public function update(Skill $skill): void
     {
@@ -53,7 +53,7 @@ class SkillRepository implements SkillRepositoryInterface
         );
         $stmt->execute([
             $skill->getName(),
-            $skill->getName()
+            $skill->getId()
         ]);
     }
     public function delete(string $id): void

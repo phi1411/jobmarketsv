@@ -32,13 +32,24 @@ class AuthenticationService
 
     public function login(array $userData): string
     {
+        $res = $this->loginDetails($userData);
+        return $res["token"];
+    }
+
+    public function loginDetails(array $userData): array
+    {
         $user = Authentication::create(
-            $userData["name"],
+            $userData["name"] ?? "",
             $userData["email"],
             $userData["password"],
-            $userData["role"]
+            $userData["role"] ?? "student"
         );
 
-        return $this->authenticationRepository->login($user);
+        if (method_exists($this->authenticationRepository, "loginWithDetails")) {
+            return $this->authenticationRepository->loginWithDetails($user);
+        }
+
+        $token = $this->authenticationRepository->login($user);
+        return ["token" => $token];
     }
 }
