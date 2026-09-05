@@ -29,7 +29,7 @@
                 Đang tải...
             </span>
             <a href="/company/jobs/create" class="btn btn-primary btn-sm">
-                ➕ Tạo Tin Tuyển Dụng
+                Tạo Tin Tuyển Dụng
             </a>
         </div>
     </div>
@@ -42,10 +42,12 @@
     </div>
 
     <!-- Error State -->
-    <div id="company-jobs-error" style="display:none;background:#fff;border-radius:var(--radius);padding:3rem 1.5rem;text-align:center;border:1px solid var(--danger);margin-bottom:2rem;">
-        <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
-        <h3 style="font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không Thể Tải Danh Sách Tin Tuyển Dụng</h3>
-        <p id="company-jobs-err-msg" style="color:var(--text-muted);margin-bottom:1.5rem;">Đã xảy ra lỗi khi lấy danh sách việc làm nội bộ.</p>
+    <div id="company-jobs-error" class="state-error" style="display:none;">
+        <div class="state-error-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+        <h3 class="state-error-title">Không Thể Tải Danh Sách Tin Tuyển Dụng</h3>
+        <p id="company-jobs-err-msg" class="state-error-desc">Đã xảy ra lỗi khi lấy danh sách việc làm nội bộ.</p>
         <button onclick="loadCompanyJobs(1)" class="btn btn-primary btn-sm">Thử Lại</button>
     </div>
 
@@ -53,13 +55,17 @@
     <div id="company-jobs-container" style="display:flex;flex-direction:column;gap:1rem;"></div>
 
     <!-- Empty State -->
-    <div id="company-jobs-empty" style="display:none;background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:3.5rem 1.5rem;text-align:center;">
-        <div style="font-size:3rem;margin-bottom:1rem;">📋</div>
-        <h3 style="font-size:1.25rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Chưa Có Tin Tuyển Dụng Nào</h3>
-        <p style="color:var(--text-muted);max-width:450px;margin:0 auto 1.5rem;">
+    <div id="company-jobs-empty" class="surface-card empty-state" style="display:none;">
+        <div class="empty-state-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        </div>
+        <h3 class="empty-state-title">Chưa Có Tin Tuyển Dụng Nào</h3>
+        <p class="empty-state-text">
             Bạn chưa tạo tin tuyển dụng nào phù hợp với bộ lọc hiện tại. Hãy tạo tin việc làm part-time để tiếp cận các ứng viên sinh viên!
         </p>
-        <a href="/company/jobs/create" class="btn btn-primary">➕ Đăng Tin Ngay</a>
+        <div class="empty-state-action">
+            <a href="/company/jobs/create" class="btn btn-primary">Đăng Tin Ngay</a>
+        </div>
     </div>
 
     <!-- Pagination -->
@@ -88,19 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadCompanyJobs(1);
 });
 
-function getJobStatusBadge(status) {
-    const map = {
-        "published":        { label: "🟢 Đang tuyển", bg: "#dcfce7", color: "#166534" },
-        "draft":            { label: "📝 Bản nháp", bg: "#f1f5f9", color: "#475569" },
-        "pending_approval": { label: "⏳ Chờ duyệt", bg: "#fef3c7", color: "#92400e" },
-        "hidden":           { label: "👁️ Tạm ẩn", bg: "#e2e8f0", color: "#334155" },
-        "closed":           { label: "🔒 Đã đóng", bg: "#fee2e2", color: "#991b1b" },
-        "expired":          { label: "⌛ Hết hạn", bg: "#fef2f2", color: "#b91c1c" },
-        "rejected":         { label: "❌ Bị từ chối", bg: "#fee2e2", color: "#7f1d1d" }
-    };
-    const s = map[status] || { label: status, bg: "#f1f5f9", color: "#475569" };
-    return `<span class="badge" style="background:${s.bg};color:${s.color};font-size:0.8rem;padding:0.25rem 0.65rem;border-radius:20px;font-weight:700;">${escapeHtml(s.label)}</span>`;
-}
+// Inherit getJobStatusBadge(status) from api.js
 
 async function loadCompanyJobs(page = 1) {
     currentJobPage = page;
@@ -142,7 +136,7 @@ async function loadCompanyJobs(page = 1) {
         container.innerHTML = jobs.map(job => {
             const isPublished = job.status === "published";
             return `
-                <div class="job-card" style="padding:1.5rem;margin:0;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.25rem;">
+                <div class="data-card" style="margin:0;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.25rem;">
                     <div style="flex:1;min-width:280px;">
                         <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;flex-wrap:wrap;">
                             <h3 style="font-size:1.15rem;font-weight:700;margin:0;color:var(--dark);">
@@ -154,36 +148,36 @@ async function loadCompanyJobs(page = 1) {
                         </div>
 
                         <div style="color:var(--text-muted);font-size:0.88rem;margin-bottom:0.75rem;">
-                            📍 ${escapeHtml(job.location_name || job.city || "Hà Nội")} &bull; 
-                            ⏰ Ca: <strong>${getShiftLabel(job.shift_type)}</strong> &bull; 
-                            💰 Lương: <strong>${formatCurrency(job.salary_min)} - ${formatCurrency(job.salary_max)}</strong> &bull; 
-                            📅 Hạn: ${formatDate(job.application_deadline) || "Chưa đặt"}
+                            📍 ${escapeHtml(job.location_name || job.city || "Hà Nội")} &bull;
+                            Ca: <strong>${getShiftLabel(job.shift_type)}</strong> &bull;
+                            Lương: <strong>${formatCurrency(job.salary_min)} - ${formatCurrency(job.salary_max)}</strong> &bull;
+                            Hạn: ${formatDate(job.application_deadline) || "Chưa đặt"}
                         </div>
 
                         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
-                            <a href="/company/applications?job_id=${encodeURIComponent(job.id)}" class="badge badge-primary" style="text-decoration:none;font-size:0.8rem;padding:0.25rem 0.6rem;">
-                                👥 Xem ứng viên nộp vào tin này &rarr;
+                            <a href="/company/applications?job_id=${encodeURIComponent(job.id)}" class="badge badge-primary" style="text-decoration:none;font-size:0.8rem;padding:0.35rem 0.65rem;">
+                                Xem ứng viên nộp vào tin này &rarr;
                             </a>
                             ${isPublished ? `
-                                <a href="/viec-lam/${encodeURIComponent(job.id)}" target="_blank" class="badge" style="background:#f1f5f9;color:var(--text);text-decoration:none;font-size:0.8rem;padding:0.25rem 0.6rem;">
-                                    🔗 Xem trang public
+                                <a href="/viec-lam/${encodeURIComponent(job.id)}" target="_blank" class="badge" style="background:#f1f5f9;color:var(--text);text-decoration:none;font-size:0.8rem;padding:0.35rem 0.65rem;">
+                                    Xem trang public
                                 </a>
                             ` : ''}
                         </div>
                     </div>
 
                     <!-- Action buttons -->
-                    <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
-                        <a href="/company/jobs/${encodeURIComponent(job.id)}/edit" class="btn btn-outline btn-sm" style="font-size:0.82rem;">
-                            ✏️ Sửa tin
+                    <div class="row-actions">
+                        <a href="/company/jobs/${encodeURIComponent(job.id)}/edit" class="btn btn-outline btn-sm row-action-btn">
+                            Sửa tin
                         </a>
                         ${isPublished ? `
-                            <button onclick="handleCloseJob('${escapeHtml(job.id)}')" class="btn btn-sm" style="background:#fff;border:1px solid #cbd5e1;color:#b45309;font-size:0.82rem;" title="Đóng tin tuyển dụng này">
-                                🔒 Đóng tuyển
+                            <button onclick="handleCloseJob('${escapeHtml(job.id)}')" class="btn btn-sm row-action-btn" style="background:#fff;border:1px solid var(--border);color:var(--warning-text);" title="Đóng tin tuyển dụng này">
+                                Đóng tuyển
                             </button>
                         ` : ''}
-                        <button onclick="handleDeleteJob('${escapeHtml(job.id)}')" class="btn btn-sm" style="background:#fff;border:1px solid var(--danger);color:var(--danger);font-size:0.82rem;" title="Xóa tin tuyển dụng này">
-                            🗑️ Xóa
+                        <button onclick="handleDeleteJob('${escapeHtml(job.id)}')" class="btn btn-sm row-action-btn" style="background:#fff;border:1px solid var(--border);color:var(--danger);" title="Xóa tin tuyển dụng này">
+                            Xóa
                         </button>
                     </div>
                 </div>

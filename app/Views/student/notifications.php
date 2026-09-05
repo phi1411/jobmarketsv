@@ -4,13 +4,13 @@
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
         <div>
             <h2 style="font-size:1.25rem;font-weight:700;color:var(--dark);margin:0;">
-                🔔 Thông Báo Của Tôi
+                Thông Báo Của Tôi
             </h2>
             <span id="notif-count-text" style="font-size:0.88rem;color:var(--text-muted);">Đang tải thông báo...</span>
         </div>
         <div>
             <button id="btn-read-all" onclick="handleMarkAllRead()" class="btn btn-outline btn-sm">
-                ✅ Đánh Dấu Tất Cả Đã Đọc
+                Đánh Dấu Tất Cả Đã Đọc
             </button>
         </div>
     </div>
@@ -26,10 +26,12 @@
     <div id="notif-container" style="display:flex;flex-direction:column;gap:0.75rem;"></div>
 
     <!-- Empty State -->
-    <div id="notif-empty" style="display:none;background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:3.5rem 1.5rem;text-align:center;">
-        <div style="font-size:3rem;margin-bottom:1rem;">📭</div>
-        <h3 style="font-size:1.25rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Hộp Thư Thông Báo Trống</h3>
-        <p style="color:var(--text-muted);max-width:450px;margin:0 auto;">
+    <div id="notif-empty" class="surface-card empty-state" style="display:none;">
+        <div class="empty-state-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        </div>
+        <h3 class="empty-state-title">Hộp Thư Thông Báo Trống</h3>
+        <p class="empty-state-text">
             Hiện tại bạn chưa có thông báo mới nào từ nhà tuyển dụng hoặc hệ thống.
         </p>
     </div>
@@ -81,30 +83,30 @@ async function loadNotifications() {
         container.innerHTML = notifs.map(n => {
             const isUnread = !n.read_at;
             return `
-                <div class="job-card" style="padding:1.25rem;margin:0;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;background:${isUnread ? '#f8fafc' : '#fff'};border-left:${isUnread ? '4px solid var(--primary)' : '1px solid var(--border)'};">
-                    <div style="display:flex;gap:1rem;flex:1;">
-                        <div style="font-size:1.5rem;line-height:1;">
-                            ${isUnread ? '📩' : '✉️'}
+                <div class="notification-item ${isUnread ? 'notification-item--unread' : ''}">
+                    <div style="display:flex;gap:var(--space-3);flex:1;min-width:0;">
+                        <div class="notification-item-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                         </div>
-                        <div style="flex:1;">
-                            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
-                                <h4 style="font-size:1rem;font-weight:${isUnread ? '800' : '600'};color:var(--dark);margin:0;">
+                        <div class="notification-item-content">
+                            <div class="notification-item-header">
+                                <h4 class="notification-item-title">
                                     ${escapeHtml(n.title)}
                                 </h4>
-                                ${isUnread ? '<span style="width:8px;height:8px;background:var(--primary);border-radius:50%;display:inline-block;" title="Chưa đọc"></span>' : ''}
+                                ${isUnread ? '<span class="status-dot" style="background:var(--primary);" title="Chưa đọc"></span>' : ''}
                             </div>
-                            <div style="font-size:0.88rem;color:var(--text);line-height:1.5;margin-bottom:0.5rem;">
+                            <div class="notification-item-desc">
                                 ${escapeHtml(n.message)}
                             </div>
-                            <div style="font-size:0.75rem;color:var(--text-muted);">
-                                🕒 ${formatDate(n.created_at)}
+                            <div class="notification-item-meta">
+                                <span>${formatDate(n.created_at)}</span>
                             </div>
                         </div>
                     </div>
 
                     ${isUnread ? `
-                        <div>
-                            <button onclick="handleMarkRead('${escapeHtml(n.id)}')" class="btn btn-outline btn-sm" style="font-size:0.78rem;white-space:nowrap;">
+                        <div class="row-actions">
+                            <button onclick="handleMarkRead('${escapeHtml(n.id)}')" class="btn btn-outline btn-sm row-action-btn" style="white-space:nowrap;">
                                 Đánh dấu đã đọc
                             </button>
                         </div>

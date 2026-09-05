@@ -11,8 +11,8 @@
     <div id="comp-prof-content" style="display:none;">
         <!-- Verification Status Banner -->
         <div id="banner-verification" style="border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:1rem;border:1px solid transparent;">
-            <div id="verify-icon" style="font-size:2rem;line-height:1;"></div>
-            <div>
+            <div id="verify-icon" style="flex-shrink:0;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;"></div>
+            <div style="flex:1;">
                 <h3 id="verify-title" style="font-size:1.1rem;font-weight:700;margin-bottom:0.25rem;"></h3>
                 <p id="verify-desc" style="font-size:0.88rem;margin:0;line-height:1.5;"></p>
                 <div id="verify-reject-box" style="display:none;margin-top:0.75rem;padding:0.6rem 0.85rem;background:#fee2e2;border-radius:var(--radius);font-size:0.85rem;color:#991b1b;">
@@ -22,10 +22,10 @@
         </div>
 
         <!-- Form Edit Company Profile -->
-        <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:2rem;">
+        <div class="form-card">
             <div style="margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:1rem;">
                 <h2 style="font-size:1.25rem;font-weight:700;color:var(--dark);margin-bottom:0.25rem;">
-                    🏢 Thông Tin Hồ Sơ Doanh Nghiệp
+                    Thông Tin Hồ Sơ Doanh Nghiệp
                 </h2>
                 <p style="color:var(--text-muted);font-size:0.88rem;margin:0;">
                     Thông tin công ty sẽ xuất hiện công khai trên các tin tuyển dụng và trang chi tiết của doanh nghiệp.
@@ -42,7 +42,7 @@
                 </div>
 
                 <!-- Row 2: Contact Person & Phone -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+                <div class="form-grid-2" style="margin-bottom:1.25rem;">
                     <div class="form-group">
                         <label class="form-label" for="cp-contact-person">Người liên hệ / Bộ phận nhân sự</label>
                         <input type="text" id="cp-contact-person" class="form-control" placeholder="Nguyễn Văn A (Phòng Tuyển Dụng)">
@@ -54,7 +54,7 @@
                 </div>
 
                 <!-- Row 3: City & District -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+                <div class="form-grid-2" style="margin-bottom:1.25rem;">
                     <div class="form-group">
                         <label class="form-label" for="cp-city">Tỉnh / Thành phố</label>
                         <input type="text" id="cp-city" class="form-control" placeholder="Hà Nội, TP. Hồ Chí Minh...">
@@ -84,9 +84,9 @@
                 </div>
 
                 <!-- Submit Button -->
-                <div style="display:flex;justify-content:flex-end;gap:1rem;border-top:1px solid var(--border);padding-top:1.25rem;">
+                <div class="form-actions">
                     <button type="submit" id="btn-save-comp" class="btn btn-primary">
-                        💾 Lưu Thay Đổi Hồ Sơ
+                        Lưu Thay Đổi Hồ Sơ
                     </button>
                 </div>
             </form>
@@ -156,7 +156,9 @@ function renderVerificationStatus(status, rejectionReason) {
     if (status === "verified") {
         banner.style.background = "#f0fdf4";
         banner.style.borderColor = "#bbf7d0";
-        icon.innerHTML = "✅";
+        icon.style.background = "#dcfce7";
+        icon.style.color = "#166534";
+        icon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
         title.style.color = "#166534";
         title.innerText = "Doanh nghiệp đã được xác thực chính thức";
         desc.style.color = "#15803d";
@@ -165,7 +167,9 @@ function renderVerificationStatus(status, rejectionReason) {
     } else if (status === "rejected") {
         banner.style.background = "#fef2f2";
         banner.style.borderColor = "#fecaca";
-        icon.innerHTML = "❌";
+        icon.style.background = "#fee2e2";
+        icon.style.color = "#991b1b";
+        icon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
         title.style.color = "#991b1b";
         title.innerText = "Hồ sơ công ty bị từ chối xác thực";
         desc.style.color = "#b91c1c";
@@ -180,7 +184,9 @@ function renderVerificationStatus(status, rejectionReason) {
         // Pending
         banner.style.background = "#fffbeb";
         banner.style.borderColor = "#fde68a";
-        icon.innerHTML = "⏳";
+        icon.style.background = "#fef3c7";
+        icon.style.color = "#92400e";
+        icon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
         title.style.color = "#92400e";
         title.innerText = "Hồ sơ đang chờ Quản trị viên xét duyệt xác thực";
         desc.style.color = "#b45309";
@@ -216,7 +222,7 @@ async function handleSaveCompanyProfile(e) {
     });
 
     btn.disabled = false;
-    btn.innerText = "💾 Lưu Thay Đổi Hồ Sơ";
+    btn.innerText = "Lưu Thay Đổi Hồ Sơ";
 
     if (res && res.success) {
         showToast("Cập nhật hồ sơ công ty thành công!", "success");

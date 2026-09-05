@@ -38,10 +38,12 @@
     </div>
 
     <!-- Error State -->
-    <div id="comp-apps-error" style="display:none;background:#fff;border-radius:var(--radius);padding:3rem 1.5rem;text-align:center;border:1px solid var(--danger);margin-bottom:2rem;">
-        <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
-        <h3 style="font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không Thể Tải Hồ Sơ Ứng Tuyển</h3>
-        <p id="comp-apps-err-msg" style="color:var(--text-muted);margin-bottom:1.5rem;">Đã có lỗi xảy ra khi truy vấn dữ liệu hồ sơ.</p>
+    <div id="comp-apps-error" class="state-error" style="display:none;">
+        <div class="state-error-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+        <h3 class="state-error-title">Không Thể Tải Hồ Sơ Ứng Tuyển</h3>
+        <p id="comp-apps-err-msg" class="state-error-desc">Đã có lỗi xảy ra khi truy vấn dữ liệu hồ sơ.</p>
         <button onclick="loadCompanyApplications(1)" class="btn btn-primary btn-sm">Thử Lại</button>
     </div>
 
@@ -49,13 +51,17 @@
     <div id="comp-apps-container" style="display:flex;flex-direction:column;gap:1.25rem;"></div>
 
     <!-- Empty State -->
-    <div id="comp-apps-empty" style="display:none;background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:3.5rem 1.5rem;text-align:center;">
-        <div style="font-size:3rem;margin-bottom:1rem;">👥</div>
-        <h3 style="font-size:1.25rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Chưa Có Hồ Sơ Ứng Tuyển Nào</h3>
-        <p style="color:var(--text-muted);max-width:450px;margin:0 auto 1.5rem;">
+    <div id="comp-apps-empty" class="surface-card empty-state" style="display:none;">
+        <div class="empty-state-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </div>
+        <h3 class="empty-state-title">Chưa Có Hồ Sơ Ứng Tuyển Nào</h3>
+        <p class="empty-state-text">
             Chưa có sinh viên nào nộp đơn vào các tin việc làm phù hợp với bộ lọc này.
         </p>
-        <a href="/company/jobs" class="btn btn-primary btn-sm">Quản Lý Tin Tuyển Dụng</a>
+        <div class="empty-state-action">
+            <a href="/company/jobs" class="btn btn-primary btn-sm">Quản Lý Tin Tuyển Dụng</a>
+        </div>
     </div>
 
     <!-- Pagination -->
@@ -67,7 +73,7 @@
     <div style="background:#fff;border-radius:var(--radius);max-width:540px;width:100%;padding:2rem;box-shadow:var(--shadow);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;border-bottom:1px solid var(--border);padding-bottom:0.75rem;">
             <h3 style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:0;">
-                📝 Cập Nhật Trạng Thái & Ghi Chú
+                Cập Nhật Trạng Thái & Ghi Chú
             </h3>
             <button type="button" onclick="closeStatusModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted);">&times;</button>
         </div>
@@ -80,25 +86,25 @@
             <div class="form-group" style="margin-bottom:1.25rem;">
                 <label class="form-label" for="modal-status-select">Trạng thái xét duyệt <span style="color:var(--danger)">*</span></label>
                 <select id="modal-status-select" class="form-control" required style="font-weight:600;">
-                    <option value="viewed">👀 Đã xem hồ sơ (Viewed)</option>
-                    <option value="shortlisted">🌟 Phù hợp / Mời phỏng vấn (Shortlisted)</option>
-                    <option value="accepted">🎉 Nhận việc / Trúng tuyển (Accepted)</option>
-                    <option value="rejected">❌ Từ chối ứng viên (Rejected)</option>
+                    <option value="viewed">Đã xem hồ sơ (Viewed)</option>
+                    <option value="shortlisted">Phù hợp / Mời phỏng vấn (Shortlisted)</option>
+                    <option value="accepted">Nhận việc / Trúng tuyển (Accepted)</option>
+                    <option value="rejected">Từ chối ứng viên (Rejected)</option>
                 </select>
             </div>
 
             <div class="form-group" style="margin-bottom:1.5rem;">
                 <label class="form-label" for="modal-employer-note">
-                    🔒 Ghi chú nội bộ (Employer Note)
+                    Ghi chú nội bộ (Employer Note)
                 </label>
                 <textarea id="modal-employer-note" rows="4" class="form-control" placeholder="Ghi chú đánh giá ứng viên, lịch hẹn phỏng vấn, lý do loại... (Chỉ nhà tuyển dụng nhìn thấy, tuyệt đối không lộ cho sinh viên)"></textarea>
-                <small style="color:var(--text-muted);font-size:0.78rem;">Bảo mật: Ghi chú này chỉ lưu hành nội bộ trong doanh nghiệp của bạn.</small>
+                <small class="form-help">Bảo mật: Ghi chú này chỉ lưu hành nội bộ trong doanh nghiệp của bạn.</small>
             </div>
 
-            <div style="display:flex;justify-content:flex-end;gap:0.75rem;">
+            <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:1rem;border-top:1px solid var(--border);">
                 <button type="button" onclick="closeStatusModal()" class="btn btn-outline btn-sm">Hủy</button>
                 <button type="submit" id="btn-save-app-status" class="btn btn-primary btn-sm">
-                    💾 Cập Nhật Trạng Thái
+                    Cập Nhật Trạng Thái
                 </button>
             </div>
         </form>
@@ -189,7 +195,7 @@ async function loadCompanyApplications(page = 1) {
         }
 
         container.innerHTML = currentAppsData.map(app => `
-            <div class="job-card" style="padding:1.5rem;margin:0;border-left:4px solid var(--primary);">
+            <div class="data-card" style="margin:0;border-left:4px solid var(--primary);">
                 <!-- Card Header -->
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
                     <div>
@@ -200,32 +206,32 @@ async function loadCompanyApplications(page = 1) {
                             ${getAppStatusBadge(app.status)}
                         </div>
                         <div style="font-size:0.88rem;color:var(--text-muted);">
-                            Ứng tuyển vào: <a href="/viec-lam/${encodeURIComponent(app.job_id)}" target="_blank" style="color:var(--primary);font-weight:600;">${escapeHtml(app.job_title || "Vị trí việc làm")}</a> &bull; 
+                            Ứng tuyển vào: <a href="/viec-lam/${encodeURIComponent(app.job_id)}" target="_blank" style="color:var(--primary);font-weight:600;">${escapeHtml(app.job_title || "Vị trí việc làm")}</a> &bull;
                             Ngày nộp: ${formatDate(app.applied_at)}
                         </div>
                     </div>
 
-                    <div>
-                        <button onclick="openStatusModal('${escapeHtml(app.id)}')" class="btn btn-primary btn-sm" style="font-size:0.82rem;">
-                            ⚙️ Cập Nhật Trạng Thái
+                    <div class="row-actions">
+                        <button onclick="openStatusModal('${escapeHtml(app.id)}')" class="btn btn-primary btn-sm row-action-btn">
+                            Cập Nhật Trạng Thái
                         </button>
                     </div>
                 </div>
 
                 <!-- Applicant Academic & Contact Info -->
                 <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.75rem;padding:0.85rem;background:#f8fafc;border-radius:var(--radius);font-size:0.85rem;margin-bottom:0.85rem;">
-                    <div style="min-width:0;overflow-wrap:anywhere;">🎓 <strong>Trường:</strong> ${escapeHtml(app.student_university || "Chưa cập nhật")}</div>
-                    <div style="min-width:0;overflow-wrap:anywhere;">📚 <strong>Ngành:</strong> ${escapeHtml(app.student_major || "Chưa cập nhật")}</div>
-                    <div style="min-width:0;overflow-wrap:anywhere;">📞 <strong>SĐT:</strong> ${escapeHtml(app.student_phone || "Chưa cập nhật")}</div>
-                    <div style="min-width:0;word-break:break-all;overflow-wrap:anywhere;">✉️ <strong>Email:</strong> ${escapeHtml(app.student_email || "Chưa cập nhật")}</div>
-                    <div style="min-width:0;overflow-wrap:anywhere;">⏰ <strong>Ca mong muốn:</strong> <strong>${getShiftLabel(app.preferred_shift)}</strong></div>
-                    <div style="min-width:0;overflow-wrap:anywhere;">📎 <strong>CV:</strong> ${app.cv_url_snapshot ? `<a href="${escapeHtml(app.cv_url_snapshot)}" target="_blank" style="color:var(--primary);text-decoration:underline;">Xem liên kết CV</a>` : '<span style="color:var(--text-muted)">Không có</span>'}</div>
+                    <div style="min-width:0;overflow-wrap:anywhere;"><strong>Trường:</strong> ${escapeHtml(app.student_university || "Chưa cập nhật")}</div>
+                    <div style="min-width:0;overflow-wrap:anywhere;"><strong>Ngành:</strong> ${escapeHtml(app.student_major || "Chưa cập nhật")}</div>
+                    <div style="min-width:0;overflow-wrap:anywhere;"><strong>SĐT:</strong> ${escapeHtml(app.student_phone || "Chưa cập nhật")}</div>
+                    <div style="min-width:0;word-break:break-all;overflow-wrap:anywhere;"><strong>Email:</strong> ${escapeHtml(app.student_email || "Chưa cập nhật")}</div>
+                    <div style="min-width:0;overflow-wrap:anywhere;"><strong>Ca mong muốn:</strong> <strong>${getShiftLabel(app.preferred_shift)}</strong></div>
+                    <div style="min-width:0;overflow-wrap:anywhere;"><strong>CV:</strong> ${app.cv_url_snapshot ? `<a href="${escapeHtml(app.cv_url_snapshot)}" target="_blank" style="color:var(--primary);text-decoration:underline;">Xem liên kết CV</a>` : '<span style="color:var(--text-muted)">Không có</span>'}</div>
                 </div>
 
                 <!-- Cover Letter -->
                 ${app.cover_letter ? `
                     <div style="font-size:0.85rem;color:var(--text);margin-bottom:0.75rem;padding:0.6rem 0.85rem;background:#fff;border:1px dashed var(--border);border-radius:var(--radius);line-height:1.5;">
-                        💬 <strong>Lời nhắn / Thư giới thiệu:</strong><br>
+                        <strong>Lời nhắn / Thư giới thiệu:</strong><br>
                         <em>"${escapeHtml(app.cover_letter)}"</em>
                     </div>
                 ` : ''}
@@ -233,7 +239,7 @@ async function loadCompanyApplications(page = 1) {
                 <!-- Employer Internal Note -->
                 ${app.employer_note ? `
                     <div style="font-size:0.82rem;color:#0f172a;background:#eff6ff;border-left:3px solid var(--primary);padding:0.5rem 0.75rem;border-radius:0 var(--radius) var(--radius) 0;">
-                        🔒 <strong>Ghi chú nội bộ:</strong> ${escapeHtml(app.employer_note)}
+                        <strong>Ghi chú nội bộ:</strong> ${escapeHtml(app.employer_note)}
                     </div>
                 ` : ''}
             </div>
@@ -298,7 +304,7 @@ async function handleSaveApplicationStatus(e) {
     });
 
     btn.disabled = false;
-    btn.innerText = "💾 Cập Nhật Trạng Thái";
+    btn.innerText = "Cập Nhật Trạng Thái";
 
     if (res && res.success) {
         closeStatusModal();

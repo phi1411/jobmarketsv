@@ -10,7 +10,7 @@
     <!-- Main Profile Content -->
     <div id="profile-content" style="display:none;">
         <!-- Completion Progress Card -->
-        <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;">
+        <div class="surface-card" style="padding:1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;">
             <div style="flex:1;min-width:260px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
                     <span style="font-weight:700;color:var(--dark);font-size:1rem;">Mức Độ Hoàn Thiện Hồ Sơ</span>
@@ -24,140 +24,148 @@
                 </p>
             </div>
             <div>
-                <a href="#schedule-section" class="btn btn-outline btn-sm">⏰ Cập nhật lịch rảnh</a>
+                <a href="#schedule-section" class="btn btn-outline btn-sm">Cập nhật lịch rảnh</a>
             </div>
         </div>
 
         <!-- Profile Edit Form -->
-        <form id="profile-form" style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:2rem;">
+        <form id="profile-form" class="form-card">
             <div id="profile-alert" style="display:none;margin-bottom:1.5rem;" class="toast toast-error"></div>
 
-            <h3 style="font-size:1.15rem;font-weight:700;color:var(--dark);margin-bottom:1.25rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);">
-                1. Thông Tin Cá Nhân Cơ Bản
-            </h3>
+            <div class="form-section">
+                <h3 class="form-section-title">
+                    1. Thông Tin Cá Nhân Cơ Bản
+                </h3>
 
-            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:1.25rem;margin-bottom:1.5rem;">
-                <div class="form-group">
-                    <label class="form-label">Họ và Tên <span style="color:var(--danger)">*</span></label>
-                    <input type="text" id="prof-fullname" class="form-control" placeholder="Nguyễn Văn A" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email Tài Khoản</label>
-                    <input type="email" id="prof-email" class="form-control" disabled style="background:#f1f5f9;cursor:not-allowed;">
-                    <small style="font-size:0.75rem;color:var(--text-muted);">Email dùng để nhận thông báo và không thể thay đổi tại đây.</small>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Số Điện Thoại <span style="color:var(--danger)">*</span></label>
-                    <input type="tel" id="prof-phone" class="form-control" placeholder="0988776655" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Ngày Sinh</label>
-                    <input type="date" id="prof-dob" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Giới Tính</label>
-                    <select id="prof-gender" class="form-control">
-                        <option value="">-- Chọn giới tính --</option>
-                        <option value="male">Nam</option>
-                        <option value="female">Nữ</option>
-                        <option value="other">Khác</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Khu Vực Sinh Sống / Trọ</label>
-                    <select id="prof-location" class="form-control">
-                        <option value="">-- Chọn Quận / Huyện --</option>
-                        <!-- Dynamic locations -->
-                    </select>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:1.25rem;">
+                    <div class="form-group">
+                        <label class="form-label">Họ và Tên <span style="color:var(--danger)">*</span></label>
+                        <input type="text" id="prof-fullname" class="form-control" placeholder="Nguyễn Văn A" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Tài Khoản</label>
+                        <input type="email" id="prof-email" class="form-control" disabled style="background:#f1f5f9;cursor:not-allowed;">
+                        <small class="form-help">Email dùng để nhận thông báo và không thể thay đổi tại đây.</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Số Điện Thoại <span style="color:var(--danger)">*</span></label>
+                        <input type="tel" id="prof-phone" class="form-control" placeholder="0988776655" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ngày Sinh</label>
+                        <input type="date" id="prof-dob" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Giới Tính</label>
+                        <select id="prof-gender" class="form-control">
+                            <option value="">-- Chọn giới tính --</option>
+                            <option value="male">Nam</option>
+                            <option value="female">Nữ</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Khu Vực Sinh Sống / Trọ</label>
+                        <select id="prof-location" class="form-control">
+                            <option value="">-- Chọn Quận / Huyện --</option>
+                            <!-- Dynamic locations -->
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <h3 style="font-size:1.15rem;font-weight:700;color:var(--dark);margin-bottom:1.25rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);">
-                2. Học Vấn & Giới Thiệu
-            </h3>
+            <div class="form-section">
+                <h3 class="form-section-title">
+                    2. Học Vấn & Giới Thiệu
+                </h3>
 
-            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:1.25rem;margin-bottom:1.5rem;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:1.25rem;margin-bottom:1.25rem;">
+                    <div class="form-group">
+                        <label class="form-label">Trường Đại Học / Cao Đẳng</label>
+                        <input type="text" id="prof-university" class="form-control" placeholder="ĐH Quốc Gia, ĐH Bách Khoa, ĐH Ngoại Thương...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Chuyên Ngành</label>
+                        <input type="text" id="prof-major" class="form-control" placeholder="Công nghệ thông tin, Marketing, Ngôn ngữ Anh...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sinh Viên Năm</label>
+                        <select id="prof-academic-year" class="form-control">
+                            <option value="">-- Chọn năm học --</option>
+                            <option value="1">Năm nhất (Năm 1)</option>
+                            <option value="2">Năm 2</option>
+                            <option value="3">Năm 3</option>
+                            <option value="4">Năm 4</option>
+                            <option value="5">Năm 5+</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label class="form-label">Trường Đại Học / Cao Đẳng</label>
-                    <input type="text" id="prof-university" class="form-control" placeholder="ĐH Quốc Gia, ĐH Bách Khoa, ĐH Ngoại Thương...">
+                    <label class="form-label">Giới Thiệu Bản Thân (Bio)</label>
+                    <textarea id="prof-bio" class="form-control" rows="3" placeholder="Chia sẻ đôi nét về bạn, mục tiêu công việc part-time hoặc tính cách nổi bật..."></textarea>
                 </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="form-section-title">
+                    3. Kỹ Năng & Hồ Sơ CV
+                </h3>
+
+                <div class="form-group" style="margin-bottom:1.25rem;">
+                    <label class="form-label">Kỹ Năng Nổi Bật (Chọn các kỹ năng bạn có)</label>
+                    <div id="prof-skills-container" style="display:flex;flex-wrap:wrap;gap:0.5rem;padding:0.75rem;background:#f8fafc;border-radius:var(--radius);border:1px solid var(--border);">
+                        <!-- Dynamic skills -->
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label class="form-label">Chuyên Ngành</label>
-                    <input type="text" id="prof-major" class="form-control" placeholder="Công nghệ thông tin, Marketing, Ngôn ngữ Anh...">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Sinh Viên Năm</label>
-                    <select id="prof-academic-year" class="form-control">
-                        <option value="">-- Chọn năm học --</option>
-                        <option value="1">Năm nhất (Năm 1)</option>
-                        <option value="2">Năm 2</option>
-                        <option value="3">Năm 3</option>
-                        <option value="4">Năm 4</option>
-                        <option value="5">Năm 5+</option>
-                    </select>
+                    <label class="form-label">Đường Dẫn CV Trực Tuyến (Google Drive, Canva, TopCV...)</label>
+                    <div style="display:flex;gap:0.75rem;">
+                        <input type="url" id="prof-cv-url" class="form-control" placeholder="https://drive.google.com/file/d/.../view">
+                        <a id="btn-view-cv" href="#" target="_blank" class="btn btn-outline btn-sm" style="display:none;white-space:nowrap;align-items:center;">
+                            Xem CV
+                        </a>
+                    </div>
+                    <small class="form-help">
+                        Hệ thống lưu link CV đã công khai quyền xem để nhà tuyển dụng dễ dàng mở trực tiếp.
+                    </small>
                 </div>
             </div>
 
-            <div class="form-group" style="margin-bottom:1.5rem;">
-                <label class="form-label">Giới Thiệu Bản Thân (Bio)</label>
-                <textarea id="prof-bio" class="form-control" rows="3" placeholder="Chia sẻ đôi nét về bạn, mục tiêu công việc part-time hoặc tính cách nổi bật..."></textarea>
-            </div>
+            <div class="form-section" id="schedule-section">
+                <h3 class="form-section-title">
+                    4. Lịch Rảnh Trong Tuần (Availability Schedule)
+                </h3>
+                <p class="form-section-desc">
+                    Đánh dấu các ca bạn có thể đi làm part-time để hệ thống ưu tiên gợi ý việc làm khớp lịch học:
+                </p>
 
-            <h3 style="font-size:1.15rem;font-weight:700;color:var(--dark);margin-bottom:1.25rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);">
-                3. Kỹ Năng & Hồ Sơ CV
-            </h3>
-
-            <div class="form-group" style="margin-bottom:1.5rem;">
-                <label class="form-label">Kỹ Năng Nổi Bật (Chọn các kỹ năng bạn có)</label>
-                <div id="prof-skills-container" style="display:flex;flex-wrap:wrap;gap:0.5rem;padding:0.75rem;background:#f8fafc;border-radius:var(--radius);border:1px solid var(--border);">
-                    <!-- Dynamic skills -->
+                <div class="table-responsive" style="margin-bottom:1rem;">
+                    <table class="data-table" style="text-align:center;">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;">Ca làm việc</th>
+                                <th style="text-align:center;">Thứ 2</th>
+                                <th style="text-align:center;">Thứ 3</th>
+                                <th style="text-align:center;">Thứ 4</th>
+                                <th style="text-align:center;">Thứ 5</th>
+                                <th style="text-align:center;">Thứ 6</th>
+                                <th style="text-align:center;">Thứ 7</th>
+                                <th style="text-align:center;">Chủ Nhật</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-matrix-body">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="form-group" style="margin-bottom:1.5rem;">
-                <label class="form-label">Đường Dẫn CV Trực Tuyến (Google Drive, Canva, TopCV...)</label>
-                <div style="display:flex;gap:0.75rem;">
-                    <input type="url" id="prof-cv-url" class="form-control" placeholder="https://drive.google.com/file/d/.../view">
-                    <a id="btn-view-cv" href="#" target="_blank" class="btn btn-outline btn-sm" style="display:none;white-space:nowrap;align-items:center;">
-                        🔗 Xem CV
-                    </a>
-                </div>
-                <small style="font-size:0.75rem;color:var(--text-muted);">
-                    Hệ thống lưu link CV đã công khai quyền xem để nhà tuyển dụng dễ dàng mở trực tiếp.
-                </small>
-            </div>
-
-            <h3 id="schedule-section" style="font-size:1.15rem;font-weight:700;color:var(--dark);margin-bottom:1.25rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);">
-                4. Lịch Rảnh Trong Tuần (Availability Schedule)
-            </h3>
-            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;">
-                Đánh dấu các ca bạn có thể đi làm part-time để hệ thống ưu tiên gợi ý việc làm khớp lịch học:
-            </p>
-
-            <div style="overflow-x:auto;margin-bottom:2rem;">
-                <table style="width:100%;border-collapse:collapse;text-align:center;font-size:0.88rem;">
-                    <thead>
-                        <tr style="background:#f1f5f9;border-bottom:2px solid var(--border);">
-                            <th style="padding:0.75rem;text-align:left;">Ca làm việc</th>
-                            <th style="padding:0.75rem;">Thứ 2</th>
-                            <th style="padding:0.75rem;">Thứ 3</th>
-                            <th style="padding:0.75rem;">Thứ 4</th>
-                            <th style="padding:0.75rem;">Thứ 5</th>
-                            <th style="padding:0.75rem;">Thứ 6</th>
-                            <th style="padding:0.75rem;">Thứ 7</th>
-                            <th style="padding:0.75rem;">Chủ Nhật</th>
-                        </tr>
-                    </thead>
-                    <tbody id="schedule-matrix-body">
-                        <!-- Rendered by JS -->
-                    </tbody>
-                </table>
-            </div>
-
-            <div style="display:flex;justify-content:flex-end;gap:1rem;border-top:1px solid var(--border);padding-top:1.5rem;">
+            <div class="form-actions">
                 <a href="/student/dashboard" class="btn btn-outline">Hủy Bỏ</a>
                 <button type="submit" id="btn-save-profile" class="btn btn-primary btn-lg">
-                    💾 Lưu Hồ Sơ Sinh Viên
+                    Lưu Hồ Sơ Sinh Viên
                 </button>
             </div>
         </form>
@@ -365,7 +373,7 @@ async function handleSaveProfile(e) {
     });
 
     btn.disabled = false;
-    btn.innerText = "💾 Lưu Hồ Sơ Sinh Viên";
+    btn.innerText = "Lưu Hồ Sơ Sinh Viên";
 
     if (res && res.success) {
         showToast("Lưu hồ sơ sinh viên thành công!", "success");

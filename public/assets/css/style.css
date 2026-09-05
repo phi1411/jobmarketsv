@@ -1549,3 +1549,288 @@ textarea:focus-visible {
     align-items: center;
     gap: var(--space-2);
 }
+
+/* UI-P2-01: Form Primitives */
+.form-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-6);
+}
+
+.form-section {
+    margin-bottom: var(--space-6);
+}
+
+.form-section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.form-section-desc {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    margin-bottom: var(--space-4);
+    line-height: 1.5;
+}
+
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+}
+
+.form-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+}
+
+.form-help {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+    line-height: 1.4;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--space-3);
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-5);
+    margin-top: var(--space-6);
+}
+
+.fieldset-card {
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    margin-bottom: var(--space-5);
+}
+
+.fieldset-card-title {
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: var(--space-3);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* UI-P2-02: Data Table, List Row & Row Actions */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+    text-align: left;
+}
+
+.data-table th {
+    background-color: var(--bg);
+    color: var(--text-muted);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+}
+
+.data-table tr:hover td {
+    background-color: var(--surface-hover, #f8fafc);
+}
+
+.data-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-5);
+    transition: var(--transition);
+}
+
+.data-card:hover {
+    border-color: var(--primary-border);
+}
+
+.row-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.row-action-btn {
+    min-height: 40px;
+    min-width: 40px;
+    padding: 0.5rem 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    box-sizing: border-box;
+}
+
+/* UI-P2-03: Loading, Empty, Error & Notification States */
+.empty-state-title {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: var(--space-1);
+}
+
+.state-error {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-8) var(--space-4);
+    text-align: center;
+    margin-bottom: var(--space-6);
+}
+
+.state-error-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--warning-light);
+    color: var(--warning-text);
+    margin: 0 auto var(--space-3);
+}
+
+.state-error-title {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: var(--space-1);
+}
+
+.state-error-desc {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    max-width: 450px;
+    margin: 0 auto var(--space-4);
+    line-height: 1.5;
+}
+
+.notification-item {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid transparent;
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-4);
+    transition: var(--transition);
+}
+
+.notification-item--unread {
+    background-color: #f8fafc;
+    border-left-color: var(--primary);
+}
+
+.notification-item-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background-color: var(--bg);
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.notification-item--unread .notification-item-icon {
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+
+.notification-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-item-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-1);
+}
+
+.notification-item-title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--dark);
+    margin: 0;
+}
+
+.notification-item--unread .notification-item-title {
+    font-weight: 700;
+}
+
+.notification-item-desc {
+    font-size: var(--font-size-sm);
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: var(--space-2);
+}
+
+.notification-item-meta {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+@media (max-width: 640px) {
+    .form-grid-2,
+    .form-grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-card {
+        padding: var(--space-4);
+    }
+    .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+    .form-actions .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+    .notification-item {
+        flex-direction: column;
+    }
+}
