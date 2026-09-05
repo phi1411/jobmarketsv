@@ -22,13 +22,12 @@ define("BASE_PATH", __DIR__);
 require_once __DIR__ . "/vendor/autoload.php";
 
 $envTestingFile = __DIR__ . "/.env.testing";
-if (file_exists($envTestingFile)) {
-    $dotenv = Dotenv\Dotenv::createMutable(__DIR__, ".env.testing");
-    $dotenv->load();
-} else {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-    $dotenv->load();
+if (!file_exists($envTestingFile)) {
+    fwrite(STDERR, "FATAL: File '.env.testing' not found. Tests must run in isolated test environment.\n");
+    exit(1);
 }
+$dotenv = Dotenv\Dotenv::createMutable(__DIR__, ".env.testing");
+$dotenv->load();
 
 use JobMarket\Domain\Authentication\GoogleOAuthClientInterface;
 use JobMarket\Domain\Authentication\GoogleOAuthService;
