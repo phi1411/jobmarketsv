@@ -24,7 +24,7 @@ class AuthenticationController extends Controller
             "name"     => "required|min:2|max:100",
             "email"    => "required|email",
             "password" => "required|min:6",
-            "role"     => "required|in:student,developer,company,employer,admin"
+            "role"     => "required|in:student,developer,company,employer"
         ]);
 
         if ($validator->fails()) {
