@@ -21,7 +21,8 @@ class GoogleOAuthController extends Controller
 
     public function start(Request $request): Response
     {
-        $role = (string)($request->input("role") ?? $request->input("intent") ?? "");
+        $roleInput = $request->input("role") ?? $request->input("intent") ?? null;
+        $role = ($roleInput !== null && trim((string)$roleInput) !== "") ? (string)$roleInput : null;
         $returnUrl = $request->input("return_url") ?? $request->input("redirect") ?? null;
 
         try {
@@ -45,9 +46,16 @@ class GoogleOAuthController extends Controller
         // Check for Google error response (e.g. access_denied)
         $error = $request->input("error");
         if (!empty($error)) {
+            $state = (string)$request->input("state", "");
+            $stateData = !empty($state) ? $this->oauthService->consumeState($state) : null;
             $msg = "Đăng nhập bằng tài khoản Google không thành công hoặc đã bị hủy.";
+            $redirectUrl = "/login?error=" . urlencode($msg);
+            if ($stateData !== null) {
+                // Legitimate OAuth session failure: safe to clear stale session
+                $redirectUrl .= "&oauth_error=1";
+            }
             if ($request->wantsHtml()) {
-                return Response::redirect("/login?error=" . urlencode($msg));
+                return Response::redirect($redirectUrl);
             }
             return Response::error($msg, Response::HTTP_BAD_REQUEST);
         }
@@ -55,8 +63,30 @@ class GoogleOAuthController extends Controller
         $code = (string)$request->input("code", "");
         $state = (string)$request->input("state", "");
 
+        if (empty(trim($code)) || empty(trim($state))) {
+            $msg = "Mã ủy quyền hoặc trạng thái xác thực không được để trống.";
+            if (!$request->wantsHtml()) {
+                return Response::error($msg, Response::HTTP_UNAUTHORIZED);
+            }
+            // State is missing: do NOT add oauth_error=1
+            return Response::redirect("/login?error=" . urlencode("Mã ủy quyền hoặc trạng thái xác thực không hợp lệ."));
+        }
+
+        // Validate and consume state server-side
+        $stateData = $this->oauthService->consumeState($state);
+        if ($stateData === null) {
+            $msg = "Trạng thái phiên xác thực (state) không hợp lệ hoặc đã hết hạn.";
+            if (!$request->wantsHtml()) {
+                return Response::error($msg, Response::HTTP_UNAUTHORIZED);
+            }
+            // State is unverified/invalid/expired: do NOT add oauth_error=1
+            return Response::redirect("/login?error=" . urlencode("Trạng thái phiên xác thực không hợp lệ hoặc đã hết hạn."));
+        }
+
+        // State has been successfully validated and consumed!
+        // Any failure after this point is from a verified OAuth session, so oauth_error=1 is permitted.
         try {
-            $result = $this->oauthService->callback($code, $state);
+            $result = $this->oauthService->processCallback($code, $stateData);
             $jwtToken = $result["token"];
             $user = $result["user"];
             $redirectUrl = $result["redirect"];
@@ -98,7 +128,7 @@ class GoogleOAuthController extends Controller
             localStorage.setItem("jobmarket_user", {$jsonUser});
             window.location.replace({$jsonRedirect});
         } catch (e) {
-            window.location.replace("/login?error=" + encodeURIComponent("Không thể lưu phiên đăng nhập."));
+            window.location.replace("/login?error=" + encodeURIComponent("Không thể lưu phiên đăng nhập.") + "&oauth_error=1");
         }
     </script>
 </body>
@@ -114,17 +144,17 @@ HTML;
                     : Response::HTTP_UNAUTHORIZED;
                 return Response::error($e->getMessage(), $status);
             }
-            return Response::redirect("/login?error=" . urlencode($e->getMessage()));
+            return Response::redirect("/login?error=" . urlencode($e->getMessage()) . "&oauth_error=1");
         } catch (ValidationException $e) {
             if (!$request->wantsHtml()) {
                 return Response::error($e->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY, $e->getErrors());
             }
-            return Response::redirect("/login?error=" . urlencode($e->getMessage()));
+            return Response::redirect("/login?error=" . urlencode($e->getMessage()) . "&oauth_error=1");
         } catch (Throwable $e) {
             if (!$request->wantsHtml()) {
                 return Response::error($e->getMessage(), Response::HTTP_BAD_REQUEST);
             }
-            return Response::redirect("/login?error=" . urlencode("Đã có lỗi xảy ra trong quá trình xác thực với Google."));
+            return Response::redirect("/login?error=" . urlencode("Đã có lỗi xảy ra trong quá trình xác thực với Google.") . "&oauth_error=1");
         }
     }
 }

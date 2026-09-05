@@ -24,7 +24,7 @@ class OAuthStateStore implements OAuthStateStoreInterface
         $payload = [
             "state"      => $state,
             "nonce"      => $data["nonce"] ?? "",
-            "role"       => $data["role"] ?? "student",
+            "role"       => array_key_exists("role", $data) ? $data["role"] : null,
             "return_url" => $data["return_url"] ?? null,
             "created_at" => $data["created_at"] ?? time(),
             "expires_at" => time() + $ttl
