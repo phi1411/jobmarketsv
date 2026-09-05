@@ -52,8 +52,8 @@ if ($appEnv !== "testing") {
 }
 
 // 3. Fail-fast: Must be dedicated test database
-if (!isset($config["dbname"]) || strpos($config["dbname"], "test") === false) {
-    fwrite(STDERR, "[CHẶN TOÀN BỘ] Database '{$config['dbname']}' không phải database testing! Nguy cơ ảnh hưởng dữ liệu." . PHP_EOL);
+if (!isset($config["dbname"]) || $config["dbname"] !== "jobmarket_test") {
+    fwrite(STDERR, "[CHẶN TOÀN BỘ] Database '{$config['dbname']}' không phải 'jobmarket_test'! Nguy cơ ảnh hưởng dữ liệu." . PHP_EOL);
     exit(1);
 }
 
