@@ -32,6 +32,34 @@ class CompanyRepository implements CompanyRepositoryInterface
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getAllVerifiedPublic(): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT id, name, description, location, address, city, district, website, logo_url, created_at
+             FROM companies
+             WHERE verification_status = 'verified'"
+        );
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function sanitizePublic(array $company): array
+    {
+        return [
+            "id"          => $company["id"] ?? "",
+            "name"        => $company["name"] ?? "",
+            "description" => $company["description"] ?? "",
+            "location"    => $company["location"] ?? "",
+            "address"     => $company["address"] ?? null,
+            "city"        => $company["city"] ?? null,
+            "district"    => $company["district"] ?? null,
+            "website"     => $company["website"] ?? "",
+            "logo_url"    => $company["logo_url"] ?? null,
+            "created_at"  => $company["created_at"] ?? null,
+        ];
+    }
+
     public function create(Company $company): void
     {
         $stmt = $this->db->prepare(
@@ -72,11 +100,10 @@ class CompanyRepository implements CompanyRepositoryInterface
     public function update(Company $company): void
     {
         $stmt = $this->db->prepare(
-            "UPDATE companies SET user_id = ?, name = ?, description = ?, location = ?, website = ? WHERE id = ?"
+            "UPDATE companies SET name = ?, description = ?, location = ?, website = ? WHERE id = ?"
         );
 
         $stmt->execute([
-            $company->getUserId(),
             $company->getName(),
             $company->getDescription(),
             $company->getLocation(),
