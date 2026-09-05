@@ -3,7 +3,7 @@
 <div class="container" style="margin-bottom:3rem;">
     <!-- Loading Skeleton -->
     <div id="comp-dash-loading" style="display:block;">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:1.25rem;margin-bottom:2rem;">
+        <div class="stat-grid" style="margin-bottom:2rem;">
             <div class="job-card skeleton" style="height:110px;"></div>
             <div class="job-card skeleton" style="height:110px;"></div>
             <div class="job-card skeleton" style="height:110px;"></div>
@@ -24,21 +24,17 @@
     <!-- Main Content -->
     <div id="comp-dash-content" style="display:none;">
         <!-- Welcome banner -->
-        <div style="background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%);color:#fff;border-radius:var(--radius-md);padding:1.5rem 2rem;margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
-            <div>
-                <h2 style="font-size:1.35rem;font-weight:800;color:#fff;margin-bottom:0.25rem;">
+        <div class="dashboard-hero dashboard-hero--company">
+            <div class="dashboard-hero-content">
+                <h2 class="dashboard-hero-title">
                     Xin chào, <span id="dash-company-name">Nhà tuyển dụng</span>!
                 </h2>
-                <p style="color:#94a3b8;font-size:0.9rem;margin:0;">
+                <p class="dashboard-hero-desc">
                     Dưới đây là thống kê tình hình tin tuyển dụng và hồ sơ ứng viên mới nhất.
                 </p>
             </div>
-            <div style="display:flex;gap:0.75rem;">
-                <a href="/company/jobs/create" class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.35);">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    <span>Đăng Tin Mới</span>
-                </a>
-                <a href="/company/applications" class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.35);">
+            <div class="dashboard-hero-actions">
+                <a href="/company/applications" class="btn btn-outline btn-sm">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
                     <span>Xem Ứng Viên</span>
                 </a>
@@ -49,45 +45,49 @@
         <div class="stat-grid">
             <!-- Card 1: Active Jobs -->
             <div class="stat-card">
-                <div class="stat-card-icon" style="background:#e0e7ff;color:#4338ca;">
+                <div class="stat-card-icon stat-card-icon--primary">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
                 </div>
                 <div class="stat-card-body">
                     <div class="stat-card-label">Tin Đang Tuyển</div>
                     <div id="stat-active-jobs" class="stat-card-value">0</div>
+                    <div class="stat-card-subtext">Tin đang hiển thị công khai</div>
                 </div>
             </div>
 
             <!-- Card 2: Total Applications -->
             <div class="stat-card">
-                <div class="stat-card-icon" style="background:#dbeafe;color:#1d4ed8;">
+                <div class="stat-card-icon stat-card-icon--info">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                 </div>
                 <div class="stat-card-body">
                     <div class="stat-card-label">Tổng Hồ Sơ Nhận</div>
                     <div id="stat-total-apps" class="stat-card-value">0</div>
+                    <div class="stat-card-subtext">Tất cả ứng viên đã nộp đơn</div>
                 </div>
             </div>
 
             <!-- Card 3: Pending Review -->
             <div class="stat-card">
-                <div class="stat-card-icon" style="background:var(--warning-light);color:var(--warning-text);">
+                <div class="stat-card-icon stat-card-icon--warning">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 </div>
                 <div class="stat-card-body">
                     <div class="stat-card-label">Hồ Sơ Chờ Duyệt</div>
-                    <div id="stat-pending-apps" class="stat-card-value" style="color:var(--warning-text);">0</div>
+                    <div id="stat-pending-apps" class="stat-card-value stat-card-value--warning">0</div>
+                    <div class="stat-card-subtext">Cần xem xét và phản hồi</div>
                 </div>
             </div>
 
             <!-- Card 4: Shortlisted / Accepted -->
             <div class="stat-card">
-                <div class="stat-card-icon" style="background:var(--success-light);color:var(--success-text);">
+                <div class="stat-card-icon stat-card-icon--success">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                 </div>
                 <div class="stat-card-body">
                     <div class="stat-card-label">Đã Chọn / Mời Phỏng Vấn</div>
-                    <div id="stat-shortlisted-apps" class="stat-card-value" style="color:var(--success-text);">0</div>
+                    <div id="stat-shortlisted-apps" class="stat-card-value stat-card-value--success">0</div>
+                    <div class="stat-card-subtext">Ứng viên phù hợp & trúng tuyển</div>
                 </div>
             </div>
         </div>
