@@ -110,7 +110,8 @@ $migrations = [
     \JobMarket\Migrations\JobApplicationEnhancementMigration::class,
     \JobMarket\Migrations\JobSearchFavoritesSavedSearchesMigration::class,
     \JobMarket\Migrations\NotificationDashboardEnhancementMigration::class,
-    \JobMarket\Migrations\AdminModerationAuditMigration::class
+    \JobMarket\Migrations\AdminModerationAuditMigration::class,
+    \JobMarket\Migrations\OAuthIdentityMigration::class
 ];
 
 $ranCount = 0;
