@@ -202,3 +202,17 @@ function getVerificationBadge(status) {
     const s = map[status] || { label: status || "Chưa xác minh", modifier: "status-badge--neutral" };
     return `<span class="status-badge ${s.modifier}"><span class="status-dot"></span>${escapeHtml(s.label)}</span>`;
 }
+
+// Explicit window exports to prevent any scope issues
+if (typeof window !== "undefined") {
+    window.escapeHtml = escapeHtml;
+    window.apiRequest = apiRequest;
+    window.showToast = showToast;
+    window.formatCurrency = formatCurrency;
+    window.formatDate = formatDate;
+    window.getShiftLabel = getShiftLabel;
+    window.getWorkTypeLabel = getWorkTypeLabel;
+    window.getAppStatusBadge = getAppStatusBadge;
+    window.getJobStatusBadge = getJobStatusBadge;
+    window.getVerificationBadge = getVerificationBadge;
+}

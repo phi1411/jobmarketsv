@@ -75,7 +75,7 @@
 <script>
 let currentJobPage = 1;
 
-document.addEventListener("DOMContentLoaded", () => {
+function initCompanyJobsPage() {
     // Auth UX Guard
     if (!TokenStorage.isLoggedIn()) {
         showToast("Vui lòng đăng nhập với tài khoản Doanh nghiệp.", "error");
@@ -92,9 +92,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     loadCompanyJobs(1);
-});
+}
 
-// Inherit getJobStatusBadge(status) from api.js
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCompanyJobsPage);
+} else {
+    initCompanyJobsPage();
+}
+
+function renderJobStatusBadge(status) {
+    if (typeof getJobStatusBadge === "function") {
+        return getJobStatusBadge(status);
+    }
+    const map = {
+        "published": { label: "Đang hiển thị", modifier: "status-badge--success" },
+        "draft": { label: "Bản nháp", modifier: "status-badge--neutral" },
+        "pending_approval": { label: "Chờ duyệt", modifier: "status-badge--warning" },
+        "hidden": { label: "Tạm ẩn", modifier: "status-badge--neutral" },
+        "closed": { label: "Đã đóng", modifier: "status-badge--neutral" },
+        "expired": { label: "Hết hạn", modifier: "status-badge--neutral" },
+        "rejected": { label: "Bị từ chối", modifier: "status-badge--danger" }
+    };
+    const s = map[status] || { label: status || "Không rõ", modifier: "status-badge--neutral" };
+    return `<span class="status-badge ${s.modifier}"><span class="status-dot"></span>${escapeHtml(s.label)}</span>`;
+}
 
 async function loadCompanyJobs(page = 1) {
     currentJobPage = page;
@@ -105,98 +126,111 @@ async function loadCompanyJobs(page = 1) {
     const totalText = document.getElementById("job-total-text");
     const pagEl = document.getElementById("company-jobs-pagination");
 
-    loadingEl.style.display = "block";
-    errorEl.style.display = "none";
-    container.innerHTML = "";
-    emptyEl.style.display = "none";
-    pagEl.innerHTML = "";
+    if (loadingEl) loadingEl.style.display = "block";
+    if (errorEl) errorEl.style.display = "none";
+    if (container) container.innerHTML = "";
+    if (emptyEl) emptyEl.style.display = "none";
+    if (pagEl) pagEl.innerHTML = "";
 
-    const status = document.getElementById("filter-job-status").value;
-    const keyword = document.getElementById("filter-job-keyword").value.trim();
+    try {
+        const statusEl = document.getElementById("filter-job-status");
+        const keywordEl = document.getElementById("filter-job-keyword");
+        const status = statusEl ? statusEl.value : "";
+        const keyword = keywordEl ? keywordEl.value.trim() : "";
 
-    const params = new URLSearchParams({ page: currentJobPage, per_page: 10 });
-    if (status) params.append("status", status);
-    if (keyword) params.append("keyword", keyword);
+        const params = new URLSearchParams({ page: currentJobPage, per_page: 10 });
+        if (status) params.append("status", status);
+        if (keyword) params.append("keyword", keyword);
 
-    const res = await apiRequest(`/company/jobs?${params.toString()}`, { requireAuth: true });
-    loadingEl.style.display = "none";
+        const res = await apiRequest(`/company/jobs?${params.toString()}`, { requireAuth: true });
 
-    if (res && res.success && Array.isArray(res.data)) {
-        const jobs = res.data;
-        const meta = res.meta || {};
-        const total = meta.total !== undefined ? meta.total : jobs.length;
+        if (res && res.success && Array.isArray(res.data)) {
+            const jobs = res.data;
+            const meta = res.meta || {};
+            const total = meta.total !== undefined ? meta.total : jobs.length;
 
-        totalText.innerText = `Tìm thấy ${total} tin tuyển dụng`;
+            if (totalText) totalText.innerText = `Tìm thấy ${total} tin tuyển dụng`;
 
-        if (jobs.length === 0) {
-            emptyEl.style.display = "block";
-            return;
-        }
+            if (jobs.length === 0) {
+                if (emptyEl) emptyEl.style.display = "block";
+                return;
+            }
 
-        container.innerHTML = jobs.map(job => {
-            const isPublished = job.status === "published";
-            return `
-                <div class="data-card" style="margin:0;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.25rem;">
-                    <div style="flex:1;min-width:280px;">
-                        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;flex-wrap:wrap;">
-                            <h3 style="font-size:1.15rem;font-weight:700;margin:0;color:var(--dark);">
-                                <a href="/company/jobs/${encodeURIComponent(job.id)}/edit">
-                                    ${escapeHtml(job.title)}
+            container.innerHTML = jobs.map(job => {
+                const isPublished = job.status === "published";
+                const shiftLabel = typeof getShiftLabel === "function" ? getShiftLabel(job.shift_type) : (job.shift_type || "Linh hoạt");
+                const currText = typeof formatCurrency === "function" ? `${formatCurrency(job.salary_min)} - ${formatCurrency(job.salary_max)}` : "Thoả thuận";
+                const dateText = typeof formatDate === "function" ? formatDate(job.application_deadline) : (job.application_deadline || "Chưa đặt");
+                return `
+                    <div class="data-card" style="margin:0;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.25rem;">
+                        <div style="flex:1;min-width:280px;">
+                            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;flex-wrap:wrap;">
+                                <h3 style="font-size:1.15rem;font-weight:700;margin:0;color:var(--dark);">
+                                    <a href="/company/jobs/${encodeURIComponent(job.id)}/edit">
+                                        ${escapeHtml(job.title)}
+                                    </a>
+                                </h3>
+                                ${renderJobStatusBadge(job.status)}
+                            </div>
+
+                            <div style="color:var(--text-muted);font-size:0.88rem;margin-bottom:0.75rem;">
+                                📍 ${escapeHtml(job.location_name || job.city || "Hà Nội")} &bull;
+                                Ca: <strong>${shiftLabel}</strong> &bull;
+                                Lương: <strong>${currText}</strong> &bull;
+                                Hạn: ${dateText || "Chưa đặt"}
+                            </div>
+
+                            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+                                <a href="/company/applications?job_id=${encodeURIComponent(job.id)}" class="badge badge-primary" style="text-decoration:none;font-size:0.8rem;padding:0.35rem 0.65rem;">
+                                    Xem ứng viên nộp vào tin này &rarr;
                                 </a>
-                            </h3>
-                            ${getJobStatusBadge(job.status)}
+                                ${isPublished ? `
+                                    <a href="/viec-lam/${encodeURIComponent(job.id)}" target="_blank" class="badge" style="background:#f1f5f9;color:var(--text);text-decoration:none;font-size:0.8rem;padding:0.35rem 0.65rem;">
+                                        Xem trang public
+                                    </a>
+                                ` : ''}
+                            </div>
                         </div>
 
-                        <div style="color:var(--text-muted);font-size:0.88rem;margin-bottom:0.75rem;">
-                            📍 ${escapeHtml(job.location_name || job.city || "Hà Nội")} &bull;
-                            Ca: <strong>${getShiftLabel(job.shift_type)}</strong> &bull;
-                            Lương: <strong>${formatCurrency(job.salary_min)} - ${formatCurrency(job.salary_max)}</strong> &bull;
-                            Hạn: ${formatDate(job.application_deadline) || "Chưa đặt"}
-                        </div>
-
-                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
-                            <a href="/company/applications?job_id=${encodeURIComponent(job.id)}" class="badge badge-primary" style="text-decoration:none;font-size:0.8rem;padding:0.35rem 0.65rem;">
-                                Xem ứng viên nộp vào tin này &rarr;
+                        <!-- Action buttons -->
+                        <div class="row-actions">
+                            <a href="/company/jobs/${encodeURIComponent(job.id)}/edit" class="btn btn-outline btn-sm row-action-btn">
+                                Sửa tin
                             </a>
                             ${isPublished ? `
-                                <a href="/viec-lam/${encodeURIComponent(job.id)}" target="_blank" class="badge" style="background:#f1f5f9;color:var(--text);text-decoration:none;font-size:0.8rem;padding:0.35rem 0.65rem;">
-                                    Xem trang public
-                                </a>
+                                <button onclick="handleCloseJob('${escapeHtml(job.id)}')" class="btn btn-sm row-action-btn" style="background:#fff;border:1px solid var(--border);color:var(--warning-text);" title="Đóng tin tuyển dụng này" aria-label="Đóng tin tuyển dụng này">
+                                    Đóng tuyển
+                                </button>
                             ` : ''}
+                            <button onclick="handleDeleteJob('${escapeHtml(job.id)}')" class="btn btn-sm row-action-btn" style="background:#fff;border:1px solid var(--border);color:var(--danger);" title="Xóa tin tuyển dụng này" aria-label="Xóa tin tuyển dụng này">
+                                Xóa
+                            </button>
                         </div>
                     </div>
+                `;
+            }).join("");
 
-                    <!-- Action buttons -->
-                    <div class="row-actions">
-                        <a href="/company/jobs/${encodeURIComponent(job.id)}/edit" class="btn btn-outline btn-sm row-action-btn">
-                            Sửa tin
-                        </a>
-                        ${isPublished ? `
-                            <button onclick="handleCloseJob('${escapeHtml(job.id)}')" class="btn btn-sm row-action-btn" style="background:#fff;border:1px solid var(--border);color:var(--warning-text);" title="Đóng tin tuyển dụng này">
-                                Đóng tuyển
-                            </button>
-                        ` : ''}
-                        <button onclick="handleDeleteJob('${escapeHtml(job.id)}')" class="btn btn-sm row-action-btn" style="background:#fff;border:1px solid var(--border);color:var(--danger);" title="Xóa tin tuyển dụng này">
-                            Xóa
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join("");
-
-        // Render Pagination
-        const totalPages = meta.total_pages || 1;
-        if (totalPages > 1) {
-            let pagHtml = "";
-            for (let i = 1; i <= totalPages; i++) {
-                pagHtml += `<button onclick="loadCompanyJobs(${i})" class="btn btn-sm ${i === currentJobPage ? 'btn-primary' : 'btn-outline'}" style="min-width:36px;">${i}</button>`;
+            // Render Pagination
+            const totalPages = meta.total_pages || 1;
+            if (totalPages > 1 && pagEl) {
+                let pagHtml = "";
+                for (let i = 1; i <= totalPages; i++) {
+                    pagHtml += `<button onclick="loadCompanyJobs(${i})" class="btn btn-sm ${i === currentJobPage ? 'btn-primary' : 'btn-outline'}" style="min-width:36px;">${i}</button>`;
+                }
+                pagEl.innerHTML = pagHtml;
             }
-            pagEl.innerHTML = pagHtml;
+        } else {
+            if (errorEl) errorEl.style.display = "block";
+            const msgEl = document.getElementById("company-jobs-err-msg");
+            if (msgEl) msgEl.innerText = (res && res.message) ? res.message : "Đã có lỗi xảy ra.";
         }
-
-    } else {
-        errorEl.style.display = "block";
-        document.getElementById("company-jobs-err-msg").innerText = (res && res.message) ? res.message : "Đã có lỗi xảy ra.";
+    } catch (err) {
+        console.error("Error loading company jobs:", err);
+        if (errorEl) errorEl.style.display = "block";
+        const msgEl = document.getElementById("company-jobs-err-msg");
+        if (msgEl) msgEl.innerText = "Lỗi kết nối máy chủ hoặc tải dữ liệu.";
+    } finally {
+        if (loadingEl) loadingEl.style.display = "none";
     }
 }
 

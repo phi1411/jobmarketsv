@@ -204,7 +204,7 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+function initCompanyDashboardPage() {
     // Auth UX Guard
     if (!TokenStorage.isLoggedIn()) {
         showToast("Vui lòng đăng nhập với tài khoản Doanh nghiệp.", "error");
@@ -221,23 +221,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     loadCompanyDashboard();
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCompanyDashboardPage);
+} else {
+    initCompanyDashboardPage();
+}
 
 async function loadCompanyDashboard() {
     const loadingEl = document.getElementById("comp-dash-loading");
     const errorEl = document.getElementById("comp-dash-error");
     const contentEl = document.getElementById("comp-dash-content");
 
-    loadingEl.style.display = "block";
-    errorEl.style.display = "none";
-    contentEl.style.display = "none";
+    if (loadingEl) loadingEl.style.display = "block";
+    if (errorEl) errorEl.style.display = "none";
+    if (contentEl) contentEl.style.display = "none";
 
-    const res = await apiRequest("/company/dashboard", { requireAuth: true });
-    loadingEl.style.display = "none";
+    try {
+        const res = await apiRequest("/company/dashboard", { requireAuth: true });
 
-    if (res && res.success && res.data) {
-        contentEl.style.display = "block";
-        const data = res.data;
+        if (res && res.success && res.data) {
+            if (contentEl) contentEl.style.display = "block";
+            const data = res.data;
 
         // Company Name
         if (data.company_name) {
@@ -355,9 +361,18 @@ async function loadCompanyDashboard() {
             `).join("");
         }
 
-    } else {
-        errorEl.style.display = "block";
-        document.getElementById("comp-dash-err-msg").innerText = (res && res.message) ? res.message : "Đã có lỗi xảy ra.";
+        } else {
+            if (errorEl) errorEl.style.display = "block";
+            const msgEl = document.getElementById("comp-dash-err-msg");
+            if (msgEl) msgEl.innerText = (res && res.message) ? res.message : "Đã có lỗi xảy ra.";
+        }
+    } catch (err) {
+        console.error("Error loading company dashboard:", err);
+        if (errorEl) errorEl.style.display = "block";
+        const msgEl = document.getElementById("comp-dash-err-msg");
+        if (msgEl) msgEl.innerText = "Lỗi kết nối máy chủ.";
+    } finally {
+        if (loadingEl) loadingEl.style.display = "none";
     }
 }
 

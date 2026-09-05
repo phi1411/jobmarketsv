@@ -42,7 +42,7 @@
     <div style="background:#fff;border-radius:var(--radius);max-width:520px;width:100%;padding:2rem;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
             <h3 style="font-size:1.2rem;font-weight:700;color:var(--dark);margin:0;">Lưu Bộ Lọc Tìm Kiếm</h3>
-            <button type="button" onclick="closeCreateModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted);">&times;</button>
+            <button type="button" onclick="closeCreateModal()" class="modal-close-btn" aria-label="Đóng hộp thoại">&times;</button>
         </div>
 
         <div id="ss-error-box" style="display:none;margin-bottom:1rem;" class="toast toast-error"></div>
@@ -102,7 +102,7 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", async () => {
+async function initStudentSavedSearchesPage() {
     if (!TokenStorage.isLoggedIn()) {
         showToast("Vui lòng đăng nhập để xem tìm kiếm đã lưu.", "error");
         window.location.href = `/login?login_required=1&redirect=${encodeURIComponent(window.location.pathname)}`;
@@ -117,7 +117,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await Promise.all([loadCategories(), loadLocations()]);
     loadSavedSearches();
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initStudentSavedSearchesPage);
+} else {
+    initStudentSavedSearchesPage();
+}
 
 async function loadCategories() {
     const res = await apiRequest("/categories");
@@ -155,56 +161,63 @@ async function loadSavedSearches() {
     container.innerHTML = "";
     emptyEl.style.display = "none";
 
-    const res = await apiRequest("/saved-searches", { requireAuth: true });
-    loadingEl.style.display = "none";
+    try {
+        const res = await apiRequest("/saved-searches", { requireAuth: true });
 
-    if (res && res.success && Array.isArray(res.data)) {
-        const searches = res.data;
-        countText.innerText = `Đang lưu ${searches.length} bộ lọc tìm kiếm`;
+        if (res && res.success && Array.isArray(res.data)) {
+            const searches = res.data;
+            if (countText) countText.innerText = `Đang lưu ${searches.length} bộ lọc tìm kiếm`;
 
-        if (searches.length === 0) {
-            emptyEl.style.display = "block";
-            return;
-        }
+            if (searches.length === 0) {
+                if (emptyEl) emptyEl.style.display = "block";
+                return;
+            }
 
-        container.innerHTML = searches.map(item => {
-            const params = new URLSearchParams();
-            if (item.keyword) params.append("keyword", item.keyword);
-            if (item.category_id) params.append("category_id", item.category_id);
-            if (item.location_id) params.append("location_id", item.location_id);
-            if (item.shift_type) params.append("shift_type", item.shift_type);
-            if (item.salary_min) params.append("salary_min", item.salary_min);
+            container.innerHTML = searches.map(item => {
+                const params = new URLSearchParams();
+                if (item.keyword) params.append("keyword", item.keyword);
+                if (item.category_id) params.append("category_id", item.category_id);
+                if (item.location_id) params.append("location_id", item.location_id);
+                if (item.shift_type) params.append("shift_type", item.shift_type);
+                if (item.salary_min) params.append("salary_min", item.salary_min);
 
-            const searchUrl = `/viec-lam?${params.toString()}`;
+                const searchUrl = `/viec-lam?${params.toString()}`;
 
-            return `
-                <div class="data-card" style="margin:0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.25rem;">
-                    <div style="flex:1;min-width:260px;">
-                        <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:0.4rem;">
-                            ${escapeHtml(item.name)}
-                        </h3>
-                        <div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;">
-                            ${item.keyword ? `<span class="badge" style="background:#f1f5f9;color:var(--text);">"${escapeHtml(item.keyword)}"</span>` : ''}
-                            ${item.shift_type ? `<span class="badge badge-shift">${getShiftLabel(item.shift_type)}</span>` : ''}
-                            ${item.salary_min ? `<span class="badge badge-salary">&ge; ${formatCurrency(item.salary_min)}/h</span>` : ''}
-                            <span style="font-size:0.75rem;color:var(--text-muted);margin-left:0.5rem;">Tạo ngày: ${formatDate(item.created_at)}</span>
+                return `
+                    <div class="data-card" style="margin:0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.25rem;">
+                        <div style="flex:1;min-width:260px;">
+                            <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:0.4rem;">
+                                ${escapeHtml(item.name)}
+                            </h3>
+                            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;">
+                                ${item.keyword ? `<span class="badge" style="background:#f1f5f9;color:var(--text);">"${escapeHtml(item.keyword)}"</span>` : ''}
+                                ${item.shift_type ? `<span class="badge badge-shift">${getShiftLabel(item.shift_type)}</span>` : ''}
+                                ${item.salary_min ? `<span class="badge badge-salary">&ge; ${formatCurrency(item.salary_min)}/h</span>` : ''}
+                                <span style="font-size:0.75rem;color:var(--text-muted);margin-left:0.5rem;">Tạo ngày: ${formatDate(item.created_at)}</span>
+                            </div>
+                        </div>
+
+                        <div class="row-actions">
+                            <a href="${searchUrl}" class="btn btn-primary btn-sm row-action-btn">
+                                Chạy Tìm Kiếm
+                            </a>
+                            <button onclick="handleDeleteSavedSearch('${escapeHtml(item.id)}')" class="btn btn-sm row-action-btn" style="background:#fff;border:1px solid var(--border);color:var(--danger);" title="Xóa bộ lọc" aria-label="Xóa bộ lọc">
+                                Xóa
+                            </button>
                         </div>
                     </div>
-
-                    <div class="row-actions">
-                        <a href="${searchUrl}" class="btn btn-primary btn-sm row-action-btn">
-                            Chạy Tìm Kiếm
-                        </a>
-                        <button onclick="handleDeleteSavedSearch('${escapeHtml(item.id)}')" class="btn btn-sm row-action-btn" style="background:#fff;border:1px solid var(--border);color:var(--danger);" title="Xóa bộ lọc">
-                            Xóa
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join("");
-    } else {
-        emptyEl.style.display = "block";
-        countText.innerText = "Không thể tải bộ lọc đã lưu.";
+                `;
+            }).join("");
+        } else {
+            if (emptyEl) emptyEl.style.display = "block";
+            if (countText) countText.innerText = "Không thể tải bộ lọc đã lưu.";
+        }
+    } catch (err) {
+        console.error("Error loading saved searches:", err);
+        if (emptyEl) emptyEl.style.display = "block";
+        if (countText) countText.innerText = "Lỗi kết nối máy chủ.";
+    } finally {
+        if (loadingEl) loadingEl.style.display = "none";
     }
 }
 

@@ -3,6 +3,8 @@
  * Navbar state, Mobile Drawer, Auth sync
  */
 
+let navbarInitialized = false;
+
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Mobile Menu Toggle
     const menuToggle = document.querySelector(".menu-toggle");
@@ -14,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 2. Synchronize Navigation with Auth State
+    // 2. Synchronize Navigation with Auth State (single execution guarded)
     updateNavbarAuthState();
 
     // 3. Check for Flash Message from URL Query
@@ -29,60 +31,139 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-function updateNavbarAuthState() {
+// Immediate execution if DOM elements exist to prevent visual flash
+if (document.querySelector(".nav-actions")) {
+    updateNavbarAuthState();
+}
+
+function updateNavbarAuthState(force = false) {
+    if (navbarInitialized && !force) return;
     const navActions = document.querySelector(".nav-actions");
     if (!navActions) return;
 
+    navbarInitialized = true;
+
+    const navLinks = document.querySelector(".nav-links");
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navbar = document.querySelector(".navbar");
+
     const user = TokenStorage.getUser();
     const token = TokenStorage.getToken();
+    const path = window.location.pathname;
+
+    const isCurrentHome = path === "/" || path === "";
+    const isCurrentJobs = path.startsWith("/viec-lam");
+    const brandLogo = document.querySelector(".brand-logo");
+    if (brandLogo) {
+        if (token && user && user.role === "admin") {
+            brandLogo.href = "/admin/dashboard";
+        } else if (token && user && user.role === "company") {
+            brandLogo.href = "/company/dashboard";
+        } else {
+            brandLogo.href = "/";
+        }
+    }
 
     if (token && user) {
-        let roleBadge = "";
-        let dashboardLink = "#";
-
-        if (user.role === "student" || user.role === "developer") {
-            roleBadge = `<a href="/student/dashboard" style="text-decoration:none;"><span class="status-badge status-badge--info" style="cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Cổng Sinh viên</span></a>`;
-            dashboardLink = "/student/dashboard";
-            fetchUnreadCount();
-        } else if (user.role === "company") {
-            roleBadge = `<a href="/company/dashboard" style="text-decoration:none;"><span class="status-badge status-badge--success" style="cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Cổng Tuyển Dụng</span></a>`;
-            dashboardLink = "/company/dashboard";
-            fetchUnreadCount();
-        } else if (user.role === "admin") {
-            roleBadge = `<a href="/admin/dashboard" style="text-decoration:none;"><span class="status-badge status-badge--danger" style="cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Quản trị</span></a>`;
-            dashboardLink = "/admin/dashboard";
+        if (navbar) {
+            navbar.classList.add("navbar--auth");
         }
 
-        navActions.innerHTML = `
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-                ${(user.role === "student" || user.role === "developer") ? `
-                    <a href="/student/notifications" style="position:relative;display:inline-flex;align-items:center;color:var(--text);text-decoration:none;padding:0.35rem;" title="Thông báo">
+        if (user.role === "student" || user.role === "developer") {
+            // STUDENT: Global header only keeps job discovery (Tìm việc làm), notification utility, account/logout
+            if (navLinks) {
+                navLinks.innerHTML = `
+                    <li><a href="/viec-lam" class="nav-link ${isCurrentJobs ? 'active' : ''}">Tìm Việc Làm</a></li>
+                `;
+                navLinks.style.display = "";
+            }
+            if (menuToggle) {
+                menuToggle.style.display = "";
+            }
+
+            navActions.innerHTML = `
+                <div class="nav-user-cluster">
+                    <a href="/student/notifications" class="nav-utility-bell" title="Thông báo" aria-label="Thông báo">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                        <span id="nav-unread-badge" style="display:none;position:absolute;top:-2px;right:-4px;background:var(--danger);color:#fff;font-size:0.7rem;font-weight:800;border-radius:10px;padding:0.1rem 0.35rem;line-height:1;">0</span>
+                        <span id="nav-unread-badge" class="nav-unread-badge" style="display:none;">0</span>
                     </a>
-                    <a href="/student/dashboard" class="btn btn-outline btn-sm" style="font-weight:600;">Cổng Sinh Viên</a>
-                ` : ''}
-                ${(user.role === "company") ? `
-                    <a href="/company/notifications" style="position:relative;display:inline-flex;align-items:center;color:var(--text);text-decoration:none;padding:0.35rem;" title="Thông báo">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                        <span id="nav-unread-badge" style="display:none;position:absolute;top:-2px;right:-4px;background:var(--danger);color:#fff;font-size:0.7rem;font-weight:800;border-radius:10px;padding:0.1rem 0.35rem;line-height:1;">0</span>
-                    </a>
-                    <a href="/company/dashboard" class="btn btn-outline btn-sm" style="font-weight:600;">Cổng Tuyển Dụng</a>
-                ` : ''}
-                ${(user.role === "admin") ? `
-                    <a href="/admin/dashboard" class="btn btn-outline btn-sm" style="font-weight:600;border-color:#fca5a5;color:#991b1b;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Cổng Quản Trị</a>
-                ` : ''}
-                <div style="text-align:right;line-height:1.2;">
-                    <div style="font-weight:700;font-size:0.9rem;color:var(--dark);">${escapeHtml(user.name || user.email)}</div>
-                    <div>${roleBadge}</div>
+                    <div class="nav-user-info">
+                        <div class="nav-user-name">${escapeHtml(user.name || user.email)}</div>
+                        <div class="nav-user-role"><span class="status-badge status-badge--info">Sinh viên</span></div>
+                    </div>
+                    <button onclick="handleLogout()" class="btn btn-outline btn-sm nav-logout-btn" title="Đăng xuất" aria-label="Đăng xuất">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span>Đăng xuất</span>
+                    </button>
                 </div>
-                <button onclick="handleLogout()" class="btn btn-outline btn-sm" title="Đăng xuất">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                    Đăng xuất
-                </button>
-            </div>
-        `;
+            `;
+            fetchUnreadCount();
+        } else if (user.role === "company") {
+            // COMPANY: Remove global Trang Chủ & Tìm Việc Làm, remove duplicate Cổng Tuyển Dụng, keep notification & account/logout
+            if (navLinks) {
+                navLinks.innerHTML = "";
+                navLinks.style.display = "none";
+            }
+            if (menuToggle) {
+                menuToggle.style.display = "none";
+            }
+
+            navActions.innerHTML = `
+                <div class="nav-user-cluster">
+                    <a href="/company/notifications" class="nav-utility-bell" title="Thông báo" aria-label="Thông báo">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        <span id="nav-unread-badge" class="nav-unread-badge" style="display:none;">0</span>
+                    </a>
+                    <div class="nav-user-info">
+                        <div class="nav-user-name">${escapeHtml(user.name || user.email)}</div>
+                        <div class="nav-user-role"><span class="status-badge status-badge--success">Nhà tuyển dụng</span></div>
+                    </div>
+                    <button onclick="handleLogout()" class="btn btn-outline btn-sm nav-logout-btn" title="Đăng xuất" aria-label="Đăng xuất">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span>Đăng xuất</span>
+                    </button>
+                </div>
+            `;
+            fetchUnreadCount();
+        } else if (user.role === "admin") {
+            // ADMIN: Remove global Trang Chủ & Tìm Việc Làm, remove duplicate Cổng Quản Trị, keep account/logout only, no notification
+            if (navLinks) {
+                navLinks.innerHTML = "";
+                navLinks.style.display = "none";
+            }
+            if (menuToggle) {
+                menuToggle.style.display = "none";
+            }
+
+            navActions.innerHTML = `
+                <div class="nav-user-cluster">
+                    <div class="nav-user-info">
+                        <div class="nav-user-name">${escapeHtml(user.name || user.email)}</div>
+                        <div class="nav-user-role"><span class="status-badge status-badge--danger">Quản trị viên</span></div>
+                    </div>
+                    <button onclick="handleLogout()" class="btn btn-outline btn-sm nav-logout-btn" title="Đăng xuất" aria-label="Đăng xuất">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span>Đăng xuất</span>
+                    </button>
+                </div>
+            `;
+        }
     } else {
+        if (navbar) {
+            navbar.classList.remove("navbar--auth");
+        }
+        // GUEST: Public discovery navigation
+        if (navLinks) {
+            navLinks.innerHTML = `
+                <li><a href="/" class="nav-link ${isCurrentHome ? 'active' : ''}">Trang Chủ</a></li>
+                <li><a href="/viec-lam" class="nav-link ${isCurrentJobs ? 'active' : ''}">Tìm Việc Làm</a></li>
+            `;
+            navLinks.style.display = "";
+        }
+        if (menuToggle) {
+            menuToggle.style.display = "";
+        }
+
         navActions.innerHTML = `
             <a href="/login" class="btn btn-outline btn-sm">Đăng nhập</a>
             <a href="/register" class="btn btn-primary btn-sm">Đăng ký</a>

@@ -75,7 +75,7 @@
             <h3 style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:0;">
                 Cập Nhật Trạng Thái & Ghi Chú
             </h3>
-            <button type="button" onclick="closeStatusModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted);">&times;</button>
+            <button type="button" onclick="closeStatusModal()" class="modal-close-btn" aria-label="Đóng hộp thoại">&times;</button>
         </div>
 
         <div id="modal-app-info" style="font-size:0.88rem;color:var(--text);margin-bottom:1.25rem;background:#f8fafc;padding:0.75rem 1rem;border-radius:var(--radius);line-height:1.5;"></div>
@@ -115,7 +115,7 @@
 let currentAppPage = 1;
 let currentAppsData = [];
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function initCompanyApplicationsPage() {
     // Auth UX Guard
     if (!TokenStorage.isLoggedIn()) {
         showToast("Vui lòng đăng nhập với tài khoản Doanh nghiệp.", "error");
@@ -137,7 +137,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await loadCompanyJobsFilter(preJobId);
     loadCompanyApplications(1);
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCompanyApplicationsPage);
+} else {
+    initCompanyApplicationsPage();
+}
 
 async function loadCompanyJobsFilter(selectedJobId) {
     const res = await apiRequest("/company/jobs?per_page=100", { requireAuth: true });
@@ -155,7 +161,21 @@ async function loadCompanyJobsFilter(selectedJobId) {
     }
 }
 
-// Inherit getAppStatusBadge(status) from api.js
+function renderAppStatusBadge(status) {
+    if (typeof getAppStatusBadge === "function") {
+        return getAppStatusBadge(status);
+    }
+    const map = {
+        "pending":     { label: "Chờ xem xét", modifier: "status-badge--warning" },
+        "viewed":      { label: "Đã xem", modifier: "status-badge--info" },
+        "shortlisted": { label: "Phù hợp", modifier: "status-badge--info" },
+        "accepted":    { label: "Trúng tuyển", modifier: "status-badge--success" },
+        "rejected":    { label: "Chưa phù hợp", modifier: "status-badge--danger" },
+        "withdrawn":   { label: "Đã rút đơn", modifier: "status-badge--neutral" }
+    };
+    const s = map[status] || { label: status || "Không rõ", modifier: "status-badge--neutral" };
+    return `<span class="status-badge ${s.modifier}"><span class="status-dot"></span>${escapeHtml(s.label)}</span>`;
+}
 
 async function loadCompanyApplications(page = 1) {
     currentAppPage = page;
@@ -172,92 +192,108 @@ async function loadCompanyApplications(page = 1) {
     emptyEl.style.display = "none";
     pagEl.innerHTML = "";
 
-    const jobId = document.getElementById("filter-app-job").value;
-    const status = document.getElementById("filter-app-status").value;
+    try {
+        const jobId = document.getElementById("filter-app-job").value;
+        const status = document.getElementById("filter-app-status").value;
 
-    const params = new URLSearchParams({ page: currentAppPage, per_page: 10 });
-    if (jobId) params.append("job_id", jobId);
-    if (status) params.append("status", status);
+        const params = new URLSearchParams({ page: currentAppPage, per_page: 10 });
+        if (jobId) params.append("job_id", jobId);
+        if (status) params.append("status", status);
 
-    const res = await apiRequest(`/company/applications?${params.toString()}`, { requireAuth: true });
-    loadingEl.style.display = "none";
+        const res = await apiRequest(`/company/applications?${params.toString()}`, { requireAuth: true });
 
-    if (res && res.success && Array.isArray(res.data)) {
-        currentAppsData = res.data;
-        const meta = res.meta || {};
-        const total = meta.total !== undefined ? meta.total : currentAppsData.length;
+        if (res && res.success && Array.isArray(res.data)) {
+            currentAppsData = res.data;
+            const meta = res.meta || {};
+            const total = meta.total !== undefined ? meta.total : currentAppsData.length;
 
-        totalText.innerText = `Tìm thấy ${total} hồ sơ ứng tuyển`;
+            totalText.innerText = `Tìm thấy ${total} hồ sơ ứng tuyển`;
 
-        if (currentAppsData.length === 0) {
-            emptyEl.style.display = "block";
-            return;
-        }
-
-        container.innerHTML = currentAppsData.map(app => `
-            <div class="data-card" style="margin:0;border-left:4px solid var(--primary);">
-                <!-- Card Header -->
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
-                    <div>
-                        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.25rem;">
-                            <h3 style="font-size:1.15rem;font-weight:800;color:var(--dark);margin:0;">
-                                ${escapeHtml(app.student_name || "Ứng viên")}
-                            </h3>
-                            ${getAppStatusBadge(app.status)}
-                        </div>
-                        <div style="font-size:0.88rem;color:var(--text-muted);">
-                            Ứng tuyển vào: <a href="/viec-lam/${encodeURIComponent(app.job_id)}" target="_blank" style="color:var(--primary);font-weight:600;">${escapeHtml(app.job_title || "Vị trí việc làm")}</a> &bull;
-                            Ngày nộp: ${formatDate(app.applied_at)}
-                        </div>
-                    </div>
-
-                    <div class="row-actions">
-                        <button onclick="openStatusModal('${escapeHtml(app.id)}')" class="btn btn-primary btn-sm row-action-btn">
-                            Cập Nhật Trạng Thái
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Applicant Academic & Contact Info -->
-                <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.75rem;padding:0.85rem;background:#f8fafc;border-radius:var(--radius);font-size:0.85rem;margin-bottom:0.85rem;">
-                    <div style="min-width:0;overflow-wrap:anywhere;"><strong>Trường:</strong> ${escapeHtml(app.student_university || "Chưa cập nhật")}</div>
-                    <div style="min-width:0;overflow-wrap:anywhere;"><strong>Ngành:</strong> ${escapeHtml(app.student_major || "Chưa cập nhật")}</div>
-                    <div style="min-width:0;overflow-wrap:anywhere;"><strong>SĐT:</strong> ${escapeHtml(app.student_phone || "Chưa cập nhật")}</div>
-                    <div style="min-width:0;word-break:break-all;overflow-wrap:anywhere;"><strong>Email:</strong> ${escapeHtml(app.student_email || "Chưa cập nhật")}</div>
-                    <div style="min-width:0;overflow-wrap:anywhere;"><strong>Ca mong muốn:</strong> <strong>${getShiftLabel(app.preferred_shift)}</strong></div>
-                    <div style="min-width:0;overflow-wrap:anywhere;"><strong>CV:</strong> ${app.cv_url_snapshot ? `<a href="${escapeHtml(app.cv_url_snapshot)}" target="_blank" style="color:var(--primary);text-decoration:underline;">Xem liên kết CV</a>` : '<span style="color:var(--text-muted)">Không có</span>'}</div>
-                </div>
-
-                <!-- Cover Letter -->
-                ${app.cover_letter ? `
-                    <div style="font-size:0.85rem;color:var(--text);margin-bottom:0.75rem;padding:0.6rem 0.85rem;background:#fff;border:1px dashed var(--border);border-radius:var(--radius);line-height:1.5;">
-                        <strong>Lời nhắn / Thư giới thiệu:</strong><br>
-                        <em>"${escapeHtml(app.cover_letter)}"</em>
-                    </div>
-                ` : ''}
-
-                <!-- Employer Internal Note -->
-                ${app.employer_note ? `
-                    <div style="font-size:0.82rem;color:#0f172a;background:#eff6ff;border-left:3px solid var(--primary);padding:0.5rem 0.75rem;border-radius:0 var(--radius) var(--radius) 0;">
-                        <strong>Ghi chú nội bộ:</strong> ${escapeHtml(app.employer_note)}
-                    </div>
-                ` : ''}
-            </div>
-        `).join("");
-
-        // Render Pagination
-        const totalPages = meta.total_pages || 1;
-        if (totalPages > 1) {
-            let pagHtml = "";
-            for (let i = 1; i <= totalPages; i++) {
-                pagHtml += `<button onclick="loadCompanyApplications(${i})" class="btn btn-sm ${i === currentAppPage ? 'btn-primary' : 'btn-outline'}" style="min-width:36px;">${i}</button>`;
+            if (currentAppsData.length === 0) {
+                emptyEl.style.display = "block";
+                return;
             }
-            pagEl.innerHTML = pagHtml;
-        }
 
-    } else {
+            try {
+                container.innerHTML = currentAppsData.map(app => {
+                    const shiftLabel = typeof getShiftLabel === "function" ? getShiftLabel(app.preferred_shift) : (app.preferred_shift || "Linh hoạt");
+                    const dateText = typeof formatDate === "function" ? formatDate(app.applied_at) : (app.applied_at || "");
+                    return `
+                    <div class="data-card" style="margin:0;border-left:4px solid var(--primary);">
+                        <!-- Card Header -->
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:0.75rem;">
+                            <div>
+                                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.25rem;">
+                                    <h3 style="font-size:1.15rem;font-weight:800;color:var(--dark);margin:0;">
+                                        ${escapeHtml(app.student_name || "Ứng viên")}
+                                    </h3>
+                                    ${renderAppStatusBadge(app.status)}
+                                </div>
+                                <div style="font-size:0.88rem;color:var(--text-muted);">
+                                    Ứng tuyển vào: <a href="/viec-lam/${encodeURIComponent(app.job_id)}" target="_blank" style="color:var(--primary);font-weight:600;">${escapeHtml(app.job_title || "Vị trí việc làm")}</a> &bull;
+                                    Ngày nộp: ${dateText}
+                                </div>
+                            </div>
+
+                            <div class="row-actions">
+                                <button onclick="openStatusModal('${escapeHtml(app.id)}')" class="btn btn-primary btn-sm row-action-btn">
+                                    Cập Nhật Trạng Thái
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Applicant Academic & Contact Info -->
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.75rem;padding:0.85rem;background:#f8fafc;border-radius:var(--radius);font-size:0.85rem;margin-bottom:0.85rem;">
+                            <div style="min-width:0;overflow-wrap:anywhere;"><strong>Trường:</strong> ${escapeHtml(app.student_university || "Chưa cập nhật")}</div>
+                            <div style="min-width:0;overflow-wrap:anywhere;"><strong>Ngành:</strong> ${escapeHtml(app.student_major || "Chưa cập nhật")}</div>
+                            <div style="min-width:0;overflow-wrap:anywhere;"><strong>SĐT:</strong> ${escapeHtml(app.student_phone || "Chưa cập nhật")}</div>
+                            <div style="min-width:0;word-break:break-all;overflow-wrap:anywhere;"><strong>Email:</strong> ${escapeHtml(app.student_email || "Chưa cập nhật")}</div>
+                            <div style="min-width:0;overflow-wrap:anywhere;"><strong>Ca mong muốn:</strong> <strong>${shiftLabel}</strong></div>
+                            <div style="min-width:0;overflow-wrap:anywhere;"><strong>CV:</strong> ${app.cv_url_snapshot ? `<a href="${escapeHtml(app.cv_url_snapshot)}" target="_blank" style="color:var(--primary);text-decoration:underline;">Xem liên kết CV</a>` : '<span style="color:var(--text-muted)">Không có</span>'}</div>
+                        </div>
+
+                        <!-- Cover Letter -->
+                        ${app.cover_letter ? `
+                            <div style="font-size:0.85rem;color:var(--text);margin-bottom:0.75rem;padding:0.6rem 0.85rem;background:#fff;border:1px dashed var(--border);border-radius:var(--radius);line-height:1.5;">
+                                <strong>Lời nhắn / Thư giới thiệu:</strong><br>
+                                <em>"${escapeHtml(app.cover_letter)}"</em>
+                            </div>
+                        ` : ''}
+
+                        <!-- Employer Internal Note -->
+                        ${app.employer_note ? `
+                            <div style="font-size:0.82rem;color:#0f172a;background:#eff6ff;border-left:3px solid var(--primary);padding:0.5rem 0.75rem;border-radius:0 var(--radius) var(--radius) 0;">
+                                <strong>Ghi chú nội bộ:</strong> ${escapeHtml(app.employer_note)}
+                            </div>
+                        ` : ''}
+                    </div>
+                    `;
+                }).join("");
+            } catch (renderErr) {
+                console.error("Error rendering company applications:", renderErr);
+                container.innerHTML = `<div class="state-error" style="display:block;"><p class="state-error-desc">Lỗi hiển thị danh sách hồ sơ ứng tuyển.</p></div>`;
+            }
+
+            // Render Pagination
+            const totalPages = meta.total_pages || 1;
+            if (totalPages > 1) {
+                let pagHtml = "";
+                for (let i = 1; i <= totalPages; i++) {
+                    pagHtml += `<button onclick="loadCompanyApplications(${i})" class="btn btn-sm ${i === currentAppPage ? 'btn-primary' : 'btn-outline'}" style="min-width:36px;">${i}</button>`;
+                }
+                pagEl.innerHTML = pagHtml;
+            }
+
+        } else {
+            errorEl.style.display = "block";
+            document.getElementById("comp-apps-err-msg").innerText = (res && res.message) ? res.message : "Đã có lỗi xảy ra.";
+        }
+    } catch (err) {
+        console.error("Error loading company applications:", err);
         errorEl.style.display = "block";
-        document.getElementById("comp-apps-err-msg").innerText = (res && res.message) ? res.message : "Đã có lỗi xảy ra.";
+        document.getElementById("comp-apps-err-msg").innerText = "Lỗi kết nối máy chủ hoặc tải dữ liệu.";
+    } finally {
+        if (loadingEl) loadingEl.style.display = "none";
     }
 }
 
