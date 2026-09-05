@@ -18,6 +18,8 @@ return [
     ["GET", "/login", [AuthController::class, "showLogin"]],
     ["GET", "/register", [AuthController::class, "showRegister"]],
     ["GET", "/logout", [AuthController::class, "logout"]],
+    ["GET", "/auth/google/start", [\JobMarket\Http\Controllers\GoogleOAuthController::class, "start"]],
+    ["GET", "/auth/google/callback", [\JobMarket\Http\Controllers\GoogleOAuthController::class, "callback"]],
 
     // Cổng Sinh viên (Student Portal)
     ["GET", "/student/dashboard", [\JobMarket\Http\Controllers\Web\StudentController::class, "dashboard"]],
