@@ -6,6 +6,7 @@ use JobMarket\Facades\JWT;
 use JobMarket\Facades\Session;
 use JobMarket\Http\Request;
 use JobMarket\Http\Response;
+use JobMarket\Infrastructure\AuthenticationRepository;
 
 class AuthMiddleware implements MiddlewareInterface
 {
@@ -31,11 +32,16 @@ class AuthMiddleware implements MiddlewareInterface
 
         $token = Session::token();
         $userPayload = null;
+        $dbUser = null;
 
         if ($token !== null) {
             $userPayload = JWT::decode($token);
             if ($userPayload !== null) {
-                $request->setUser($userPayload);
+                $authRepo = new AuthenticationRepository();
+                $dbUser = $authRepo->findUserRecordByIdOrEmail(
+                    $userPayload["id"] ?? null,
+                    $userPayload["email"] ?? null
+                );
             }
         }
 
@@ -61,15 +67,67 @@ class AuthMiddleware implements MiddlewareInterface
             $isPublic = true;
         }
 
-        // For public routes, continue even without token
+        // For public routes, continue even without token or with invalid/revoked token
         if ($isPublic) {
+            if ($dbUser !== null && ($dbUser["status"] ?? "active") === "active") {
+                $isValidToken = !empty($dbUser["token"]) &&
+                    $dbUser["token"] !== "revoked" &&
+                    $dbUser["token"] === $token &&
+                    !empty($dbUser["token_expires_at"]) &&
+                    strtotime($dbUser["token_expires_at"]) > time();
+
+                if ($isValidToken) {
+                    $userPayload["id"] = $dbUser["id"];
+                    $userPayload["email"] = $dbUser["email"];
+                    $userPayload["role"] = $dbUser["role"];
+                    $request->setUser($userPayload);
+                }
+            }
             return call_user_func([new $this->next, "__invoke"], $request);
         }
 
-        // For protected routes, require valid token
+        // For protected routes:
+        // 1. Require valid token syntax and signature
         if ($token === null || $userPayload === null) {
             return Response::error("Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.", Response::HTTP_UNAUTHORIZED);
         }
+
+        // 2. User record must exist in database
+        if ($dbUser === null) {
+            return Response::error("Tài khoản không tồn tại trên hệ thống.", Response::HTTP_UNAUTHORIZED);
+        }
+
+        // 3. User status policy: active only
+        $status = $dbUser["status"] ?? "active";
+        if ($status === "banned") {
+            return Response::error("Tài khoản của bạn đã bị khóa.", Response::HTTP_FORBIDDEN);
+        }
+        if ($status === "suspended") {
+            return Response::error("Tài khoản của bạn đang bị tạm khóa.", Response::HTTP_FORBIDDEN);
+        }
+        if ($status !== "active") {
+            return Response::error("Tài khoản chưa được kích hoạt hoặc không hợp lệ.", Response::HTTP_FORBIDDEN);
+        }
+
+        // 4. Token validation policy: Fail-closed.
+        // Protected routes require an active token in the DB that matches Bearer token exactly and has not expired.
+        if (empty($dbUser["token"]) || $dbUser["token"] === "revoked") {
+            return Response::error("Phiên đăng nhập không hợp lệ hoặc đã kết thúc. Vui lòng đăng nhập lại.", Response::HTTP_UNAUTHORIZED);
+        }
+
+        if ($dbUser["token"] !== $token) {
+            return Response::error("Phiên đăng nhập không hợp lệ hoặc đã bị thay thế. Vui lòng đăng nhập lại.", Response::HTTP_UNAUTHORIZED);
+        }
+
+        if (empty($dbUser["token_expires_at"]) || strtotime($dbUser["token_expires_at"]) <= time()) {
+            return Response::error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", Response::HTTP_UNAUTHORIZED);
+        }
+
+        // Synchronize authoritative user data from database into request
+        $userPayload["id"] = $dbUser["id"];
+        $userPayload["email"] = $dbUser["email"];
+        $userPayload["role"] = $dbUser["role"];
+        $request->setUser($userPayload);
 
         return call_user_func([new $this->next, "__invoke"], $request);
     }
