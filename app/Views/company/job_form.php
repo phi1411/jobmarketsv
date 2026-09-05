@@ -13,7 +13,7 @@ $editingJobId = $jobId ?? "";
                 &larr; Quay lại danh sách tin
             </a>
             <h2 style="font-size:1.4rem;font-weight:800;color:var(--dark);margin-top:0.35rem;margin-bottom:0;">
-                <?= $isEditMode ? "✏️ Chỉnh Sửa Tin Tuyển Dụng" : "➕ Đăng Tin Tuyển Dụng Mới" ?>
+                <?= $isEditMode ? "Chỉnh Sửa Tin Tuyển Dụng" : "Đăng Tin Tuyển Dụng Mới" ?>
             </h2>
         </div>
         <div id="company-verify-notice" style="display:none;"></div>
@@ -28,17 +28,17 @@ $editingJobId = $jobId ?? "";
     <div id="job-form-alert" style="display:none;margin-bottom:1.5rem;" class="toast"></div>
 
     <!-- Form Container -->
-    <div id="job-form-container" style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:2rem;display:<?= $isEditMode ? 'none' : 'block' ?>;">
+    <div id="job-form-container" class="form-card" style="display:<?= $isEditMode ? 'none' : 'block' ?>;">
         <form id="form-job" onsubmit="handleSubmitJob(event)">
             <!-- 1. Tiêu đề việc làm -->
-            <div class="form-group" style="margin-bottom:1.5rem;">
+            <div class="form-group" style="margin-bottom:1.25rem;">
                 <label class="form-label" for="job-title">Tiêu đề việc làm <span style="color:var(--danger)">*</span></label>
                 <input type="text" id="job-title" class="form-control" placeholder="Ví dụ: Nhân viên phục vụ & Phụ quầy Part-time (Ca sáng/tối)" required minlength="5">
-                <small style="color:var(--text-muted);font-size:0.8rem;">Tối thiểu 5 ký tự. Nên ghi rõ chức danh và ca làm việc để thu hút sinh viên.</small>
+                <small class="form-help">Tối thiểu 5 ký tự. Nên ghi rõ chức danh và ca làm việc để thu hút sinh viên.</small>
             </div>
 
             <!-- 2. Ngành nghề & Địa điểm -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
+            <div class="form-grid-2" style="margin-bottom:1.25rem;">
                 <div class="form-group">
                     <label class="form-label" for="job-category">Ngành nghề / Lĩnh vực <span style="color:var(--danger)">*</span></label>
                     <select id="job-category" class="form-control" required>
@@ -54,7 +54,7 @@ $editingJobId = $jobId ?? "";
             </div>
 
             <!-- 3. Hình thức làm việc & Chế độ làm việc -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
+            <div class="form-grid-2" style="margin-bottom:1.25rem;">
                 <div class="form-group">
                     <label class="form-label" for="job-work-type">Hình thức tuyển dụng</label>
                     <select id="job-work-type" class="form-control">
@@ -74,9 +74,9 @@ $editingJobId = $jobId ?? "";
             </div>
 
             <!-- 4. Lương: Loại lương, Min, Max -->
-            <div style="background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem;">
-                <label style="font-weight:700;color:var(--dark);display:block;margin-bottom:0.75rem;">💰 Chế độ Tiền lương</label>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+            <div class="fieldset-card">
+                <label class="fieldset-card-title">Chế độ Tiền lương</label>
+                <div class="form-grid-3">
                     <div class="form-group">
                         <label class="form-label" for="job-salary-type">Loại hình trả lương</label>
                         <select id="job-salary-type" class="form-control">
@@ -98,17 +98,17 @@ $editingJobId = $jobId ?? "";
             </div>
 
             <!-- 5. Ca làm việc & Lịch làm chi tiết -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
+            <div class="form-grid-2" style="margin-bottom:1.25rem;">
                 <div class="form-group">
                     <label class="form-label" for="job-shift-type">Ca làm việc chính</label>
                     <select id="job-shift-type" class="form-control">
-                        <option value="morning">🌅 Ca Sáng</option>
-                        <option value="afternoon">☀️ Ca Chiều</option>
-                        <option value="evening">🌙 Ca Tối</option>
-                        <option value="night">🌃 Ca Đêm</option>
-                        <option value="rotating">🔄 Xoay ca</option>
-                        <option value="weekend">📅 Cuối tuần</option>
-                        <option value="flexible">⚡ Linh hoạt theo lịch học</option>
+                        <option value="morning">Ca Sáng (08:00 - 12:00)</option>
+                        <option value="afternoon">Ca Chiều (13:00 - 17:00)</option>
+                        <option value="evening">Ca Tối (18:00 - 22:00)</option>
+                        <option value="night">Ca Đêm</option>
+                        <option value="rotating">Xoay ca</option>
+                        <option value="weekend">Cuối tuần</option>
+                        <option value="flexible">Linh hoạt theo lịch học</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -118,7 +118,7 @@ $editingJobId = $jobId ?? "";
             </div>
 
             <!-- 6. Số lượng tuyển & Hạn nộp -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
+            <div class="form-grid-2" style="margin-bottom:1.25rem;">
                 <div class="form-group">
                     <label class="form-label" for="job-quantity">Số lượng cần tuyển</label>
                     <input type="number" id="job-quantity" class="form-control" placeholder="Ví dụ: 5" min="1">
@@ -126,12 +126,12 @@ $editingJobId = $jobId ?? "";
                 <div class="form-group">
                     <label class="form-label" for="job-deadline">Hạn nộp hồ sơ <span style="color:var(--danger)">*</span></label>
                     <input type="date" id="job-deadline" class="form-control" required>
-                    <small style="color:var(--text-muted);font-size:0.8rem;">Ngày hết hạn phải ở tương lai.</small>
+                    <small class="form-help">Ngày hết hạn phải ở tương lai.</small>
                 </div>
             </div>
 
             <!-- 7. Kỹ năng yêu cầu (Skills) -->
-            <div class="form-group" style="margin-bottom:1.5rem;">
+            <div class="form-group" style="margin-bottom:1.25rem;">
                 <label class="form-label">Kỹ năng / Phẩm chất mong muốn</label>
                 <div id="job-skills-container" style="display:flex;flex-wrap:wrap;gap:0.5rem;padding:0.75rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);max-height:150px;overflow-y:auto;">
                     <!-- Checkboxes rendered dynamically -->
@@ -139,45 +139,45 @@ $editingJobId = $jobId ?? "";
             </div>
 
             <!-- 8. Mô tả công việc -->
-            <div class="form-group" style="margin-bottom:1.5rem;">
+            <div class="form-group" style="margin-bottom:1.25rem;">
                 <label class="form-label" for="job-desc">Mô tả công việc <span style="color:var(--danger)">*</span></label>
                 <textarea id="job-desc" rows="5" class="form-control" placeholder="Chi tiết các nhiệm vụ hàng ngày sinh viên sẽ thực hiện..." required minlength="10"></textarea>
-                <small style="color:var(--text-muted);font-size:0.8rem;">Tối thiểu 10 ký tự.</small>
+                <small class="form-help">Tối thiểu 10 ký tự.</small>
             </div>
 
             <!-- 9. Yêu cầu ứng viên -->
-            <div class="form-group" style="margin-bottom:1.5rem;">
+            <div class="form-group" style="margin-bottom:1.25rem;">
                 <label class="form-label" for="job-req">Yêu cầu ứng viên</label>
                 <textarea id="job-req" rows="4" class="form-control" placeholder="Sinh viên năm 1-4, chăm chỉ, đúng giờ, giao tiếp tốt, không yêu cầu kinh nghiệm..."></textarea>
             </div>
 
             <!-- 10. Quyền lợi được hưởng -->
-            <div class="form-group" style="margin-bottom:1.5rem;">
+            <div class="form-group" style="margin-bottom:1.25rem;">
                 <label class="form-label" for="job-benefits">Quyền lợi & Đãi ngộ</label>
                 <textarea id="job-benefits" rows="4" class="form-control" placeholder="Hỗ trợ gửi xe, phụ cấp ăn trưa/tối, thưởng theo năng suất, linh hoạt đổi ca thi cử..."></textarea>
             </div>
 
             <!-- 11. Trạng thái xuất bản -->
-            <div style="background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:2rem;">
+            <div class="fieldset-card" style="margin-bottom:0;">
                 <label class="form-label" for="job-status" style="font-weight:700;">Trạng thái xuất bản tin</label>
                 <select id="job-status" class="form-control" style="font-weight:600;">
-                    <option value="published">🟢 Công khai tuyển dụng ngay (Published)</option>
-                    <option value="draft">📝 Lưu bản nháp (Draft)</option>
-                    <option value="pending_approval">⏳ Gửi chờ xét duyệt (Pending Approval)</option>
+                    <option value="published">Công khai tuyển dụng ngay (Published)</option>
+                    <option value="draft">Lưu bản nháp (Draft)</option>
+                    <option value="pending_approval">Gửi chờ xét duyệt (Pending Approval)</option>
                     <?php if ($isEditMode): ?>
-                    <option value="closed">🔒 Đóng tuyển dụng (Closed)</option>
+                    <option value="closed">Đóng tuyển dụng (Closed)</option>
                     <?php endif; ?>
                 </select>
-                <small id="status-warning" style="display:none;color:#b45309;margin-top:0.4rem;font-weight:600;">
-                    ⚠️ Lưu ý: Doanh nghiệp của bạn chưa được xác minh (verified) nên chưa thể công khai trực tiếp. Vui lòng chọn "Lưu bản nháp" hoặc "Gửi chờ xét duyệt".
+                <small id="status-warning" style="display:none;color:var(--warning-text);margin-top:0.4rem;font-weight:600;">
+                    Lưu ý: Doanh nghiệp của bạn chưa được xác minh (verified) nên chưa thể công khai trực tiếp. Vui lòng chọn "Lưu bản nháp" hoặc "Gửi chờ xét duyệt".
                 </small>
             </div>
 
             <!-- Submit Buttons -->
-            <div style="display:flex;justify-content:flex-end;gap:1rem;border-top:1px solid var(--border);padding-top:1.5rem;">
+            <div class="form-actions">
                 <a href="/company/jobs" class="btn btn-outline">Hủy Bỏ</a>
                 <button type="submit" id="btn-submit-job" class="btn btn-primary">
-                    <?= $isEditMode ? "💾 Cập Nhật Tin Tuyển Dụng" : "🚀 Đăng Tin Tuyển Dụng" ?>
+                    <?= $isEditMode ? "Cập Nhật Tin Tuyển Dụng" : "Đăng Tin Tuyển Dụng" ?>
                 </button>
             </div>
         </form>
@@ -387,7 +387,7 @@ async function handleSubmitJob(e) {
     });
 
     btn.disabled = false;
-    btn.innerText = IS_EDIT_MODE ? "💾 Cập Nhật Tin Tuyển Dụng" : "🚀 Đăng Tin Tuyển Dụng";
+    btn.innerText = IS_EDIT_MODE ? "Cập Nhật Tin Tuyển Dụng" : "Đăng Tin Tuyển Dụng";
 
     if (res && res.success) {
         showToast(IS_EDIT_MODE ? "Cập nhật tin tuyển dụng thành công!" : "Đăng tin tuyển dụng thành công!", "success");

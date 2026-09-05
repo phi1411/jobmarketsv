@@ -28,10 +28,12 @@
     </div>
 
     <!-- Error State -->
-    <div id="apps-error" style="display:none;background:#fff;border-radius:var(--radius);padding:2rem;border:1px solid var(--danger);text-align:center;">
-        <div style="font-size:2.5rem;color:var(--danger);margin-bottom:1rem;">⚠️</div>
-        <h3 style="font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không Thể Tải Đơn Ứng Tuyển</h3>
-        <p id="apps-err-msg" style="color:var(--text-muted);margin-bottom:1rem;">Đã xảy ra lỗi khi kết nối.</p>
+    <div id="apps-error" class="state-error" style="display:none;">
+        <div class="state-error-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+        <h3 class="state-error-title">Không Thể Tải Đơn Ứng Tuyển</h3>
+        <p id="apps-err-msg" class="state-error-desc">Đã xảy ra lỗi khi kết nối.</p>
         <button onclick="loadApplications()" class="btn btn-primary btn-sm">Thử Lại</button>
     </div>
 
@@ -41,13 +43,17 @@
     </div>
 
     <!-- Empty State -->
-    <div id="apps-empty" style="display:none;background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:3rem 1.5rem;text-align:center;">
-        <div style="font-size:3rem;margin-bottom:1rem;">📂</div>
-        <h3 style="font-size:1.25rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Chưa Có Đơn Ứng Tuyển Nào</h3>
-        <p style="color:var(--text-muted);max-width:450px;margin:0 auto 1.5rem;">
+    <div id="apps-empty" class="surface-card empty-state" style="display:none;">
+        <div class="empty-state-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        </div>
+        <h3 class="empty-state-title">Chưa Có Đơn Ứng Tuyển Nào</h3>
+        <p class="empty-state-text">
             Bạn chưa gửi đơn ứng tuyển vào công việc part-time nào. Hãy khám phá ngay các công việc phù hợp với lịch học của bạn!
         </p>
-        <a href="/viec-lam" class="btn btn-primary">🔍 Khám Phá Việc Làm Ngay</a>
+        <div class="empty-state-action">
+            <a href="/viec-lam" class="btn btn-primary">Khám Phá Việc Làm Ngay</a>
+        </div>
     </div>
 
     <!-- Pagination -->
@@ -115,7 +121,7 @@ async function loadApplications(page = 1) {
         container.innerHTML = apps.map(app => {
             const canWithdraw = ["pending", "viewed", "reviewed"].includes(app.status);
             return `
-                <div class="job-card" style="padding:1.5rem;margin:0;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.25rem;">
+                <div class="data-card" style="margin:0;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.25rem;">
                     <div style="flex:1;min-width:280px;">
                         <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;flex-wrap:wrap;">
                             <h3 style="font-size:1.15rem;font-weight:700;margin:0;color:var(--dark);">
@@ -125,31 +131,31 @@ async function loadApplications(page = 1) {
                         </div>
 
                         <div style="color:var(--text-muted);font-size:0.88rem;margin-bottom:0.75rem;">
-                            🏢 <strong>${escapeHtml(app.company_name || "Nhà tuyển dụng")}</strong> &bull; 
-                            📅 Ngày nộp: ${formatDate(app.created_at)} &bull; 
-                            ⏰ Ca mong muốn: <strong>${getShiftLabel(app.preferred_shift)}</strong>
+                            <strong>${escapeHtml(app.company_name || "Nhà tuyển dụng")}</strong> &bull;
+                            Ngày nộp: ${formatDate(app.created_at)} &bull;
+                            Ca mong muốn: <strong>${getShiftLabel(app.preferred_shift)}</strong>
                         </div>
 
                         ${app.cover_letter ? `
                             <div style="background:#f8fafc;border-left:3px solid var(--border);padding:0.6rem 0.85rem;font-size:0.85rem;color:var(--text);margin-bottom:0.75rem;border-radius:0 var(--radius) var(--radius) 0;line-height:1.5;">
-                                💬 <em>"${escapeHtml(app.cover_letter)}"</em>
+                                <em>"${escapeHtml(app.cover_letter)}"</em>
                             </div>
                         ` : ''}
 
                         ${app.cv_url_snapshot ? `
                             <div style="font-size:0.8rem;color:var(--text-muted);">
-                                📎 CV đính kèm lúc nộp: <a href="${escapeHtml(app.cv_url_snapshot)}" target="_blank" style="text-decoration:underline;">Xem liên kết CV</a>
+                                CV đính kèm lúc nộp: <a href="${escapeHtml(app.cv_url_snapshot)}" target="_blank" style="text-decoration:underline;">Xem liên kết CV</a>
                             </div>
                         ` : ''}
                     </div>
 
-                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.75rem;">
-                        <a href="/viec-lam/${encodeURIComponent(app.job_id)}" class="btn btn-outline btn-sm">
-                            Xem tin việc làm &rarr;
+                    <div class="row-actions" style="flex-direction:column;align-items:flex-end;">
+                        <a href="/viec-lam/${encodeURIComponent(app.job_id)}" class="btn btn-outline btn-sm row-action-btn">
+                            Xem việc làm &rarr;
                         </a>
                         ${canWithdraw ? `
-                            <button onclick="handleWithdraw('${escapeHtml(app.id)}')" class="btn btn-sm" style="background:#fff;border:1px solid var(--danger);color:var(--danger);font-size:0.8rem;">
-                                ↩️ Rút đơn ứng tuyển
+                            <button onclick="handleWithdraw('${escapeHtml(app.id)}')" class="btn btn-sm row-action-btn" style="background:#fff;border:1px solid var(--border);color:var(--danger);">
+                                Rút đơn ứng tuyển
                             </button>
                         ` : ''}
                     </div>

@@ -104,12 +104,12 @@
 <!-- Apply Job Modal -->
 <div id="apply-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
     <div style="background:#fff;border-radius:var(--radius);max-width:550px;width:100%;padding:2rem;box-shadow:var(--shadow);position:relative;max-height:90vh;overflow-y:auto;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
-            <h3 style="font-size:1.25rem;font-weight:700;color:var(--dark);margin:0;">📝 Ứng Tuyển Việc Làm</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
+            <h3 style="font-size:1.2rem;font-weight:700;color:var(--dark);margin:0;">Ứng Tuyển Việc Làm</h3>
             <button type="button" onclick="closeApplyModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted);">&times;</button>
         </div>
 
-        <div id="apply-job-info" style="background:#f8fafc;border-radius:var(--radius);padding:0.75rem 1rem;margin-bottom:1.25rem;border:1px solid var(--border);">
+        <div id="apply-job-info" style="background:#f8fafc;border-radius:var(--radius-sm);padding:0.75rem 1rem;margin-bottom:1.25rem;border:1px solid var(--border);">
             <div id="apply-modal-job-title" style="font-weight:700;color:var(--dark);font-size:0.95rem;"></div>
             <div id="apply-modal-company" style="font-size:0.85rem;color:var(--text-muted);"></div>
         </div>
@@ -120,24 +120,24 @@
             <div class="form-group" style="margin-bottom:1rem;">
                 <label class="form-label">Ca làm việc mong muốn <span style="color:var(--danger)">*</span></label>
                 <select id="apply-shift" class="form-control" required>
-                    <option value="morning">🌅 Ca Sáng (08:00 - 12:00)</option>
-                    <option value="afternoon">☀️ Ca Chiều (13:00 - 17:00)</option>
-                    <option value="evening">🌙 Ca Tối (18:00 - 22:00)</option>
-                    <option value="weekend">📅 Cuối Tuần (Thứ 7 & CN)</option>
-                    <option value="flexible">🔄 Linh hoạt theo lịch học</option>
+                    <option value="morning">Ca Sáng (08:00 - 12:00)</option>
+                    <option value="afternoon">Ca Chiều (13:00 - 17:00)</option>
+                    <option value="evening">Ca Tối (18:00 - 22:00)</option>
+                    <option value="weekend">Cuối Tuần (Thứ 7 & CN)</option>
+                    <option value="flexible">Linh hoạt theo lịch học</option>
                 </select>
             </div>
 
             <div class="form-group" style="margin-bottom:1.5rem;">
                 <label class="form-label">Thư giới thiệu / Lời nhắn tới nhà tuyển dụng</label>
                 <textarea id="apply-cover-letter" class="form-control" rows="4" placeholder="Giới thiệu nhanh về bạn, kinh nghiệm làm thêm (nếu có) và mong muốn khi làm việc..."></textarea>
-                <small style="color:var(--text-muted);font-size:0.75rem;">Hồ sơ năng lực và liên kết CV đã lưu trong hồ sơ của bạn sẽ được gửi kèm tự động.</small>
+                <small class="form-help">Hồ sơ năng lực và liên kết CV đã lưu trong hồ sơ của bạn sẽ được gửi kèm tự động.</small>
             </div>
 
-            <div style="display:flex;justify-content:flex-end;gap:0.75rem;">
+            <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:1rem;border-top:1px solid var(--border);">
                 <button type="button" onclick="closeApplyModal()" class="btn btn-outline btn-sm">Hủy</button>
                 <button type="submit" id="btn-submit-apply" class="btn btn-primary btn-sm">
-                    🚀 Gửi Đơn Ứng Tuyển
+                    Gửi Đơn Ứng Tuyển
                 </button>
             </div>
         </form>
@@ -272,7 +272,7 @@ async function submitApplication(e) {
     });
 
     btn.disabled = false;
-    btn.innerText = "🚀 Gửi Đơn Ứng Tuyển";
+    btn.innerText = "Gửi Đơn Ứng Tuyển";
 
     if (res && res.success) {
         closeApplyModal();
