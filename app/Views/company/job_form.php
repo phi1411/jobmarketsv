@@ -307,12 +307,24 @@ async function loadJobForEditing(id) {
         document.getElementById("job-status").value = j.status || "published";
 
         // Pre-check skills if available
+        let skillIds = [];
         if (Array.isArray(j.skills)) {
-            const skillIds = j.skills.map(s => typeof s === "object" ? s.id : s);
-            document.querySelectorAll("input[name='skill_id']").forEach(cb => {
-                if (skillIds.includes(cb.value)) cb.checked = true;
-            });
+            skillIds = j.skills.map(s => typeof s === "object" && s !== null ? s.id : s);
+        } else if (Array.isArray(j.required_skills)) {
+            skillIds = j.required_skills.map(s => typeof s === "object" && s !== null ? s.id : s);
+        } else if (typeof j.required_skills === "string") {
+            try {
+                const parsed = JSON.parse(j.required_skills);
+                if (Array.isArray(parsed)) {
+                    skillIds = parsed;
+                }
+            } catch (e) {
+                skillIds = j.required_skills.split(",").map(s => s.trim()).filter(Boolean);
+            }
         }
+        document.querySelectorAll("input[name='skill_id']").forEach(cb => {
+            if (skillIds.includes(cb.value)) cb.checked = true;
+        });
     } else {
         showToast((res && res.message) ? res.message : "Không thể tải thông tin tin việc làm.", "error");
         setTimeout(() => { window.location.href = "/company/jobs"; }, 1500);

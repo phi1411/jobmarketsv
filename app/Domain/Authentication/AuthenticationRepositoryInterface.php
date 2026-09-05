@@ -10,4 +10,5 @@ interface AuthenticationRepositoryInterface
     public function getById(string $id): ?Authentication;
     public function getByEmail(string $email): ?Authentication;
     public function getByToken(string $token): ?Authentication;
+    public function findUserRecordByIdOrEmail(?string $id, ?string $email): ?array;
 }

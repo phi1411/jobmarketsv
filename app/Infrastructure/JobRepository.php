@@ -66,7 +66,11 @@ class JobRepository implements JobRepositoryInterface
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($rows as &$r) {
+            $this->hydrateSkills($r);
+        }
+        return $rows;
     }
 
     public function count(array $filters = []): int
@@ -212,8 +216,26 @@ class JobRepository implements JobRepositoryInterface
         );
         $stmt->execute([$id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            return [];
+        }
 
-        return $row ?: [];
+        $this->hydrateSkills($row);
+        return $row;
+    }
+
+    private function hydrateSkills(array &$jobRow): void
+    {
+        $skillsArray = [];
+        if (!empty($jobRow["required_skills"])) {
+            $decoded = json_decode($jobRow["required_skills"], true);
+            if (is_array($decoded)) {
+                $skillsArray = $decoded;
+            } else {
+                $skillsArray = array_values(array_filter(array_map('trim', explode(',', $jobRow["required_skills"])), fn($s) => $s !== ''));
+            }
+        }
+        $jobRow["skills"] = $skillsArray;
     }
 
     public function findByCompany(string $companyId, array $filters = [], ?Pagination $pagination = null): array
