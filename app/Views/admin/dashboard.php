@@ -23,105 +23,112 @@
     <!-- Main Content -->
     <div id="admin-dash-content" style="display:none;">
         <!-- Top 4 Summary Cards -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:1.25rem;margin-bottom:2rem;">
+        <!-- Top 4 Summary Cards -->
+        <div class="stat-grid">
             <!-- Card 1: Users -->
-            <div class="job-card" style="padding:1.5rem;margin:0;border-top:4px solid #3b82f6;">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                    <div>
-                        <div style="color:var(--text-muted);font-size:0.85rem;font-weight:600;margin-bottom:0.35rem;">TỔNG NGƯỜI DÙNG</div>
-                        <div id="stat-total-users" style="font-size:2rem;font-weight:800;color:var(--dark);line-height:1;">0</div>
-                    </div>
-                    <div style="font-size:2rem;line-height:1;">👥</div>
+            <div class="stat-card">
+                <div class="stat-card-icon stat-card-icon--primary">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 </div>
-                <div style="margin-top:1rem;font-size:0.82rem;color:var(--text-muted);border-top:1px solid var(--border);padding-top:0.75rem;">
-                    Sinh viên: <strong id="stat-student-users" style="color:#1e40af;">0</strong> &bull; 
-                    Công ty: <strong id="stat-company-users" style="color:#b45309;">0</strong> &bull; 
-                    Admin: <strong id="stat-admin-users" style="color:#991b1b;">0</strong>
+                <div class="stat-card-body">
+                    <div class="stat-card-label">Tổng Người Dùng</div>
+                    <div id="stat-total-users" class="stat-card-value">0</div>
+                    <div class="stat-card-subtext">
+                        SV: <strong id="stat-student-users" style="color:#1e40af;">0</strong> &bull;
+                        CT: <strong id="stat-company-users" style="color:#b45309;">0</strong> &bull;
+                        Admin: <strong id="stat-admin-users" style="color:#991b1b;">0</strong>
+                    </div>
                 </div>
             </div>
 
             <!-- Card 2: Companies -->
-            <div class="job-card" style="padding:1.5rem;margin:0;border-top:4px solid #f59e0b;">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                    <div>
-                        <div style="color:var(--text-muted);font-size:0.85rem;font-weight:600;margin-bottom:0.35rem;">DOANH NGHIỆP</div>
-                        <div id="stat-total-comp" style="font-size:2rem;font-weight:800;color:var(--dark);line-height:1;">0</div>
-                    </div>
-                    <div style="font-size:2rem;line-height:1;">🏢</div>
+            <div class="stat-card">
+                <div class="stat-card-icon stat-card-icon--warning">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
                 </div>
-                <div style="margin-top:1rem;font-size:0.82rem;color:var(--text-muted);border-top:1px solid var(--border);padding-top:0.75rem;">
-                    Đã duyệt: <strong id="stat-verified-comp" style="color:#166534;">0</strong> &bull; 
-                    Chờ duyệt: <strong id="stat-pending-comp" style="color:#d97706;">0</strong>
+                <div class="stat-card-body">
+                    <div class="stat-card-label">Doanh Nghiệp</div>
+                    <div id="stat-total-comp" class="stat-card-value stat-card-value--warning">0</div>
+                    <div class="stat-card-subtext">
+                        Đã duyệt: <strong id="stat-verified-comp" style="color:#166534;">0</strong> &bull;
+                        Chờ duyệt: <strong id="stat-pending-comp" style="color:#d97706;">0</strong>
+                    </div>
                 </div>
             </div>
 
             <!-- Card 3: Jobs -->
-            <div class="job-card" style="padding:1.5rem;margin:0;border-top:4px solid #10b981;">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                    <div>
-                        <div style="color:var(--text-muted);font-size:0.85rem;font-weight:600;margin-bottom:0.35rem;">TIN TUYỂN DỤNG</div>
-                        <div id="stat-total-jobs" style="font-size:2rem;font-weight:800;color:var(--dark);line-height:1;">0</div>
-                    </div>
-                    <div style="font-size:2rem;line-height:1;">💼</div>
+            <div class="stat-card">
+                <div class="stat-card-icon stat-card-icon--success">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
                 </div>
-                <div style="margin-top:1rem;font-size:0.82rem;color:var(--text-muted);border-top:1px solid var(--border);padding-top:0.75rem;">
-                    Đang tuyển: <strong id="stat-pub-jobs" style="color:#166534;">0</strong> &bull; 
-                    Bản nháp: <strong id="stat-draft-jobs">0</strong> &bull; 
-                    Đã đóng: <strong id="stat-closed-jobs" style="color:#991b1b;">0</strong>
+                <div class="stat-card-body">
+                    <div class="stat-card-label">Tin Tuyển Dụng</div>
+                    <div id="stat-total-jobs" class="stat-card-value stat-card-value--success">0</div>
+                    <div class="stat-card-subtext">
+                        Đang tuyển: <strong id="stat-pub-jobs" style="color:#166534;">0</strong> &bull;
+                        Nháp: <strong id="stat-draft-jobs">0</strong> &bull;
+                        Đóng: <strong id="stat-closed-jobs" style="color:#991b1b;">0</strong>
+                    </div>
                 </div>
             </div>
 
             <!-- Card 4: Applications -->
-            <div class="job-card" style="padding:1.5rem;margin:0;border-top:4px solid #8b5cf6;">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                    <div>
-                        <div style="color:var(--text-muted);font-size:0.85rem;font-weight:600;margin-bottom:0.35rem;">HỒ SƠ ỨNG TUYỂN</div>
-                        <div id="stat-total-apps" style="font-size:2rem;font-weight:800;color:var(--dark);line-height:1;">0</div>
-                    </div>
-                    <div style="font-size:2rem;line-height:1;">📄</div>
+            <div class="stat-card">
+                <div class="stat-card-icon stat-card-icon--purple">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                 </div>
-                <div style="margin-top:1rem;font-size:0.82rem;color:var(--text-muted);border-top:1px solid var(--border);padding-top:0.75rem;">
-                    Chờ xem: <strong id="stat-pending-apps" style="color:#b45309;">0</strong> &bull; 
-                    Phù hợp: <strong id="stat-short-apps" style="color:#065f46;">0</strong> &bull; 
-                    Nhận việc: <strong id="stat-acc-apps" style="color:#166534;">0</strong>
+                <div class="stat-card-body">
+                    <div class="stat-card-label">Hồ Sơ Ứng Tuyển</div>
+                    <div id="stat-total-apps" class="stat-card-value stat-card-value--purple">0</div>
+                    <div class="stat-card-subtext">
+                        Chờ: <strong id="stat-pending-apps" style="color:#b45309;">0</strong> &bull;
+                        Chọn: <strong id="stat-short-apps" style="color:#065f46;">0</strong> &bull;
+                        Nhận: <strong id="stat-acc-apps" style="color:#166534;">0</strong>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 2 Column Layout: Quick Actions & Application Distribution -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;">
+        <!-- 2 Column Layout: Quick Actions & Application Distribution -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1.5rem;margin-bottom:2rem;">
             <!-- Column 1: Moderation Shortcuts -->
-            <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem;">
-                <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
-                    ⚡ Lối Tắt Kiểm Duyệt Cần Xử Lý
-                </h3>
+            <div class="surface-card">
+                <div class="section-header" style="margin-bottom:1.25rem;">
+                    <div class="section-header-main">
+                        <h3 class="section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--warning);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            <span>Lối Tắt Kiểm Duyệt Cần Xử Lý</span>
+                        </h3>
+                    </div>
+                </div>
                 
                 <div style="display:flex;flex-direction:column;gap:0.75rem;">
-                    <a href="/admin/companies?verification_status=pending" style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem 1rem;background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius);text-decoration:none;color:#92400e;transition:var(--transition);">
-                        <div style="display:flex;align-items:center;gap:0.75rem;">
-                            <span style="font-size:1.25rem;">🏢</span>
+                    <a href="/admin/companies?verification_status=pending" style="display:flex;justify-content:space-between;align-items:center;padding:0.9rem 1.15rem;background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius-sm);text-decoration:none;color:#92400e;transition:var(--transition);">
+                        <div style="display:flex;align-items:center;gap:0.85rem;">
+                            <span style="font-size:1.35rem;">🏢</span>
                             <div>
-                                <div style="font-weight:700;font-size:0.92rem;">Doanh nghiệp chờ xác thực</div>
+                                <div style="font-weight:700;font-size:0.92rem;color:#78350f;">Doanh nghiệp chờ xác thực</div>
                                 <div style="font-size:0.8rem;color:#b45309;">Xét duyệt tính hợp lệ trước khi cấp phép đăng tin công khai</div>
                             </div>
                         </div>
                         <span id="badge-pending-comp" class="badge" style="background:#f59e0b;color:#fff;font-weight:700;font-size:0.85rem;padding:0.25rem 0.65rem;border-radius:20px;">0</span>
                     </a>
 
-                    <a href="/admin/jobs?status=pending_approval" style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem 1rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--radius);text-decoration:none;color:#166534;transition:var(--transition);">
-                        <div style="display:flex;align-items:center;gap:0.75rem;">
-                            <span style="font-size:1.25rem;">💼</span>
+                    <a href="/admin/jobs?status=pending_approval" style="display:flex;justify-content:space-between;align-items:center;padding:0.9rem 1.15rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--radius-sm);text-decoration:none;color:#166534;transition:var(--transition);">
+                        <div style="display:flex;align-items:center;gap:0.85rem;">
+                            <span style="font-size:1.35rem;">💼</span>
                             <div>
-                                <div style="font-weight:700;font-size:0.92rem;">Tin tuyển dụng chờ kiểm duyệt</div>
+                                <div style="font-weight:700;font-size:0.92rem;color:#14532d;">Tin tuyển dụng chờ kiểm duyệt</div>
                                 <div style="font-size:0.8rem;color:#15803d;">Duyệt nội dung mô tả, quyền lợi, lương an toàn cho sinh viên</div>
                             </div>
                         </div>
                         <span class="badge" style="background:#10b981;color:#fff;font-weight:700;font-size:0.85rem;padding:0.25rem 0.65rem;border-radius:20px;">Kiểm tra</span>
                     </a>
 
-                    <a href="/admin/users" style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem 1rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--dark);transition:var(--transition);">
-                        <div style="display:flex;align-items:center;gap:0.75rem;">
-                            <span style="font-size:1.25rem;">👥</span>
+                    <a href="/admin/users" style="display:flex;justify-content:space-between;align-items:center;padding:0.9rem 1.15rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);text-decoration:none;color:var(--dark);transition:var(--transition);">
+                        <div style="display:flex;align-items:center;gap:0.85rem;">
+                            <span style="font-size:1.35rem;">👥</span>
                             <div>
                                 <div style="font-weight:700;font-size:0.92rem;">Quản lý tài khoản người dùng</div>
                                 <div style="font-size:0.8rem;color:var(--text-muted);">Khóa hoặc kích hoạt tài khoản vi phạm chính sách</div>
@@ -130,9 +137,9 @@
                         <span class="badge" style="background:#e2e8f0;color:var(--dark);font-weight:700;font-size:0.85rem;padding:0.25rem 0.65rem;border-radius:20px;">Xem &rarr;</span>
                     </a>
 
-                    <a href="/admin/audit-logs" style="display:flex;justify-content:space-between;align-items:center;padding:0.85rem 1rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--dark);transition:var(--transition);">
-                        <div style="display:flex;align-items:center;gap:0.75rem;">
-                            <span style="font-size:1.25rem;">📜</span>
+                    <a href="/admin/audit-logs" style="display:flex;justify-content:space-between;align-items:center;padding:0.9rem 1.15rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);text-decoration:none;color:var(--dark);transition:var(--transition);">
+                        <div style="display:flex;align-items:center;gap:0.85rem;">
+                            <span style="font-size:1.35rem;">📜</span>
                             <div>
                                 <div style="font-weight:700;font-size:0.92rem;">Nhật ký thao tác quản trị</div>
                                 <div style="font-size:0.8rem;color:var(--text-muted);">Xem lịch sử kiểm duyệt của các quản trị viên</div>
@@ -144,10 +151,15 @@
             </div>
 
             <!-- Column 2: Application Breakdown -->
-            <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem;">
-                <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
-                    📊 Phân Bố Hồ Sơ Ứng Tuyển Toàn Sàn
-                </h3>
+            <div class="surface-card">
+                <div class="section-header" style="margin-bottom:1.25rem;">
+                    <div class="section-header-main">
+                        <h3 class="section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                            <span>Phân Bố Hồ Sơ Ứng Tuyển Toàn Sàn</span>
+                        </h3>
+                    </div>
+                </div>
 
                 <div style="display:flex;flex-direction:column;gap:0.85rem;" id="apps-distribution-list">
                     <!-- Populated dynamically -->
@@ -158,7 +170,7 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+function initAdminDashboardPage() {
     // Auth UX Guard
     if (!TokenStorage.isLoggedIn()) {
         showToast("Vui lòng đăng nhập với tài khoản Quản trị viên.", "error");
@@ -175,57 +187,72 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     loadAdminDashboard();
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAdminDashboardPage);
+} else {
+    initAdminDashboardPage();
+}
 
 async function loadAdminDashboard() {
     const loadingEl = document.getElementById("admin-dash-loading");
     const errorEl = document.getElementById("admin-dash-error");
     const contentEl = document.getElementById("admin-dash-content");
 
-    loadingEl.style.display = "block";
-    errorEl.style.display = "none";
-    contentEl.style.display = "none";
+    if (loadingEl) loadingEl.style.display = "block";
+    if (errorEl) errorEl.style.display = "none";
+    if (contentEl) contentEl.style.display = "none";
 
-    const res = await apiRequest("/admin/dashboard", { requireAuth: true });
-    loadingEl.style.display = "none";
+    try {
+        const res = await apiRequest("/admin/dashboard", { requireAuth: true });
 
-    if (res && res.success && res.data) {
-        contentEl.style.display = "block";
-        const d = res.data;
+        if (res && res.success && res.data) {
+            if (contentEl) contentEl.style.display = "block";
+            const d = res.data;
 
-        // 1. Users
-        const u = d.users || {};
-        document.getElementById("stat-total-users").innerText = u.total || 0;
-        document.getElementById("stat-student-users").innerText = u.student || 0;
-        document.getElementById("stat-company-users").innerText = u.company || 0;
-        document.getElementById("stat-admin-users").innerText = u.admin || 0;
+            // 1. Users
+            const u = d.users || {};
+            document.getElementById("stat-total-users").innerText = u.total || 0;
+            document.getElementById("stat-student-users").innerText = u.student || 0;
+            document.getElementById("stat-company-users").innerText = u.company || 0;
+            document.getElementById("stat-admin-users").innerText = u.admin || 0;
 
-        // 2. Companies
-        const c = d.companies || {};
-        document.getElementById("stat-total-comp").innerText = c.total || 0;
-        document.getElementById("stat-verified-comp").innerText = c.verified || 0;
-        document.getElementById("stat-pending-comp").innerText = c.pending || 0;
-        document.getElementById("badge-pending-comp").innerText = c.pending || 0;
+            // 2. Companies
+            const c = d.companies || {};
+            document.getElementById("stat-total-comp").innerText = c.total || 0;
+            document.getElementById("stat-verified-comp").innerText = c.verified || 0;
+            document.getElementById("stat-pending-comp").innerText = c.pending || 0;
+            document.getElementById("badge-pending-comp").innerText = c.pending || 0;
 
-        // 3. Jobs
-        const j = d.jobs || {};
-        document.getElementById("stat-total-jobs").innerText = j.total || 0;
-        document.getElementById("stat-pub-jobs").innerText = j.published || 0;
-        document.getElementById("stat-draft-jobs").innerText = j.draft || 0;
-        document.getElementById("stat-closed-jobs").innerText = j.closed || 0;
+            // 3. Jobs
+            const j = d.jobs || {};
+            document.getElementById("stat-total-jobs").innerText = j.total || 0;
+            document.getElementById("stat-pub-jobs").innerText = j.published || 0;
+            document.getElementById("stat-draft-jobs").innerText = j.draft || 0;
+            document.getElementById("stat-closed-jobs").innerText = j.closed || 0;
 
-        // 4. Applications
-        const a = d.applications || {};
-        document.getElementById("stat-total-apps").innerText = a.total || 0;
-        document.getElementById("stat-pending-apps").innerText = a.pending || 0;
-        document.getElementById("stat-short-apps").innerText = a.shortlisted || 0;
-        document.getElementById("stat-acc-apps").innerText = a.accepted || 0;
+            // 4. Applications
+            const a = d.applications || {};
+            document.getElementById("stat-total-apps").innerText = a.total || 0;
+            document.getElementById("stat-pending-apps").innerText = a.pending || 0;
+            document.getElementById("stat-short-apps").innerText = a.shortlisted || 0;
+            document.getElementById("stat-acc-apps").innerText = a.accepted || 0;
 
-        // Render Application breakdown
-        renderAppsDistribution(a);
-    } else {
-        errorEl.style.display = "block";
-        document.getElementById("admin-dash-err-msg").innerText = (res && res.message) ? res.message : "Đã có lỗi xảy ra.";
+            // Render Application breakdown
+            renderAppsDistribution(a);
+        } else {
+            if (errorEl) errorEl.style.display = "block";
+            const msgEl = document.getElementById("admin-dash-err-msg");
+            if (msgEl) msgEl.innerText = (res && res.message) ? res.message : "Đã có lỗi xảy ra.";
+        }
+    } catch (err) {
+        console.error("Error loading admin dashboard:", err);
+        if (errorEl) errorEl.style.display = "block";
+        const msgEl = document.getElementById("admin-dash-err-msg");
+        if (msgEl) msgEl.innerText = "Lỗi kết nối máy chủ.";
+    } finally {
+        if (loadingEl) loadingEl.style.display = "none";
     }
 }
 

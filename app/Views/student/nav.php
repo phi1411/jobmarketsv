@@ -16,12 +16,6 @@ $tab = $activeTab ?? "dashboard";
                     Quản lý hồ sơ, theo dõi trạng thái ứng tuyển và tìm kiếm cơ hội việc làm part-time.
                 </p>
             </div>
-            <div class="portal-actions">
-                <a href="/viec-lam" class="btn btn-primary btn-sm">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    <span>Tìm Việc Làm Mới</span>
-                </a>
-            </div>
         </div>
 
         <nav class="portal-nav-rail student-nav-tabs" aria-label="Điều hướng cổng sinh viên">
@@ -44,11 +38,6 @@ $tab = $activeTab ?? "dashboard";
             <a href="/student/saved-searches" class="portal-tab student-tab <?= $tab === 'saved_searches' ? 'active' : '' ?>">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <span>Tìm Kiếm Đã Lưu</span>
-            </a>
-            <a href="/student/notifications" class="portal-tab student-tab <?= $tab === 'notifications' ? 'active' : '' ?>">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                <span>Thông Báo</span>
-                <span id="nav-student-notif-badge" class="portal-tab-badge" style="display:none;">0</span>
             </a>
         </nav>
     </div>

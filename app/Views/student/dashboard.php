@@ -206,7 +206,7 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+function initStudentDashboardPage() {
     // 1. Authorization Guard
     if (!TokenStorage.isLoggedIn()) {
         showToast("Vui lòng đăng nhập để truy cập Cổng Sinh viên.", "error");
@@ -223,26 +223,32 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    document.getElementById("dash-user-name").innerText = user.name || "Sinh viên";
+    const nameEl = document.getElementById("dash-user-name");
+    if (nameEl) nameEl.innerText = user.name || "Sinh viên";
     loadDashboard();
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initStudentDashboardPage);
+} else {
+    initStudentDashboardPage();
+}
 
 async function loadDashboard() {
     const loadingEl = document.getElementById("student-dash-loading");
     const errorEl = document.getElementById("student-dash-error");
     const contentEl = document.getElementById("student-dash-content");
 
-    loadingEl.style.display = "block";
-    errorEl.style.display = "none";
-    contentEl.style.display = "none";
+    if (loadingEl) loadingEl.style.display = "block";
+    if (errorEl) errorEl.style.display = "none";
+    if (contentEl) contentEl.style.display = "none";
 
-    const res = await apiRequest("/student/dashboard", { requireAuth: true });
+    try {
+        const res = await apiRequest("/student/dashboard", { requireAuth: true });
 
-    loadingEl.style.display = "none";
-
-    if (res && res.success && res.data) {
-        contentEl.style.display = "block";
-        const data = res.data;
+        if (res && res.success && res.data) {
+            if (contentEl) contentEl.style.display = "block";
+            const data = res.data;
 
         // 1. Metrics & Pipeline
         const counts = data.applications || data.application_counts || {};
@@ -334,9 +340,18 @@ async function loadDashboard() {
             `).join("");
         }
 
-    } else {
-        errorEl.style.display = "block";
-        document.getElementById("student-dash-err-msg").innerText = (res && res.message) ? res.message : "Vui lòng kiểm tra lại kết nối.";
+        } else {
+            if (errorEl) errorEl.style.display = "block";
+            const msgEl = document.getElementById("student-dash-err-msg");
+            if (msgEl) msgEl.innerText = (res && res.message) ? res.message : "Vui lòng kiểm tra lại kết nối.";
+        }
+    } catch (err) {
+        console.error("Error loading student dashboard:", err);
+        if (errorEl) errorEl.style.display = "block";
+        const msgEl = document.getElementById("student-dash-err-msg");
+        if (msgEl) msgEl.innerText = "Lỗi kết nối máy chủ.";
+    } finally {
+        if (loadingEl) loadingEl.style.display = "none";
     }
 }
 </script>

@@ -38,7 +38,7 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+function initStudentNotificationsPage() {
     if (!TokenStorage.isLoggedIn()) {
         showToast("Vui lòng đăng nhập để xem thông báo.", "error");
         window.location.href = `/login?login_required=1&redirect=${encodeURIComponent(window.location.pathname)}`;
@@ -52,7 +52,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     loadNotifications();
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initStudentNotificationsPage);
+} else {
+    initStudentNotificationsPage();
+}
 
 async function loadNotifications() {
     const loadingEl = document.getElementById("notif-loading");
@@ -60,63 +66,70 @@ async function loadNotifications() {
     const emptyEl = document.getElementById("notif-empty");
     const countText = document.getElementById("notif-count-text");
 
-    loadingEl.style.display = "block";
-    container.innerHTML = "";
-    emptyEl.style.display = "none";
+    if (loadingEl) loadingEl.style.display = "block";
+    if (container) container.innerHTML = "";
+    if (emptyEl) emptyEl.style.display = "none";
 
-    const res = await apiRequest("/notifications", { requireAuth: true });
-    loadingEl.style.display = "none";
+    try {
+        const res = await apiRequest("/notifications", { requireAuth: true });
 
-    if (res && res.success && Array.isArray(res.data)) {
-        const notifs = res.data;
-        const unreadCount = notifs.filter(n => !n.read_at).length;
-        countText.innerText = `Có ${notifs.length} thông báo (${unreadCount} chưa đọc)`;
+        if (res && res.success && Array.isArray(res.data)) {
+            const notifs = res.data;
+            const unreadCount = notifs.filter(n => !n.read_at).length;
+            if (countText) countText.innerText = `Có ${notifs.length} thông báo (${unreadCount} chưa đọc)`;
 
-        // Sync navbar badges
-        updateBadgeUI(unreadCount);
+            // Sync navbar badges
+            updateBadgeUI(unreadCount);
 
-        if (notifs.length === 0) {
-            emptyEl.style.display = "block";
-            return;
-        }
+            if (notifs.length === 0) {
+                if (emptyEl) emptyEl.style.display = "block";
+                return;
+            }
 
-        container.innerHTML = notifs.map(n => {
-            const isUnread = !n.read_at;
-            return `
-                <div class="notification-item ${isUnread ? 'notification-item--unread' : ''}">
-                    <div style="display:flex;gap:var(--space-3);flex:1;min-width:0;">
-                        <div class="notification-item-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            container.innerHTML = notifs.map(n => {
+                const isUnread = !n.read_at;
+                return `
+                    <div class="notification-item ${isUnread ? 'notification-item--unread' : ''}">
+                        <div style="display:flex;gap:var(--space-3);flex:1;min-width:0;">
+                            <div class="notification-item-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            </div>
+                            <div class="notification-item-content">
+                                <div class="notification-item-header">
+                                    <h4 class="notification-item-title">
+                                        ${escapeHtml(n.title)}
+                                    </h4>
+                                    ${isUnread ? '<span class="status-dot" style="background:var(--primary);" title="Chưa đọc" aria-label="Chưa đọc"></span>' : ''}
+                                </div>
+                                <div class="notification-item-desc">
+                                    ${escapeHtml(n.message)}
+                                </div>
+                                <div class="notification-item-meta">
+                                    <span>${formatDate(n.created_at)}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="notification-item-content">
-                            <div class="notification-item-header">
-                                <h4 class="notification-item-title">
-                                    ${escapeHtml(n.title)}
-                                </h4>
-                                ${isUnread ? '<span class="status-dot" style="background:var(--primary);" title="Chưa đọc"></span>' : ''}
+
+                        ${isUnread ? `
+                            <div class="row-actions">
+                                <button onclick="handleMarkRead('${escapeHtml(n.id)}')" class="btn btn-outline btn-sm row-action-btn" style="white-space:nowrap;" aria-label="Đánh dấu thông báo đã đọc">
+                                    Đánh dấu đã đọc
+                                </button>
                             </div>
-                            <div class="notification-item-desc">
-                                ${escapeHtml(n.message)}
-                            </div>
-                            <div class="notification-item-meta">
-                                <span>${formatDate(n.created_at)}</span>
-                            </div>
-                        </div>
+                        ` : ''}
                     </div>
-
-                    ${isUnread ? `
-                        <div class="row-actions">
-                            <button onclick="handleMarkRead('${escapeHtml(n.id)}')" class="btn btn-outline btn-sm row-action-btn" style="white-space:nowrap;">
-                                Đánh dấu đã đọc
-                            </button>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-        }).join("");
-    } else {
-        emptyEl.style.display = "block";
-        countText.innerText = "Không thể tải thông báo.";
+                `;
+            }).join("");
+        } else {
+            if (emptyEl) emptyEl.style.display = "block";
+            if (countText) countText.innerText = "Không thể tải thông báo.";
+        }
+    } catch (err) {
+        console.error("Error loading notifications:", err);
+        if (emptyEl) emptyEl.style.display = "block";
+        if (countText) countText.innerText = "Lỗi kết nối máy chủ.";
+    } finally {
+        if (loadingEl) loadingEl.style.display = "none";
     }
 }
 

@@ -63,7 +63,7 @@
 <script>
 let currentAppPage = 1;
 
-document.addEventListener("DOMContentLoaded", () => {
+function initStudentApplicationsPage() {
     // Auth Guard
     if (!TokenStorage.isLoggedIn()) {
         showToast("Vui lòng đăng nhập để xem đơn ứng tuyển.", "error");
@@ -77,11 +77,17 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    loadApplications();
-});
+    loadApplications(1);
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initStudentApplicationsPage);
+} else {
+    initStudentApplicationsPage();
+}
 
 function getStatusBadge(status) {
-    return getAppStatusBadge(status);
+    return (typeof getAppStatusBadge === "function") ? getAppStatusBadge(status) : `<span class="badge">${escapeHtml(status)}</span>`;
 }
 
 async function loadApplications(page = 1) {
@@ -93,30 +99,30 @@ async function loadApplications(page = 1) {
     const countText = document.getElementById("apps-count-text");
     const paginationEl = document.getElementById("apps-pagination");
 
-    loadingEl.style.display = "block";
-    errorEl.style.display = "none";
-    container.innerHTML = "";
-    emptyEl.style.display = "none";
-    paginationEl.innerHTML = "";
+    if (loadingEl) loadingEl.style.display = "block";
+    if (errorEl) errorEl.style.display = "none";
+    if (container) container.innerHTML = "";
+    if (emptyEl) emptyEl.style.display = "none";
+    if (paginationEl) paginationEl.innerHTML = "";
 
-    const statusFilter = document.getElementById("filter-app-status").value;
-    const params = new URLSearchParams({ page: currentAppPage, per_page: 10 });
-    if (statusFilter) params.append("status", statusFilter);
+    try {
+        const statusFilter = document.getElementById("filter-app-status").value;
+        const params = new URLSearchParams({ page: currentAppPage, per_page: 10 });
+        if (statusFilter) params.append("status", statusFilter);
 
-    const res = await apiRequest(`/student/applications?${params.toString()}`, { requireAuth: true });
-    loadingEl.style.display = "none";
+        const res = await apiRequest(`/student/applications?${params.toString()}`, { requireAuth: true });
 
-    if (res && res.success && Array.isArray(res.data)) {
-        const apps = res.data;
-        const meta = res.meta || {};
-        const total = meta.total || apps.length;
+        if (res && res.success && Array.isArray(res.data)) {
+            const apps = res.data;
+            const meta = res.meta || {};
+            const total = meta.total || apps.length;
 
-        countText.innerText = `Tìm thấy ${total} đơn ứng tuyển`;
+            if (countText) countText.innerText = `Tìm thấy ${total} đơn ứng tuyển`;
 
-        if (apps.length === 0) {
-            emptyEl.style.display = "block";
-            return;
-        }
+            if (apps.length === 0) {
+                if (emptyEl) emptyEl.style.display = "block";
+                return;
+            }
 
         container.innerHTML = apps.map(app => {
             const canWithdraw = ["pending", "viewed", "reviewed"].includes(app.status);
@@ -173,9 +179,18 @@ async function loadApplications(page = 1) {
             paginationEl.innerHTML = pagHtml;
         }
 
-    } else {
-        errorEl.style.display = "block";
-        document.getElementById("apps-err-msg").innerText = (res && res.message) ? res.message : "Đã có lỗi xảy ra.";
+        } else {
+            if (errorEl) errorEl.style.display = "block";
+            const msgEl = document.getElementById("apps-err-msg");
+            if (msgEl) msgEl.innerText = (res && res.message) ? res.message : "Đã có lỗi xảy ra.";
+        }
+    } catch (err) {
+        console.error("Error loading student applications:", err);
+        if (errorEl) errorEl.style.display = "block";
+        const msgEl = document.getElementById("apps-err-msg");
+        if (msgEl) msgEl.innerText = "Lỗi kết nối máy chủ hoặc tải dữ liệu.";
+    } finally {
+        if (loadingEl) loadingEl.style.display = "none";
     }
 }
 

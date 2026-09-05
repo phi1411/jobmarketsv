@@ -106,7 +106,7 @@
     <div style="background:#fff;border-radius:var(--radius);max-width:550px;width:100%;padding:2rem;box-shadow:var(--shadow);position:relative;max-height:90vh;overflow-y:auto;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
             <h3 style="font-size:1.2rem;font-weight:700;color:var(--dark);margin:0;">Ứng Tuyển Việc Làm</h3>
-            <button type="button" onclick="closeApplyModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted);">&times;</button>
+            <button type="button" onclick="closeApplyModal()" class="modal-close-btn" aria-label="Đóng hộp thoại">&times;</button>
         </div>
 
         <div id="apply-job-info" style="background:#f8fafc;border-radius:var(--radius-sm);padding:0.75rem 1rem;margin-bottom:1.25rem;border:1px solid var(--border);">

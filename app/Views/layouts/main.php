@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title ?? "Job Marketplace - Việc Làm Part-Time Sinh Viên") ?></title>
     <meta name="description" content="Nền tảng kết nối việc làm bán thời gian, linh hoạt theo ca cho sinh viên tại Việt Nam.">
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/style.css') ? filemtime(BASE_PATH . '/public/assets/css/style.css') : time() ?>">
+    <script src="/assets/js/api.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/api.js') ? filemtime(BASE_PATH . '/public/assets/js/api.js') : time() ?>"></script>
 </head>
 <body>
 
@@ -88,7 +92,6 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/main.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/main.js') ? filemtime(BASE_PATH . '/public/assets/js/main.js') : time() ?>"></script>
 </body>
 </html>

@@ -84,11 +84,17 @@ document.addEventListener("DOMContentLoaded", () => {
             TokenStorage.setToken(res.data.token, res.data.user);
             showToast("Đăng nhập thành công! Chào mừng " + (res.data.user.name || ""), "success");
 
-            // Redirect to desired page (Prevent Open Redirect: strictly relative path)
+            // Redirect to desired page (Role-aware default destination, prevent open redirect)
             const urlParams = new URLSearchParams(window.location.search);
-            let redirectUrl = urlParams.get("redirect") || "/viec-lam";
-            if (!redirectUrl.startsWith("/") || redirectUrl.startsWith("//") || redirectUrl.includes("://")) {
-                redirectUrl = "/viec-lam";
+            let redirectUrl = urlParams.get("redirect");
+            if (!redirectUrl || !redirectUrl.startsWith("/") || redirectUrl.startsWith("//") || redirectUrl.includes("://")) {
+                if (res.data.user && res.data.user.role === "admin") {
+                    redirectUrl = "/admin/dashboard";
+                } else if (res.data.user && res.data.user.role === "company") {
+                    redirectUrl = "/company/dashboard";
+                } else {
+                    redirectUrl = "/viec-lam";
+                }
             }
 
             setTimeout(() => {

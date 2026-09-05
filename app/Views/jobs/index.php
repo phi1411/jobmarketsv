@@ -191,6 +191,11 @@ async function loadJobs() {
             return;
         }
 
+        // Determine role-appropriate CTA label
+        const currentUser = (typeof TokenStorage !== "undefined") ? TokenStorage.getUser() : null;
+        const isJobSeeker = !currentUser || currentUser.role === "student" || currentUser.role === "developer";
+        const ctaLabel = isJobSeeker ? "Ứng tuyển ngay &rarr;" : "Xem chi tiết &rarr;";
+
         // Render Cards safely
         container.innerHTML = jobs.map(job => `
             <div class="job-card" style="flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;">
@@ -212,7 +217,7 @@ async function loadJobs() {
 
                 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">
                     <span style="font-size:0.82rem;color:var(--text-muted);">Hạn nộp: ${formatDate(job.application_deadline) || "Còn tuyển"}</span>
-                    <a href="/viec-lam/${encodeURIComponent(job.id)}" class="btn btn-primary btn-sm">Ứng tuyển ngay &rarr;</a>
+                    <a href="/viec-lam/${encodeURIComponent(job.id)}" class="btn btn-primary btn-sm">${ctaLabel}</a>
                 </div>
             </div>
         `).join("");
