@@ -117,6 +117,21 @@ class Response
         return $this->payload;
     }
 
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    public function getHeader(string $name): ?string
+    {
+        foreach ($this->headers as $key => $value) {
+            if (strcasecmp($key, $name) === 0) {
+                return (string)$value;
+            }
+        }
+        return null;
+    }
+
     public function send(): void
     {
         // Set HTTP Status Code

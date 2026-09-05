@@ -47,16 +47,18 @@ class GoogleOAuthService
         }
     }
 
-    public function start(string $role, ?string $returnUrl = null): string
+    public function start(?string $role = null, ?string $returnUrl = null): string
     {
-        $normalizedRole = strtolower(trim($role));
-
-        // Start accepts only Student or Company intent
-        if (!in_array($normalizedRole, ["student", "company"], true)) {
-            throw new ValidationException(
-                ["role" => ["Vai trò không hợp lệ. Google Sign-In chỉ hỗ trợ vai trò 'student' hoặc 'company'."]],
-                "Vai trò không hợp lệ"
-            );
+        $normalizedRole = null;
+        if ($role !== null) {
+            $normalizedRole = strtolower(trim($role));
+            // Start accepts only Student or Company intent if role is provided
+            if (!in_array($normalizedRole, ["student", "company"], true)) {
+                throw new ValidationException(
+                    ["role" => ["Vai trò không hợp lệ. Google Sign-In chỉ hỗ trợ vai trò 'student' hoặc 'company'."]],
+                    "Vai trò không hợp lệ"
+                );
+            }
         }
 
         // Canonicalize and validate internal return path
@@ -77,6 +79,16 @@ class GoogleOAuthService
         return $this->client->getAuthorizationUrl($state, $nonce);
     }
 
+    public function consumeState(string $state): ?array
+    {
+        $trimmedState = trim($state);
+        if (empty($trimmedState) || strlen($trimmedState) > 256) {
+            return null;
+        }
+
+        return $this->stateStore->consume($trimmedState);
+    }
+
     public function callback(string $code, string $state): array
     {
         $trimmedCode = trim($code);
@@ -87,16 +99,26 @@ class GoogleOAuthService
         }
 
         // One-time atomic consumption of state
-        $stateData = $this->stateStore->consume($trimmedState);
+        $stateData = $this->consumeState($trimmedState);
         if (!$stateData) {
             throw new AuthenticationException("Trạng thái phiên xác thực (state) không hợp lệ hoặc đã hết hạn.");
         }
 
+        return $this->processCallback($trimmedCode, $stateData);
+    }
+
+    public function processCallback(string $code, array $stateData): array
+    {
+        $trimmedCode = trim($code);
+        if (empty($trimmedCode)) {
+            throw new AuthenticationException("Mã ủy quyền hoặc trạng thái xác thực không được để trống.");
+        }
+
         $expectedNonce = $stateData["nonce"] ?? "";
-        $stateRole = $stateData["role"] ?? "student";
+        $stateRole = $stateData["role"] ?? null;
         $storedReturnUrl = $stateData["return_url"] ?? null;
 
-        if (!in_array($stateRole, ["student", "company"], true)) {
+        if ($stateRole !== null && !in_array($stateRole, ["student", "company"], true)) {
             throw new AuthenticationException("Vai trò lưu trong phiên xác thực không hợp lệ.");
         }
 
@@ -161,6 +183,14 @@ class GoogleOAuthService
             $userRole = $user["role"];
         } else {
             // First-time user
+            // If user initiated OAuth from Login without selecting a role, reject and guide to Register
+            if (empty($stateRole)) {
+                throw new ValidationException(
+                    ["role" => ["Tài khoản Google chưa được liên kết với hệ thống. Vui lòng đăng ký tài khoản mới và chọn vai trò trước."]],
+                    "Tài khoản Google chưa được liên kết với hệ thống. Vui lòng đăng ký tài khoản mới và chọn vai trò trước."
+                );
+            }
+
             // Preserve no-auto-link policy: do not link to existing local account with same email
             $localUser = $this->oauthRepo->findLocalUserByEmail($email);
             if ($localUser !== null) {
@@ -223,7 +253,7 @@ class GoogleOAuthService
      * - Rejects raw or encoded dot segments ('.' or '..' or '%2e').
      * - Canonicalizes path segments and enforces allowlist by role.
      */
-    public function validateInternalReturnUrl(?string $url, string $role): ?string
+    public function validateInternalReturnUrl(?string $url, ?string $role = null): ?string
     {
         if ($url === null || $url === "") {
             return null;
@@ -297,7 +327,23 @@ class GoogleOAuthService
         }
 
         // 7. Check allowlisted prefixes by role
-        if ($role === "student") {
+        if ($role === null) {
+            $allowed = false;
+            if ($canonicalPath === "/") {
+                $allowed = true;
+            } else {
+                $allowedPrefixes = ["/student/", "/company/", "/jobs", "/viec-lam", "/profile", "/developers", "/companies"];
+                foreach ($allowedPrefixes as $prefix) {
+                    if ($canonicalPath === rtrim($prefix, "/") || str_starts_with($canonicalPath, $prefix)) {
+                        $allowed = true;
+                        break;
+                    }
+                }
+            }
+            if (!$allowed) {
+                return null;
+            }
+        } elseif ($role === "student") {
             $allowed = false;
             if ($canonicalPath === "/") {
                 $allowed = true;
