@@ -2,19 +2,34 @@
 
 namespace JobMarket\Facades;
 
+use Firebase\JWT\JWT as FirebaseJWT;
+use Firebase\JWT\Key;
+use Throwable;
+
 class JWT extends Facade
 {
-    public static function encode(array $payload): string
+    public static function encode(array $payload, int $ttl = 2592000): string
     {
-        $payload = [
-            "email"    => $payload["email"],
-            "password" => $payload["password"],
-            "exp"   => time() + (1 * 30 * 24 * 3600)
+        $now = time();
+        $tokenData = [
+            "iss"   => "JobMarketplace",
+            "iat"   => $now,
+            "exp"   => $now + $ttl,
+            "id"    => $payload["id"] ?? null,
+            "email" => $payload["email"] ?? "",
+            "role"  => $payload["role"] ?? "student"
         ];
 
-        $secret = Config::secret();
+        return FirebaseJWT::encode($tokenData, Config::secret(), "HS256");
+    }
 
-        $jwt = \Firebase\JWT\JWT::encode($payload, $secret, "HS256");
-        return $jwt;
+    public static function decode(string $token): ?array
+    {
+        try {
+            $decoded = FirebaseJWT::decode($token, new Key(Config::secret(), "HS256"));
+            return (array)$decoded;
+        } catch (Throwable $e) {
+            return null;
+        }
     }
 }

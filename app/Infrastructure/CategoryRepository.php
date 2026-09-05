@@ -44,7 +44,7 @@ class CategoryRepository implements CategoryRepositoryInterface
             "SELECT * FROM categories WHERE id = ?"
         );
         $stmt->execute([$id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
     }
     public function update(Category $category): void
     {

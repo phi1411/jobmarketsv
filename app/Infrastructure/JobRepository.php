@@ -5,6 +5,8 @@ namespace JobMarket\Infrastructure;
 use JobMarket\Domain\Job\Job;
 use JobMarket\Domain\Job\JobRepositoryInterface;
 use JobMarket\Facades\Config;
+use JobMarket\Support\Pagination;
+use JobMarket\Support\QueryHelper;
 use PDO;
 
 class JobRepository implements JobRepositoryInterface
@@ -17,68 +19,365 @@ class JobRepository implements JobRepositoryInterface
         $this->db = new PDO(
             "mysql:dbname={$config['dbname']};host={$config['host']}",
             $config["user"],
-            $config["password"]
+            $config["password"],
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
         );
     }
+
     public function getAll(): array
     {
-        $stmt = $this->db->prepare(
-            "SELECT * FROM jobs"
-        );
+        return $this->search([], null);
+    }
 
-        $stmt->execute();
+    public function search(array $filters = [], ?Pagination $pagination = null): array
+    {
+        [$whereSql, $params] = $this->buildWhereClause($filters);
+
+        $sql = "SELECT j.*, 
+                       c.name AS company_name, 
+                       c.logo_url AS company_logo, 
+                       c.verification_status,
+                       c.contact_person,
+                       c.contact_phone,
+                       c.address AS company_address,
+                       cat.name AS category_name
+                FROM `jobs` j
+                LEFT JOIN `companies` c ON j.company_id = c.id
+                LEFT JOIN `categories` cat ON (j.category_id = cat.id OR j.category = cat.id)
+                WHERE {$whereSql}";
+
+        // Sort Whitelisting
+        $sortBy = $filters["sort_by"] ?? "newest";
+        $sortDir = $filters["sort_dir"] ?? "DESC";
+
+        $sortSql = match ($sortBy) {
+            "newest"      => "ORDER BY j.created_at DESC",
+            "salary_desc" => "ORDER BY j.salary_max DESC, j.salary_min DESC",
+            "salary_asc"  => "ORDER BY j.salary_min ASC",
+            default       => QueryHelper::sanitizeSort($sortBy, $sortDir, ["created_at", "salary_min", "salary_max", "title"])["sql"]
+        };
+        $sql .= " " . $sortSql;
+
+        // Pagination
+        if ($pagination !== null) {
+            $sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset();
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function create(Job $job): void
+    public function count(array $filters = []): int
     {
-        $stmt = $this->db->prepare(
-            "INSERT INTO jobs (id, company_id, title, description, requirements, location, category, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-        );
+        [$whereSql, $params] = $this->buildWhereClause($filters);
 
-        $stmt->execute([
-            $job->getId(),
-            $job->getCompanyId(),
-            $job->getTitle(),
-            $job->getDescription(),
-            $job->getRequirements(),
-            $job->getLocation(),
-            $job->getCategory(),
-            $job->getType()
-        ]);
+        $sql = "SELECT COUNT(*) FROM `jobs` j WHERE {$whereSql}";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (int)$stmt->fetchColumn();
+    }
+
+    private function buildWhereClause(array $filters): array
+    {
+        $sql = "j.deleted_at IS NULL";
+        $params = [];
+
+        // Public queries only show published, non-expired, non-closed jobs
+        $isPublic = !empty($filters["is_public"]) || !isset($filters["is_public"]);
+
+        if ($isPublic) {
+            $sql .= " AND j.status = 'published'";
+            $sql .= " AND (j.application_deadline IS NULL OR j.application_deadline >= CURDATE())";
+            $sql .= " AND (j.deadline IS NULL OR j.deadline >= CURDATE())";
+        } else {
+            // Non-public (company managing their own jobs)
+            if (!empty($filters["status"]) && $filters["status"] !== "all") {
+                $sql .= " AND j.status = ?";
+                $params[] = $filters["status"];
+            }
+        }
+
+        // Filter: Company ID
+        if (!empty($filters["company_id"])) {
+            $sql .= " AND j.company_id = ?";
+            $params[] = $filters["company_id"];
+        }
+
+        // Filter: Category ID
+        if (!empty($filters["category_id"])) {
+            $sql .= " AND (j.category_id = ? OR j.category = ?)";
+            $params[] = $filters["category_id"];
+            $params[] = $filters["category_id"];
+        }
+
+        // Filter: Location ID
+        if (!empty($filters["location_id"])) {
+            $sql .= " AND (j.location_id = ? OR j.location = ?)";
+            $params[] = $filters["location_id"];
+            $params[] = $filters["location_id"];
+        }
+
+        // Filter: City
+        if (!empty($filters["city"])) {
+            $sql .= " AND j.city LIKE ?";
+            $params[] = "%" . QueryHelper::escapeLike($filters["city"]) . "%";
+        }
+
+        // Filter: District
+        if (!empty($filters["district"])) {
+            $sql .= " AND j.district LIKE ?";
+            $params[] = "%" . QueryHelper::escapeLike($filters["district"]) . "%";
+        }
+
+        // Filter: Work Type (e.g. part_time, internship, freelance)
+        if (!empty($filters["work_type"])) {
+            $normalizedWorkType = str_replace("-", "_", $filters["work_type"]);
+            $legacyWorkType = str_replace("_", "-", $filters["work_type"]);
+            $sql .= " AND (j.work_type = ? OR j.type = ?)";
+            $params[] = $normalizedWorkType;
+            $params[] = $legacyWorkType;
+        }
+
+        // Filter: Work Mode (e.g. onsite, remote, hybrid)
+        if (!empty($filters["work_mode"])) {
+            $normalizedWorkMode = str_replace("-", "", $filters["work_mode"]);
+            $legacyWorkMode = ($filters["work_mode"] === "onsite" ? "on-site" : $filters["work_mode"]);
+            $sql .= " AND (j.work_mode = ? OR j.work_format = ?)";
+            $params[] = $normalizedWorkMode;
+            $params[] = $legacyWorkMode;
+        }
+
+        // Filter: Shift Type
+        if (!empty($filters["shift_type"])) {
+            $sql .= " AND j.shift_type = ?";
+            $params[] = $filters["shift_type"];
+        }
+
+        // Filter: Salary Type
+        if (!empty($filters["salary_type"])) {
+            $sql .= " AND j.salary_type = ?";
+            $params[] = $filters["salary_type"];
+        }
+
+        // Filter: Minimum Salary
+        if (!empty($filters["salary_min"]) && is_numeric($filters["salary_min"])) {
+            $sql .= " AND (j.salary_max >= ? OR j.salary_min >= ?)";
+            $params[] = (int)$filters["salary_min"];
+            $params[] = (int)$filters["salary_min"];
+        }
+
+        // Filter: Maximum Salary
+        if (!empty($filters["salary_max"]) && is_numeric($filters["salary_max"])) {
+            $sql .= " AND (j.salary_min <= ?)";
+            $params[] = (int)$filters["salary_max"];
+        }
+
+        // Filter: Skill ID (inside required_skills)
+        if (!empty($filters["skill_id"])) {
+            $sql .= " AND j.required_skills LIKE ?";
+            $params[] = "%" . QueryHelper::escapeLike($filters["skill_id"]) . "%";
+        }
+
+        // Filter: Search Keyword
+        if (!empty($filters["keyword"])) {
+            $keyword = "%" . QueryHelper::escapeLike($filters["keyword"]) . "%";
+            $sql .= " AND (j.title LIKE ? OR j.description LIKE ? OR j.requirements LIKE ? OR j.benefits LIKE ?)";
+            $params[] = $keyword;
+            $params[] = $keyword;
+            $params[] = $keyword;
+            $params[] = $keyword;
+        }
+
+        return [$sql, $params];
     }
 
     public function findById(string $id): array
     {
         $stmt = $this->db->prepare(
-            "SELECT * FROM jobs WHERE id = ?"
+            "SELECT j.*, 
+                    c.name AS company_name, 
+                    c.logo_url AS company_logo, 
+                    c.address AS company_address,
+                    c.contact_person, 
+                    c.contact_phone, 
+                    c.verification_status,
+                    cat.name AS category_name
+             FROM `jobs` j
+             LEFT JOIN `companies` c ON j.company_id = c.id
+             LEFT JOIN `categories` cat ON (j.category_id = cat.id OR j.category = cat.id)
+             WHERE j.id = ? AND j.deleted_at IS NULL LIMIT 1"
         );
         $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row ?: [];
+    }
+
+    public function findByCompany(string $companyId, array $filters = [], ?Pagination $pagination = null): array
+    {
+        $filters["company_id"] = $companyId;
+        return $this->search($filters, $pagination);
+    }
+
+    public function countByCompany(string $companyId, array $filters = []): int
+    {
+        $filters["company_id"] = $companyId;
+        return $this->count($filters);
+    }
+
+    public function create(Job $job): void
+    {
+        $stmt = $this->db->prepare(
+            "INSERT INTO `jobs` (
+                `id`, `company_id`, `category_id`, `location_id`, `title`, 
+                `description`, `requirements`, `benefits`, `location`, `city`, 
+                `district`, `address`, `status`, `work_type`, `work_mode`, 
+                `salary_type`, `salary_min`, `salary_max`, `currency`, `shift_type`, 
+                `shift_information`, `working_schedule`, `required_skills`, `quantity`, 
+                `application_deadline`, `rejection_reason`, `published_at`, `type`, 
+                `work_format`, `deadline`, `category`
+            ) VALUES (
+                ?, ?, ?, ?, ?, 
+                ?, ?, ?, ?, ?, 
+                ?, ?, ?, ?, ?, 
+                ?, ?, ?, ?, ?, 
+                ?, ?, ?, ?, 
+                ?, ?, ?, ?, 
+                ?, ?, ?
+            )"
+        );
+
+        $legacyType = str_replace("_", "-", $job->getWorkType());
+        if (!in_array($legacyType, ["full-time", "part-time", "contract", "freelance"], true)) {
+            $legacyType = "part-time";
+        }
+
+        $stmt->execute([
+            $job->getId(),
+            $job->getCompanyId(),
+            $job->getCategoryId(),
+            $job->getLocationId(),
+            $job->getTitle(),
+            $job->getDescription(),
+            $job->getRequirements(),
+            $job->getBenefits(),
+            $job->getLocation(),
+            $job->getCity(),
+            $job->getDistrict(),
+            $job->getAddress(),
+            $job->getStatus(),
+            $job->getWorkType(),
+            $job->getWorkMode(),
+            $job->getSalaryType(),
+            $job->getSalaryMin(),
+            $job->getSalaryMax(),
+            $job->getCurrency(),
+            $job->getShiftType(),
+            $job->getShiftInformation(),
+            $job->getWorkingSchedule(),
+            $job->getRequiredSkills(),
+            $job->getQuantity(),
+            $job->getApplicationDeadline(),
+            $job->getRejectionReason(),
+            $job->getPublishedAt(),
+            $legacyType,
+            $job->getWorkMode() === "onsite" ? "on-site" : $job->getWorkMode(),
+            $job->getApplicationDeadline(),
+            $job->getCategoryId()
+        ]);
     }
 
     public function update(Job $job): void
     {
         $stmt = $this->db->prepare(
-            "UPDATE jobs SET company_id = ?, title = ?, description = ?, requirements = ?, location = ?, category = ?, type = ? WHERE id = ?"
+            "UPDATE `jobs` SET 
+                `title` = ?,
+                `description` = ?,
+                `requirements` = ?,
+                `benefits` = ?,
+                `category_id` = ?,
+                `category` = ?,
+                `location_id` = ?,
+                `location` = ?,
+                `city` = ?,
+                `district` = ?,
+                `address` = ?,
+                `status` = ?,
+                `work_type` = ?,
+                `type` = ?,
+                `work_mode` = ?,
+                `work_format` = ?,
+                `salary_type` = ?,
+                `salary_min` = ?,
+                `salary_max` = ?,
+                `currency` = ?,
+                `shift_type` = ?,
+                `shift_information` = ?,
+                `working_schedule` = ?,
+                `required_skills` = ?,
+                `quantity` = ?,
+                `application_deadline` = ?,
+                `deadline` = ?,
+                `rejection_reason` = ?,
+                `published_at` = ?,
+                `updated_at` = NOW()
+            WHERE `id` = ? AND `deleted_at` IS NULL"
         );
+
+        $legacyType = str_replace("_", "-", $job->getWorkType());
+        if (!in_array($legacyType, ["full-time", "part-time", "contract", "freelance"], true)) {
+            $legacyType = "part-time";
+        }
+
         $stmt->execute([
-            $job->getCompanyId(),
             $job->getTitle(),
             $job->getDescription(),
             $job->getRequirements(),
+            $job->getBenefits(),
+            $job->getCategoryId(),
+            $job->getCategoryId(),
+            $job->getLocationId(),
             $job->getLocation(),
-            $job->getCategory(),
-            $job->getType(),
+            $job->getCity(),
+            $job->getDistrict(),
+            $job->getAddress(),
+            $job->getStatus(),
+            $job->getWorkType(),
+            $legacyType,
+            $job->getWorkMode(),
+            $job->getWorkMode() === "onsite" ? "on-site" : $job->getWorkMode(),
+            $job->getSalaryType(),
+            $job->getSalaryMin(),
+            $job->getSalaryMax(),
+            $job->getCurrency(),
+            $job->getShiftType(),
+            $job->getShiftInformation(),
+            $job->getWorkingSchedule(),
+            $job->getRequiredSkills(),
+            $job->getQuantity(),
+            $job->getApplicationDeadline(),
+            $job->getApplicationDeadline(),
+            $job->getRejectionReason(),
+            $job->getPublishedAt(),
             $job->getId()
         ]);
+    }
+
+    public function close(string $id): void
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE `jobs` SET `status` = 'closed', `updated_at` = NOW() WHERE `id` = ? AND `deleted_at` IS NULL"
+        );
+        $stmt->execute([$id]);
     }
 
     public function delete(string $id): void
     {
         $stmt = $this->db->prepare(
-            "DELETE FROM jobs WHERE id = ?"
+            "UPDATE `jobs` SET `deleted_at` = NOW(), `status` = 'closed', `updated_at` = NOW() WHERE `id` = ?"
         );
         $stmt->execute([$id]);
     }

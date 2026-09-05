@@ -4,71 +4,91 @@ namespace JobMarket\Domain\Notification;
 
 class Notification
 {
-    private $id;
-    private $user_id;
-    private $message;
-    private $is_read;
+    private string $id;
+    private string $user_id;
+    private string $type;
+    private string $title;
+    private string $message;
+    private ?array $data = null;
+    private ?string $read_at = null;
+    private ?string $created_at = null;
 
     public function __construct(
         string $user_id,
+        string $title,
         string $message,
-        bool $is_read
+        string $type = "general",
+        ?array $data = null,
+        ?string $id = null
     ) {
-        $this->id = uniqid();
+        $this->id = $id ?? ("notif-" . uniqid());
         $this->user_id = $user_id;
+        $this->title = $title;
         $this->message = $message;
-        $this->is_read = $is_read;
+        $this->type = $type;
+        $this->data = $data;
+        $this->created_at = date("Y-m-d H:i:s");
     }
 
     public static function create(
         string $user_id,
+        string $title,
         string $message,
-        bool $is_read
+        string $type = "general",
+        ?array $data = null
     ): static {
-        return new static($user_id, $message, $is_read);
+        return new static($user_id, $title, $message, $type, $data);
     }
 
-    public function getId(): string
+    public static function fromArray(array $row): static
     {
-        return $this->id;
+        $id = $row["id"] ?? ("notif-" . uniqid());
+        $userId = $row["user_id"] ?? "";
+        $title = $row["title"] ?? "";
+        $message = $row["message"] ?? "";
+        $type = $row["type"] ?? "general";
+
+        $data = $row["data"] ?? null;
+        if (is_string($data)) {
+            $decoded = json_decode($data, true);
+            $data = is_array($decoded) ? $decoded : null;
+        }
+
+        $notif = new static($userId, $title, $message, $type, $data, $id);
+        $notif->read_at = $row["read_at"] ?? null;
+        $notif->created_at = $row["created_at"] ?? null;
+
+        return $notif;
     }
 
-    public function getUserId(): string
+    public function toArray(): array
     {
-        return $this->user_id;
+        return [
+            "id"         => $this->id,
+            "user_id"    => $this->user_id,
+            "type"       => $this->type,
+            "title"      => $this->title,
+            "message"    => $this->message,
+            "data"       => $this->data,
+            "is_read"    => $this->read_at !== null,
+            "read_at"    => $this->read_at,
+            "created_at" => $this->created_at,
+        ];
     }
 
-    public function getMessage(): string
+    public function markAsRead(): void
     {
-        return $this->message;
+        if ($this->read_at === null) {
+            $this->read_at = date("Y-m-d H:i:s");
+        }
     }
 
-    public function getIsRead(): bool
-    {
-        return $this->is_read;
-    }
-
-    public function setId(string $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    public function setUserId(string $user_id): self
-    {
-        $this->user_id = $user_id;
-        return $this;
-    }
-
-    public function setMessage(string $message): self
-    {
-        $this->message = $message;
-        return $this;
-    }
-
-    public function setIsRead(bool $is_read): self
-    {
-        $this->is_read = $is_read;
-        return $this;
-    }
+    public function getId(): string { return $this->id; }
+    public function getUserId(): string { return $this->user_id; }
+    public function getType(): string { return $this->type; }
+    public function getTitle(): string { return $this->title; }
+    public function getMessage(): string { return $this->message; }
+    public function getData(): ?array { return $this->data; }
+    public function getReadAt(): ?string { return $this->read_at; }
+    public function getCreatedAt(): ?string { return $this->created_at; }
 }

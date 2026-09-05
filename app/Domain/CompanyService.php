@@ -47,12 +47,16 @@ class CompanyService
 
     public function update(array $userData): void
     {
-        $this->companyRepository->update(Company::create(
-            $userData["user_id"],
-            $userData["name"],
-            $userData["description"],
-            $userData["location"],
-            $userData["website"]
-        ));
+        $company = Company::create(
+            $userData["user_id"] ?? "",
+            $userData["name"] ?? "",
+            $userData["description"] ?? "",
+            $userData["location"] ?? "",
+            $userData["website"] ?? ""
+        );
+        if (!empty($userData["id"])) {
+            $company->setId((string)$userData["id"]);
+        }
+        $this->companyRepository->update($company);
     }
 }

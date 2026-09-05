@@ -23,7 +23,7 @@ class DeveloperRepository implements DeveloperRepositoryInterface
     public function getAll(): array
     {
         $stmt = $this->db->prepare(
-            "SELECT * FROM users WHERE role = developer"
+            "SELECT * FROM users WHERE role = 'developer' OR role = 'student'"
         );
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -43,6 +43,7 @@ class DeveloperRepository implements DeveloperRepositoryInterface
     }
     public function getById(string $id): array
     {
+        return [];
     }
     public function update(Developer $developer): void
     {
