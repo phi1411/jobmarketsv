@@ -75,16 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function getStatusBadge(status) {
-    const map = {
-        "pending":     { label: "⏳ Chờ duyệt", bg: "#fef3c7", color: "#92400e" },
-        "viewed":      { label: "👀 Đã xem", bg: "#dbeafe", color: "#1e40af" },
-        "shortlisted": { label: "🌟 Phù hợp / Đã chọn", bg: "#d1fae5", color: "#065f46" },
-        "accepted":    { label: "🎉 Trúng tuyển", bg: "#bbf7d0", color: "#166534" },
-        "rejected":    { label: "❌ Từ chối", bg: "#fee2e2", color: "#991b1b" },
-        "withdrawn":   { label: "↩️ Đã rút đơn", bg: "#f1f5f9", color: "#475569" }
-    };
-    const s = map[status] || { label: status, bg: "#f1f5f9", color: "#475569" };
-    return `<span class="badge" style="background:${s.bg};color:${s.color};font-size:0.82rem;padding:0.3rem 0.65rem;border-radius:20px;font-weight:700;">${escapeHtml(s.label)}</span>`;
+    return getAppStatusBadge(status);
 }
 
 async function loadApplications(page = 1) {

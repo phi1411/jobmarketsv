@@ -4,30 +4,99 @@
    ========================================================================== */
 
 :root {
+    /* Brand & Primary */
     --primary: #2563eb;
     --primary-hover: #1d4ed8;
     --primary-light: #eff6ff;
+    --primary-border: #bfdbfe;
+    --primary-text: #1d4ed8;
+
+    /* Secondary (Success accent) */
     --secondary: #059669;
     --secondary-hover: #047857;
     --secondary-light: #ecfdf5;
+    --secondary-border: #a7f3d0;
+    --secondary-text: #065f46;
+
+    /* Base Neutrals & Surfaces */
     --dark: #0f172a;
     --text: #1e293b;
     --text-muted: #64748b;
+    --text-subtle: #94a3b8;
     --border: #e2e8f0;
+    --border-light: #f1f5f9;
     --bg: #f8fafc;
     --surface: #ffffff;
-    --danger: #ef4444;
-    --danger-light: #fef2f2;
+    --surface-hover: #f8fafc;
+
+    /* Semantic: Success */
+    --success: #059669;
+    --success-light: #ecfdf5;
+    --success-border: #a7f3d0;
+    --success-text: #065f46;
+
+    /* Semantic: Warning */
     --warning: #f59e0b;
     --warning-light: #fffbeb;
-    --info: #0ea5e9;
+    --warning-border: #fde68a;
+    --warning-text: #92400e;
+
+    /* Semantic: Danger */
+    --danger: #ef4444;
+    --danger-light: #fef2f2;
+    --danger-border: #fecaca;
+    --danger-text: #991b1b;
+
+    /* Semantic: Info */
+    --info: #0284c7;
+    --info-light: #eff6ff;
+    --info-border: #bfdbfe;
+    --info-text: #1e40af;
+
+    /* Semantic: Neutral / Slate */
+    --neutral: #64748b;
+    --neutral-light: #f8fafc;
+    --neutral-border: #e2e8f0;
+    --neutral-text: #475569;
+
+    /* Spacing Scale (4px increments) */
+    --space-1: 0.25rem;  /* 4px */
+    --space-2: 0.5rem;   /* 8px */
+    --space-3: 0.75rem;  /* 12px */
+    --space-4: 1rem;     /* 16px */
+    --space-5: 1.25rem;  /* 20px */
+    --space-6: 1.5rem;   /* 24px */
+    --space-8: 2rem;     /* 32px */
+    --space-10: 2.5rem;  /* 40px */
+    --space-12: 3rem;    /* 48px */
+
+    /* Typography Scale */
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-size-xs: 0.75rem;    /* 12px */
+    --font-size-sm: 0.875rem;   /* 14px */
+    --font-size-base: 1rem;     /* 16px */
+    --font-size-lg: 1.125rem;   /* 18px */
+    --font-size-xl: 1.25rem;    /* 20px */
+    --font-size-2xl: 1.5rem;    /* 24px */
+    --font-size-3xl: 1.75rem;   /* 28px */
+    --font-size-4xl: 2.25rem;   /* 36px */
+
+    /* Radius Scale */
+    --radius-xs: 4px;
+    --radius-sm: 8px;
+    --radius: 10px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+
+    /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --radius: 10px;
-    --radius-sm: 6px;
-    --radius-lg: 16px;
+
+    /* Transitions & Focus Ring */
     --transition: all 0.2s ease-in-out;
+    --focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.25);
 }
 
 /* Reset & Base */
@@ -180,6 +249,25 @@ img {
     color: var(--primary);
     background-color: var(--primary-light);
 }
+.btn-ghost {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--text-muted);
+}
+.btn-ghost:hover {
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+.btn-danger-outline {
+    background-color: transparent;
+    border-color: var(--danger-border);
+    color: var(--danger);
+}
+.btn-danger-outline:hover {
+    background-color: var(--danger-light);
+    border-color: var(--danger);
+    color: var(--danger-text);
+}
 .btn-sm {
     padding: 0.35rem 0.75rem;
     font-size: 0.85rem;
@@ -187,6 +275,17 @@ img {
 .btn-lg {
     padding: 0.85rem 1.75rem;
     font-size: 1.1rem;
+}
+
+/* Accessible Focus States */
+.btn:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
 }
 
 /* Hero Section */
@@ -343,23 +442,102 @@ img {
 .badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.25rem 0.6rem;
-    font-size: 0.78rem;
+    gap: var(--space-1);
+    padding: 0.25rem 0.65rem;
+    font-size: var(--font-size-xs);
     font-weight: 600;
-    border-radius: 9999px;
+    line-height: 1.25;
+    border-radius: var(--radius-full);
+    border: 1px solid transparent;
+    white-space: nowrap;
+    text-decoration: none;
+}
+.badge-primary {
+    background-color: var(--primary-light);
+    color: var(--primary-text);
+    border-color: var(--primary-border);
+}
+.badge-success {
+    background-color: var(--success-light);
+    color: var(--success-text);
+    border-color: var(--success-border);
 }
 .badge-salary {
     background-color: var(--secondary-light);
-    color: var(--secondary);
+    color: var(--secondary-text);
+    border-color: var(--secondary-border);
 }
 .badge-shift {
     background-color: var(--primary-light);
-    color: var(--primary);
+    color: var(--primary-text);
+    border-color: var(--primary-border);
 }
 .badge-location {
-    background-color: #f1f5f9;
-    color: var(--text-muted);
+    background-color: var(--neutral-light);
+    color: var(--neutral-text);
+    border-color: var(--neutral-border);
+}
+
+/* ==========================================================================
+   SEMANTIC STATUS BADGES (UI-P0-03)
+   Standardized badge primitive with semantic status contracts:
+   - success: published, accepted, verified, active
+   - warning: pending, pending_approval
+   - danger: rejected, banned
+   - info: viewed, shortlisted
+   - neutral: draft, hidden, closed, withdrawn, suspended, expired
+   ========================================================================== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.25rem 0.65rem;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    line-height: 1.25;
+    border-radius: var(--radius-full);
+    border: 1px solid transparent;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+    flex-shrink: 0;
+}
+
+.status-badge--success {
+    background-color: var(--success-light);
+    color: var(--success-text);
+    border-color: var(--success-border);
+}
+
+.status-badge--warning {
+    background-color: var(--warning-light);
+    color: var(--warning-text);
+    border-color: var(--warning-border);
+}
+
+.status-badge--danger {
+    background-color: var(--danger-light);
+    color: var(--danger-text);
+    border-color: var(--danger-border);
+}
+
+.status-badge--info {
+    background-color: var(--info-light);
+    color: var(--info-text);
+    border-color: var(--info-border);
+}
+
+.status-badge--neutral {
+    background-color: var(--neutral-light);
+    color: var(--neutral-text);
+    border-color: var(--neutral-border);
 }
 
 .job-card-footer {
@@ -731,27 +909,216 @@ img {
     }
 }
 
-/* Student Portal Tabs */
+/* ==========================================================================
+   PORTAL APP SHELL & NAVIGATION RAIL (UI-P0-02)
+   Unified page header and horizontal navigation rail for Student & Employer
+   ========================================================================== */
+.portal-header,
+.student-header,
+.company-header {
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: var(--space-6) 0 0;
+    margin-bottom: var(--space-8);
+}
+
+.portal-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.portal-header-content {
+    flex: 1;
+    min-width: 260px;
+}
+
+.portal-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--primary);
+    margin-bottom: var(--space-1);
+}
+
+.portal-title-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+}
+
+.portal-title {
+    font-size: var(--font-size-3xl);
+    font-weight: 800;
+    color: var(--dark);
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    line-height: 1.25;
+}
+
+.portal-title-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.portal-desc {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.portal-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-shrink: 0;
+}
+
+.portal-nav-rail,
+.student-nav-tabs {
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 0;
+}
+.portal-nav-rail::-webkit-scrollbar,
+.student-nav-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.portal-tab,
 .student-tab {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.75rem 1.1rem;
-    font-size: 0.92rem;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-sm);
     font-weight: 600;
     color: var(--text-muted);
     border-bottom: 3px solid transparent;
     text-decoration: none;
     transition: var(--transition);
     white-space: nowrap;
+    position: relative;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
+.portal-tab:hover,
 .student-tab:hover {
     color: var(--primary);
+    background-color: rgba(37, 99, 235, 0.04);
 }
+.portal-tab.active,
 .student-tab.active {
     color: var(--primary);
     border-bottom-color: var(--primary);
     background-color: var(--primary-light);
-    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.portal-tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--radius-full);
+    min-width: 18px;
+    height: 18px;
+    line-height: 1;
+}
+
+/* ==========================================================================
+   SURFACE CARD & STAT CARD PRIMITIVES (UI-P0-01)
+   ========================================================================== */
+.surface-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+}
+
+.stat-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5) var(--space-6);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+.stat-card:hover {
+    border-color: var(--primary-border);
+    box-shadow: var(--shadow);
+}
+
+.stat-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+
+.stat-card-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.stat-card-label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-1);
+}
+
+.stat-card-value {
+    font-size: var(--font-size-3xl);
+    font-weight: 800;
+    color: var(--dark);
+    line-height: 1.15;
+}
+
+.stat-card-subtext {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    margin-top: var(--space-1);
 }
 

@@ -24,7 +24,7 @@
     <!-- Main Content -->
     <div id="comp-dash-content" style="display:none;">
         <!-- Welcome banner -->
-        <div style="background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%);color:#fff;border-radius:var(--radius);padding:1.5rem 2rem;margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <div style="background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%);color:#fff;border-radius:var(--radius-md);padding:1.5rem 2rem;margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
             <div>
                 <h2 style="font-size:1.35rem;font-weight:800;color:#fff;margin-bottom:0.25rem;">
                     Xin chào, <span id="dash-company-name">Nhà tuyển dụng</span>!
@@ -34,64 +34,66 @@
                 </p>
             </div>
             <div style="display:flex;gap:0.75rem;">
-                <a href="/company/jobs/create" class="btn btn-primary btn-sm" style="background:var(--primary);border:none;">
-                    ➕ Đăng Tin Mới
+                <a href="/company/jobs/create" class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.35);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span>Đăng Tin Mới</span>
                 </a>
-                <a href="/company/applications" class="btn btn-outline btn-sm" style="color:#fff;border-color:#475569;">
-                    👥 Xem Ứng Viên
+                <a href="/company/applications" class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.35);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                    <span>Xem Ứng Viên</span>
                 </a>
             </div>
         </div>
 
         <!-- 4 Key Stat Cards -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:1.25rem;margin-bottom:2rem;">
+        <div class="stat-grid">
             <!-- Card 1: Active Jobs -->
-            <div class="job-card" style="padding:1.25rem 1.5rem;margin:0;display:flex;align-items:center;gap:1.25rem;">
-                <div style="width:48px;height:48px;border-radius:12px;background:#e0e7ff;color:#4338ca;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">
-                    📋
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background:#e0e7ff;color:#4338ca;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
                 </div>
-                <div>
-                    <div style="font-size:0.85rem;color:var(--text-muted);font-weight:600;">Tin Đang Tuyển</div>
-                    <div id="stat-active-jobs" style="font-size:1.6rem;font-weight:800;color:var(--dark);">0</div>
+                <div class="stat-card-body">
+                    <div class="stat-card-label">Tin Đang Tuyển</div>
+                    <div id="stat-active-jobs" class="stat-card-value">0</div>
                 </div>
             </div>
 
             <!-- Card 2: Total Applications -->
-            <div class="job-card" style="padding:1.25rem 1.5rem;margin:0;display:flex;align-items:center;gap:1.25rem;">
-                <div style="width:48px;height:48px;border-radius:12px;background:#dbeafe;color:#1d4ed8;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">
-                    📥
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background:#dbeafe;color:#1d4ed8;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                 </div>
-                <div>
-                    <div style="font-size:0.85rem;color:var(--text-muted);font-weight:600;">Tổng Hồ Sơ Nhận</div>
-                    <div id="stat-total-apps" style="font-size:1.6rem;font-weight:800;color:var(--dark);">0</div>
+                <div class="stat-card-body">
+                    <div class="stat-card-label">Tổng Hồ Sơ Nhận</div>
+                    <div id="stat-total-apps" class="stat-card-value">0</div>
                 </div>
             </div>
 
             <!-- Card 3: Pending Review -->
-            <div class="job-card" style="padding:1.25rem 1.5rem;margin:0;display:flex;align-items:center;gap:1.25rem;">
-                <div style="width:48px;height:48px;border-radius:12px;background:#fef3c7;color:#b45309;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">
-                    ⏳
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background:var(--warning-light);color:var(--warning-text);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 </div>
-                <div>
-                    <div style="font-size:0.85rem;color:var(--text-muted);font-weight:600;">Hồ Sơ Chờ Duyệt</div>
-                    <div id="stat-pending-apps" style="font-size:1.6rem;font-weight:800;color:#d97706;">0</div>
+                <div class="stat-card-body">
+                    <div class="stat-card-label">Hồ Sơ Chờ Duyệt</div>
+                    <div id="stat-pending-apps" class="stat-card-value" style="color:var(--warning-text);">0</div>
                 </div>
             </div>
 
             <!-- Card 4: Shortlisted / Accepted -->
-            <div class="job-card" style="padding:1.25rem 1.5rem;margin:0;display:flex;align-items:center;gap:1.25rem;">
-                <div style="width:48px;height:48px;border-radius:12px;background:#dcfce7;color:#15803d;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">
-                    🌟
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background:var(--success-light);color:var(--success-text);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                 </div>
-                <div>
-                    <div style="font-size:0.85rem;color:var(--text-muted);font-weight:600;">Đã Chọn / Mời Phỏng Vấn</div>
-                    <div id="stat-shortlisted-apps" style="font-size:1.6rem;font-weight:800;color:#16a34a;">0</div>
+                <div class="stat-card-body">
+                    <div class="stat-card-label">Đã Chọn / Mời Phỏng Vấn</div>
+                    <div id="stat-shortlisted-apps" class="stat-card-value" style="color:var(--success-text);">0</div>
                 </div>
             </div>
         </div>
 
         <!-- Section 2: Recent Applications Table -->
-        <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem;margin-bottom:2rem;">
+        <div class="surface-card" style="margin-bottom:2rem;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.5rem;">
                 <h3 style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:0;">
                     📥 Đơn Ứng Tuyển Mới Nhất
@@ -112,9 +114,9 @@
         </div>
 
         <!-- Section 3: Top Jobs & Job Status Breakdown -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1.5rem;align-items:start;">
             <!-- Top Jobs -->
-            <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem;">
+            <div class="surface-card">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
                     <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:0;">
                         🔥 Top Việc Làm Nhiều Ứng Viên
@@ -132,25 +134,25 @@
             </div>
 
             <!-- Job Status Distribution -->
-            <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.5rem;">
+            <div class="surface-card">
                 <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:1.25rem;">
                     📊 Tình Trạng Tin Tuyển Dụng
                 </h3>
 
                 <div style="display:flex;flex-direction:column;gap:0.85rem;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:#f8fafc;border-radius:var(--radius);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:var(--bg);border-radius:var(--radius-sm);">
                         <span style="font-size:0.9rem;font-weight:600;color:var(--dark);">🟢 Đang hiển thị (Published)</span>
                         <span id="dist-published" class="badge badge-success" style="font-size:0.85rem;">0</span>
                     </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:#f8fafc;border-radius:var(--radius);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:var(--bg);border-radius:var(--radius-sm);">
                         <span style="font-size:0.9rem;font-weight:600;color:var(--dark);">📝 Bản nháp (Draft)</span>
                         <span id="dist-draft" class="badge" style="background:#f1f5f9;color:#475569;font-size:0.85rem;">0</span>
                     </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:#f8fafc;border-radius:var(--radius);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:var(--bg);border-radius:var(--radius-sm);">
                         <span style="font-size:0.9rem;font-weight:600;color:var(--dark);">⏳ Chờ duyệt (Pending Approval)</span>
                         <span id="dist-pending" class="badge" style="background:#fef3c7;color:#92400e;font-size:0.85rem;">0</span>
                     </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:#f8fafc;border-radius:var(--radius);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:var(--bg);border-radius:var(--radius-sm);">
                         <span style="font-size:0.9rem;font-weight:600;color:var(--dark);">🔒 Đã đóng tuyển (Closed)</span>
                         <span id="dist-closed" class="badge" style="background:#fee2e2;color:#991b1b;font-size:0.85rem;">0</span>
                     </div>
@@ -293,14 +295,14 @@ async function loadCompanyDashboard() {
             topEmpty.style.display = "none";
 
             topContainer.innerHTML = topJobs.map(job => `
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem;border:1px solid var(--border);border-radius:var(--radius);background:#f8fafc;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);">
                     <div style="flex:1;min-width:0;margin-right:0.75rem;">
                         <a href="/viec-lam/${encodeURIComponent(job.id)}" target="_blank" style="font-weight:700;font-size:0.92rem;color:var(--dark);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                             ${escapeHtml(job.title)}
                         </a>
-                        <span class="badge" style="background:#e2e8f0;color:#475569;font-size:0.72rem;margin-top:0.25rem;">
-                            Trạng thái: ${escapeHtml(job.status)}
-                        </span>
+                        <div style="margin-top:0.25rem;">
+                            ${getJobStatusBadge(job.status)}
+                        </div>
                     </div>
                     <div style="text-align:right;white-space:nowrap;">
                         <span class="badge badge-primary" style="font-size:0.82rem;font-weight:700;">
@@ -317,16 +319,5 @@ async function loadCompanyDashboard() {
     }
 }
 
-function getAppStatusBadge(status) {
-    const map = {
-        "pending":     { label: "Chờ duyệt", bg: "#fef3c7", color: "#92400e" },
-        "viewed":      { label: "Đã xem", bg: "#dbeafe", color: "#1e40af" },
-        "shortlisted": { label: "Phù hợp", bg: "#d1fae5", color: "#065f46" },
-        "accepted":    { label: "Trúng tuyển", bg: "#bbf7d0", color: "#166534" },
-        "rejected":    { label: "Từ chối", bg: "#fee2e2", color: "#991b1b" },
-        "withdrawn":   { label: "Đã rút", bg: "#f1f5f9", color: "#475569" }
-    };
-    const s = map[status] || { label: status, bg: "#f1f5f9", color: "#475569" };
-    return `<span class="badge" style="background:${s.bg};color:${s.color};font-size:0.78rem;padding:0.25rem 0.55rem;border-radius:20px;font-weight:700;">${escapeHtml(s.label)}</span>`;
-}
+// Inherit getAppStatusBadge(status) from api.js
 </script>
