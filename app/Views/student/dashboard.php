@@ -94,39 +94,68 @@
 
         <!-- Application Status Pipeline -->
         <div class="surface-card" style="margin-bottom:2rem;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
-                <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:0;">
-                    📊 Tiến Trình Đơn Ứng Tuyển
-                </h3>
-                <a href="/student/applications" style="font-size:0.85rem;font-weight:600;color:var(--primary);">
-                    Chi tiết &rarr;
+            <div class="section-header">
+                <div class="section-header-main">
+                    <h3 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        <span>Tiến Trình Đơn Ứng Tuyển</span>
+                    </h3>
+                    <p class="section-desc">Theo dõi các giai đoạn xét duyệt hồ sơ từ nhà tuyển dụng</p>
+                </div>
+                <a href="/student/applications" class="section-action-link">
+                    <span>Chi tiết</span>
+                    <span>&rarr;</span>
                 </a>
             </div>
 
-            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:0.75rem;text-align:center;">
-                <div style="padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg);">
-                    <div style="font-size:0.8rem;color:var(--text-muted);">Chờ duyệt</div>
-                    <div id="pipe-pending" style="font-size:1.3rem;font-weight:700;color:var(--warning-text);">0</div>
+            <div class="pipeline-flow">
+                <!-- Group 1: Đang xét duyệt (In-progress) -->
+                <div class="pipeline-group">
+                    <div class="pipeline-group-label">
+                        <span class="status-dot" style="background:var(--primary);"></span>
+                        <span>Đang xử lý (Active Steps)</span>
+                    </div>
+                    <div class="pipeline-steps">
+                        <div class="pipeline-step">
+                            <span class="pipeline-step-badge">1</span>
+                            <span class="pipeline-step-name">Chờ duyệt</span>
+                            <span id="pipe-pending" class="pipeline-step-count pipeline-step-count--warning">0</span>
+                        </div>
+                        <span class="pipeline-step-arrow">&rarr;</span>
+                        <div class="pipeline-step">
+                            <span class="pipeline-step-badge">2</span>
+                            <span class="pipeline-step-name">Đã xem</span>
+                            <span id="pipe-viewed" class="pipeline-step-count pipeline-step-count--info">0</span>
+                        </div>
+                        <span class="pipeline-step-arrow">&rarr;</span>
+                        <div class="pipeline-step">
+                            <span class="pipeline-step-badge">3</span>
+                            <span class="pipeline-step-name">Phù hợp</span>
+                            <span id="pipe-shortlisted" class="pipeline-step-count pipeline-step-count--secondary">0</span>
+                        </div>
+                    </div>
                 </div>
-                <div style="padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg);">
-                    <div style="font-size:0.8rem;color:var(--text-muted);">Đã xem</div>
-                    <div id="pipe-viewed" style="font-size:1.3rem;font-weight:700;color:var(--primary);">0</div>
-                </div>
-                <div style="padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg);">
-                    <div style="font-size:0.8rem;color:var(--text-muted);">Phù hợp</div>
-                    <div id="pipe-shortlisted" style="font-size:1.3rem;font-weight:700;color:var(--secondary);">0</div>
-                </div>
-                <div style="padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg);">
-                    <div style="font-size:0.8rem;color:var(--text-muted);">Trúng tuyển</div>
-                    <div id="pipe-accepted" style="font-size:1.3rem;font-weight:700;color:var(--success);">0</div>
-                </div>
-                <div style="padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg);">
-                    <div style="font-size:0.8rem;color:var(--text-muted);">Từ chối</div>
-                    <div id="pipe-rejected" style="font-size:1.3rem;font-weight:700;color:var(--danger);">0</div>
-                </div>
-                <div style="padding:0.75rem;border-radius:var(--radius-sm);background:var(--bg);">
-                    <div style="font-size:0.8rem;color:var(--text-muted);">Đã rút</div>
-                    <div id="pipe-withdrawn" style="font-size:1.3rem;font-weight:700;color:var(--neutral-text);">0</div>
+
+                <!-- Group 2: Kết quả cuối cùng (Outcomes / Terminal) -->
+                <div class="pipeline-group">
+                    <div class="pipeline-group-label">
+                        <span class="status-dot" style="background:var(--neutral);"></span>
+                        <span>Đã kết thúc (Final Outcomes)</span>
+                    </div>
+                    <div class="pipeline-outcomes">
+                        <div class="pipeline-outcome pipeline-outcome--success">
+                            <span class="pipeline-step-name">Trúng tuyển</span>
+                            <span id="pipe-accepted" class="pipeline-step-count">0</span>
+                        </div>
+                        <div class="pipeline-outcome pipeline-outcome--danger">
+                            <span class="pipeline-step-name">Từ chối</span>
+                            <span id="pipe-rejected" class="pipeline-step-count">0</span>
+                        </div>
+                        <div class="pipeline-outcome pipeline-outcome--neutral">
+                            <span class="pipeline-step-name">Đã rút</span>
+                            <span id="pipe-withdrawn" class="pipeline-step-count">0</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -135,12 +164,17 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1.5rem;">
             <!-- Expiring Favorites -->
             <div class="surface-card">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
-                    <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:0;">
-                        ⭐ Việc Đã Lưu Sắp Hết Hạn
-                    </h3>
-                    <a href="/student/favorites" style="font-size:0.85rem;font-weight:600;color:var(--primary);">
-                        Tất cả &rarr;
+                <div class="section-header">
+                    <div class="section-header-main">
+                        <h3 class="section-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <span>Việc Đã Lưu Sắp Hết Hạn</span>
+                        </h3>
+                        <p class="section-desc">Tin đã lưu cần nộp đơn sớm trước khi hết hạn</p>
+                    </div>
+                    <a href="/student/favorites" class="section-action-link">
+                        <span>Tất cả</span>
+                        <span>&rarr;</span>
                     </a>
                 </div>
                 <div id="expiring-favs-container">
@@ -150,12 +184,17 @@
 
             <!-- Recent Notifications -->
             <div class="surface-card">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
-                    <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:0;">
-                        🔔 Thông Báo Gần Đây
-                    </h3>
-                    <a href="/student/notifications" style="font-size:0.85rem;font-weight:600;color:var(--primary);">
-                        Tất cả &rarr;
+                <div class="section-header">
+                    <div class="section-header-main">
+                        <h3 class="section-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                            <span>Thông Báo Gần Đây</span>
+                        </h3>
+                        <p class="section-desc">Cập nhật mới từ nhà tuyển dụng & hệ thống</p>
+                    </div>
+                    <a href="/student/notifications" class="section-action-link">
+                        <span>Tất cả</span>
+                        <span>&rarr;</span>
                     </a>
                 </div>
                 <div id="recent-notifs-container">
@@ -232,9 +271,14 @@ async function loadDashboard() {
         const favs = data.expiring_favorites || [];
         if (favs.length === 0) {
             favContainer.innerHTML = `
-                <div style="text-align:center;padding:2rem 1rem;color:var(--text-muted);font-size:0.9rem;">
-                    <div>📂 Không có việc yêu thích nào sắp hết hạn.</div>
-                    <a href="/viec-lam" class="btn btn-outline btn-sm" style="margin-top:0.75rem;">Tìm việc ngay</a>
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <p class="empty-state-text">Không có việc yêu thích nào sắp hết hạn.</p>
+                    <div class="empty-state-action">
+                        <a href="/viec-lam" class="btn btn-outline btn-sm">Tìm việc ngay</a>
+                    </div>
                 </div>
             `;
         } else {
@@ -245,7 +289,7 @@ async function loadDashboard() {
                             <a href="/viec-lam/${encodeURIComponent(job.id)}">${escapeHtml(job.title)}</a>
                         </h4>
                         <div style="font-size:0.8rem;color:var(--text-muted);">
-                            ${escapeHtml(job.company_name || "Doanh nghiệp")} &bull; ⏰ ${getShiftLabel(job.shift_type)}
+                            ${escapeHtml(job.company_name || "Doanh nghiệp")} &bull; ${getShiftLabel(job.shift_type)}
                         </div>
                     </div>
                     <div style="text-align:right;">
@@ -262,14 +306,19 @@ async function loadDashboard() {
         const notifs = data.recent_notifications || [];
         if (notifs.length === 0) {
             notifContainer.innerHTML = `
-                <div style="text-align:center;padding:2rem 1rem;color:var(--text-muted);font-size:0.9rem;">
-                    <div>🎉 Không có thông báo mới nào.</div>
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    </div>
+                    <p class="empty-state-text">Chưa có thông báo mới nào.</p>
                 </div>
             `;
         } else {
             notifContainer.innerHTML = notifs.map(n => `
                 <div style="border-bottom:1px solid var(--border);padding:0.75rem 0;display:flex;gap:0.75rem;align-items:flex-start;">
-                    <span style="font-size:1.1rem;">${n.read_at ? "✉️" : "📩"}</span>
+                    <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--radius-sm);background:${n.read_at ? 'var(--bg)' : 'var(--primary-light)'};color:${n.read_at ? 'var(--neutral)' : 'var(--primary)'};flex-shrink:0;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </span>
                     <div style="flex:1;">
                         <div style="font-size:0.9rem;font-weight:${n.read_at ? '600' : '700'};color:var(--dark);">
                             ${escapeHtml(n.title)}

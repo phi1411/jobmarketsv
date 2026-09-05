@@ -94,22 +94,32 @@
 
         <!-- Section 2: Recent Applications Table -->
         <div class="surface-card" style="margin-bottom:2rem;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.5rem;">
-                <h3 style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:0;">
-                    📥 Đơn Ứng Tuyển Mới Nhất
-                </h3>
-                <a href="/company/applications" class="btn btn-outline btn-sm" style="font-size:0.82rem;">
-                    Xem Tất Cả &rarr;
+            <div class="section-header">
+                <div class="section-header-main">
+                    <h3 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        <span>Đơn Ứng Tuyển Mới Nhất</span>
+                    </h3>
+                    <p class="section-desc">Danh sách ứng viên nộp đơn vào các vị trí tuyển dụng gần đây</p>
+                </div>
+                <a href="/company/applications" class="section-action-link">
+                    <span>Xem tất cả</span>
+                    <span>&rarr;</span>
                 </a>
             </div>
 
-            <div id="recent-apps-container" style="overflow-x:auto;">
+            <div id="recent-apps-container" class="table-responsive">
                 <!-- Rendered dynamically -->
             </div>
 
-            <div id="recent-apps-empty" style="display:none;padding:2.5rem 1rem;text-align:center;color:var(--text-muted);">
-                <div style="font-size:2rem;margin-bottom:0.5rem;">📭</div>
-                <p style="margin:0;font-size:0.9rem;">Chưa có đơn ứng tuyển nào được nộp vào các tin việc làm của bạn.</p>
+            <div id="recent-apps-empty" class="empty-state" style="display:none;">
+                <div class="empty-state-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <p class="empty-state-text">Chưa có đơn ứng tuyển nào được nộp vào các tin việc làm của bạn.</p>
+                <div class="empty-state-action">
+                    <a href="/company/jobs" class="btn btn-outline btn-sm">Quản lý tin tuyển dụng</a>
+                </div>
             </div>
         </div>
 
@@ -117,44 +127,75 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1.5rem;align-items:start;">
             <!-- Top Jobs -->
             <div class="surface-card">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
-                    <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin:0;">
-                        🔥 Top Việc Làm Nhiều Ứng Viên
-                    </h3>
-                    <a href="/company/jobs" class="btn btn-outline btn-sm" style="font-size:0.8rem;">Quản lý tin</a>
+                <div class="section-header">
+                    <div class="section-header-main">
+                        <h3 class="section-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6M6 20V10M18 20V4"/></svg>
+                            <span>Top Việc Làm Nhiều Ứng Viên</span>
+                        </h3>
+                        <p class="section-desc">Tin tuyển dụng thu hút nhiều hồ sơ nhất</p>
+                    </div>
+                    <a href="/company/jobs" class="section-action-link">
+                        <span>Quản lý tin</span>
+                        <span>&rarr;</span>
+                    </a>
                 </div>
 
                 <div id="top-jobs-container" style="display:flex;flex-direction:column;gap:0.75rem;">
                     <!-- Rendered dynamically -->
                 </div>
 
-                <div id="top-jobs-empty" style="display:none;padding:2rem 1rem;text-align:center;color:var(--text-muted);">
-                    <p style="margin:0;font-size:0.88rem;">Chưa có việc làm nào có ứng viên nộp đơn.</p>
+                <div id="top-jobs-empty" class="empty-state" style="display:none;">
+                    <div class="empty-state-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    </div>
+                    <p class="empty-state-text">Chưa có việc làm nào có ứng viên nộp đơn.</p>
+                    <div class="empty-state-action">
+                        <a href="/company/jobs" class="btn btn-outline btn-sm">Xem danh sách tin</a>
+                    </div>
                 </div>
             </div>
 
             <!-- Job Status Distribution -->
             <div class="surface-card">
-                <h3 style="font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:1.25rem;">
-                    📊 Tình Trạng Tin Tuyển Dụng
-                </h3>
+                <div class="section-header">
+                    <div class="section-header-main">
+                        <h3 class="section-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                            <span>Tình Trạng Tin Tuyển Dụng</span>
+                        </h3>
+                        <p class="section-desc">Phân bố tin theo trạng thái kiểm duyệt và hiển thị</p>
+                    </div>
+                </div>
 
-                <div style="display:flex;flex-direction:column;gap:0.85rem;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:var(--bg);border-radius:var(--radius-sm);">
-                        <span style="font-size:0.9rem;font-weight:600;color:var(--dark);">🟢 Đang hiển thị (Published)</span>
-                        <span id="dist-published" class="badge badge-success" style="font-size:0.85rem;">0</span>
+                <div class="status-dist-list">
+                    <div class="status-dist-item">
+                        <span class="status-dist-label">
+                            <span class="status-dot" style="background:var(--success);"></span>
+                            <span>Đang hiển thị (Published)</span>
+                        </span>
+                        <span id="dist-published" class="status-badge status-badge--success">0</span>
                     </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:var(--bg);border-radius:var(--radius-sm);">
-                        <span style="font-size:0.9rem;font-weight:600;color:var(--dark);">📝 Bản nháp (Draft)</span>
-                        <span id="dist-draft" class="badge" style="background:#f1f5f9;color:#475569;font-size:0.85rem;">0</span>
+                    <div class="status-dist-item">
+                        <span class="status-dist-label">
+                            <span class="status-dot" style="background:var(--neutral);"></span>
+                            <span>Bản nháp (Draft)</span>
+                        </span>
+                        <span id="dist-draft" class="status-badge status-badge--neutral">0</span>
                     </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:var(--bg);border-radius:var(--radius-sm);">
-                        <span style="font-size:0.9rem;font-weight:600;color:var(--dark);">⏳ Chờ duyệt (Pending Approval)</span>
-                        <span id="dist-pending" class="badge" style="background:#fef3c7;color:#92400e;font-size:0.85rem;">0</span>
+                    <div class="status-dist-item">
+                        <span class="status-dist-label">
+                            <span class="status-dot" style="background:var(--warning);"></span>
+                            <span>Chờ duyệt (Pending Approval)</span>
+                        </span>
+                        <span id="dist-pending" class="status-badge status-badge--warning">0</span>
                     </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:var(--bg);border-radius:var(--radius-sm);">
-                        <span style="font-size:0.9rem;font-weight:600;color:var(--dark);">🔒 Đã đóng tuyển (Closed)</span>
-                        <span id="dist-closed" class="badge" style="background:#fee2e2;color:#991b1b;font-size:0.85rem;">0</span>
+                    <div class="status-dist-item">
+                        <span class="status-dist-label">
+                            <span class="status-dot" style="background:var(--neutral);"></span>
+                            <span>Đã đóng tuyển (Closed)</span>
+                        </span>
+                        <span id="dist-closed" class="status-badge status-badge--neutral">0</span>
                     </div>
                 </div>
             </div>
@@ -305,8 +346,9 @@ async function loadCompanyDashboard() {
                         </div>
                     </div>
                     <div style="text-align:right;white-space:nowrap;">
-                        <span class="badge badge-primary" style="font-size:0.82rem;font-weight:700;">
-                            👥 ${job.application_count || 0} hồ sơ
+                        <span class="status-badge status-badge--info" style="font-size:0.8rem;font-weight:700;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                            <span>${job.application_count || 0} hồ sơ</span>
                         </span>
                     </div>
                 </div>
