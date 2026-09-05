@@ -275,6 +275,37 @@ class JobService
             }
         }
 
+        // Required Skills Validation
+        if (array_key_exists("required_skills", $data) && $data["required_skills"] !== null) {
+            $skills = $data["required_skills"];
+            if (is_array($skills)) {
+                if (count($skills) > 30) {
+                    $errors["required_skills"][] = "Số lượng kỹ năng yêu cầu không được vượt quá 30.";
+                }
+                foreach ($skills as $s) {
+                    if (!is_string($s) && !is_numeric($s)) {
+                        $errors["required_skills"][] = "Kỹ năng yêu cầu phải là chuỗi ký tự.";
+                        break;
+                    }
+                    $trimS = trim((string)$s);
+                    if ($trimS === "") {
+                        $errors["required_skills"][] = "Kỹ năng yêu cầu không được chứa phần tử rỗng.";
+                        break;
+                    }
+                    if (strlen($trimS) > 100) {
+                        $errors["required_skills"][] = "Mỗi kỹ năng yêu cầu không được vượt quá 100 ký tự.";
+                        break;
+                    }
+                }
+            } elseif (is_string($skills)) {
+                if (strlen($skills) > 2000) {
+                    $errors["required_skills"][] = "Chuỗi kỹ năng yêu cầu không được vượt quá 2000 ký tự.";
+                }
+            } else {
+                $errors["required_skills"][] = "Kỹ năng yêu cầu (required_skills) phải là mảng hoặc chuỗi ký tự hợp lệ.";
+            }
+        }
+
         // If status is published, require essential fields
         $status = $data["status"] ?? "published";
         if ($status === "published") {

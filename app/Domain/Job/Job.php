@@ -96,7 +96,19 @@ class Job
         $job->shift_type = $data["shift_type"] ?? "morning";
         $job->shift_information = $data["shift_information"] ?? null;
         $job->working_schedule = $data["working_schedule"] ?? null;
-        $job->required_skills = $data["required_skills"] ?? null;
+        if (isset($data["required_skills"])) {
+            if (is_array($data["required_skills"])) {
+                $filtered = array_values(array_filter(array_map(fn($item) => is_string($item) || is_numeric($item) ? trim((string)$item) : "", $data["required_skills"]), fn($s) => $s !== ""));
+                $job->required_skills = empty($filtered) ? null : json_encode($filtered, JSON_UNESCAPED_UNICODE);
+            } elseif (is_string($data["required_skills"])) {
+                $trimmed = trim($data["required_skills"]);
+                $job->required_skills = $trimmed === "" ? null : $trimmed;
+            } else {
+                $job->required_skills = null;
+            }
+        } else {
+            $job->required_skills = null;
+        }
         $job->quantity = isset($data["quantity"]) ? (int)$data["quantity"] : 1;
         $job->application_deadline = $data["application_deadline"] ?? ($data["deadline"] ?? null);
         $job->rejection_reason = $data["rejection_reason"] ?? null;
@@ -134,6 +146,7 @@ class Job
             "shift_information"    => $this->shift_information,
             "working_schedule"     => $this->working_schedule,
             "required_skills"      => $this->required_skills,
+            "skills"               => $this->getRequiredSkillsArray(),
             "quantity"             => $this->quantity,
             "application_deadline" => $this->application_deadline,
             "deadline"             => $this->application_deadline,
@@ -203,6 +216,17 @@ class Job
     public function getShiftInformation(): ?string { return $this->shift_information; }
     public function getWorkingSchedule(): ?string { return $this->working_schedule; }
     public function getRequiredSkills(): ?string { return $this->required_skills; }
+    public function getRequiredSkillsArray(): array
+    {
+        if (empty($this->required_skills)) {
+            return [];
+        }
+        $decoded = json_decode($this->required_skills, true);
+        if (is_array($decoded)) {
+            return $decoded;
+        }
+        return array_values(array_filter(array_map('trim', explode(',', $this->required_skills)), fn($s) => $s !== ''));
+    }
     public function getQuantity(): int { return $this->quantity; }
     public function getApplicationDeadline(): ?string { return $this->application_deadline; }
     public function getRejectionReason(): ?string { return $this->rejection_reason; }
@@ -238,7 +262,19 @@ class Job
     public function setShiftType(string $shift_type): self { $this->shift_type = $shift_type; return $this; }
     public function setShiftInformation(?string $info): self { $this->shift_information = $info; return $this; }
     public function setWorkingSchedule(?string $schedule): self { $this->working_schedule = $schedule; return $this; }
-    public function setRequiredSkills(?string $skills): self { $this->required_skills = $skills; return $this; }
+    public function setRequiredSkills(string|array|null $skills): self
+    {
+        if (is_array($skills)) {
+            $filtered = array_values(array_filter(array_map(fn($item) => is_string($item) || is_numeric($item) ? trim((string)$item) : "", $skills), fn($s) => $s !== ""));
+            $this->required_skills = empty($filtered) ? null : json_encode($filtered, JSON_UNESCAPED_UNICODE);
+        } elseif (is_string($skills)) {
+            $trimmed = trim($skills);
+            $this->required_skills = $trimmed === "" ? null : $trimmed;
+        } else {
+            $this->required_skills = null;
+        }
+        return $this;
+    }
     public function setQuantity(int $quantity): self { $this->quantity = $quantity; return $this; }
     public function setApplicationDeadline(?string $deadline): self { $this->application_deadline = $deadline; return $this; }
     public function setRejectionReason(?string $reason): self { $this->rejection_reason = $reason; return $this; }
