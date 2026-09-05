@@ -4,7 +4,7 @@
     <!-- Loading State -->
     <div id="student-dash-loading" style="text-align:center;padding:3rem 0;">
         <div class="job-card skeleton" style="height:120px;margin-bottom:1rem;"></div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:1rem;margin-bottom:1.5rem;">
+        <div class="stat-grid" style="margin-bottom:1.5rem;">
             <div class="job-card skeleton" style="height:100px;"></div>
             <div class="job-card skeleton" style="height:100px;"></div>
             <div class="job-card skeleton" style="height:100px;"></div>
@@ -24,25 +24,31 @@
     <!-- Main Content -->
     <div id="student-dash-content" style="display:none;">
         <!-- Welcome Banner -->
-        <div style="background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);border:1px solid #bfdbfe;border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
-            <div>
-                <h2 style="font-size:1.3rem;font-weight:800;color:#1e3a8a;margin-bottom:0.25rem;">
-                    Xin chào, <span id="dash-user-name">Sinh viên</span>! 👋
+        <div class="dashboard-hero dashboard-hero--student">
+            <div class="dashboard-hero-content">
+                <h2 class="dashboard-hero-title">
+                    Xin chào, <span id="dash-user-name">Sinh viên</span>!
                 </h2>
-                <p style="color:#3b82f6;font-size:0.9rem;margin:0;">
+                <p class="dashboard-hero-desc">
                     Theo dõi tiến độ đơn ứng tuyển và các cơ hội việc làm part-time phù hợp nhất hôm nay.
                 </p>
             </div>
-            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-                <a href="/student/profile" class="btn btn-outline btn-sm" style="background:#fff;">Cập Nhật Hồ Sơ</a>
-                <a href="/student/applications" class="btn btn-primary btn-sm">Xem Đơn Ứng Tuyển</a>
+            <div class="dashboard-hero-actions">
+                <a href="/student/profile" class="btn btn-outline btn-sm">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span>Cập Nhật Hồ Sơ</span>
+                </a>
+                <a href="/student/applications" class="btn btn-primary btn-sm">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <span>Xem Đơn Ứng Tuyển</span>
+                </a>
             </div>
         </div>
 
         <!-- 4 Metric Cards -->
         <div class="stat-grid">
             <div class="stat-card">
-                <div class="stat-card-icon" style="background:var(--primary-light);color:var(--primary);">
+                <div class="stat-card-icon stat-card-icon--primary">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                 </div>
                 <div class="stat-card-body">
@@ -53,34 +59,34 @@
             </div>
 
             <div class="stat-card">
-                <div class="stat-card-icon" style="background:var(--warning-light);color:var(--warning-text);">
+                <div class="stat-card-icon stat-card-icon--warning">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 </div>
                 <div class="stat-card-body">
                     <div class="stat-card-label">Đang Chờ Duyệt</div>
-                    <div id="stat-pending-apps" class="stat-card-value" style="color:var(--warning-text);">0</div>
+                    <div id="stat-pending-apps" class="stat-card-value stat-card-value--warning">0</div>
                     <div class="stat-card-subtext">Nhà tuyển dụng chưa xem</div>
                 </div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-card-icon" style="background:var(--success-light);color:var(--success-text);">
+                <div class="stat-card-icon stat-card-icon--success">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                 </div>
                 <div class="stat-card-body">
                     <div class="stat-card-label">Được Chọn / Phù Hợp</div>
-                    <div id="stat-shortlisted-apps" class="stat-card-value" style="color:var(--success-text);">0</div>
+                    <div id="stat-shortlisted-apps" class="stat-card-value stat-card-value--success">0</div>
                     <div class="stat-card-subtext">Đã vào vòng phỏng vấn / nhận việc</div>
                 </div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-card-icon" style="background:#f3e8ff;color:#7c3aed;">
+                <div class="stat-card-icon stat-card-icon--purple">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                 </div>
                 <div class="stat-card-body">
                     <div class="stat-card-label">Thông Báo Mới</div>
-                    <div id="stat-unread-notifs" class="stat-card-value" style="color:#7c3aed;">0</div>
+                    <div id="stat-unread-notifs" class="stat-card-value stat-card-value--purple">0</div>
                     <div class="stat-card-subtext"><a href="/student/notifications" style="color:#7c3aed;text-decoration:underline;">Xem thông báo</a></div>
                 </div>
             </div>
