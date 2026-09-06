@@ -48,6 +48,15 @@ class Config extends Facade
         return filter_var($enabled, FILTER_VALIDATE_BOOLEAN);
     }
 
+    public static function isGeminiCompanyEnabled(): bool
+    {
+        if (!self::isGeminiEnabled()) {
+            return false;
+        }
+        $enabled = $_ENV["GEMINI_COMPANY_ENABLED"] ?? getenv("GEMINI_COMPANY_ENABLED");
+        return filter_var($enabled, FILTER_VALIDATE_BOOLEAN);
+    }
+
     public static function geminiTimeout(): int
     {
         $timeout = $_ENV["GEMINI_TIMEOUT_SECONDS"] ?? getenv("GEMINI_TIMEOUT_SECONDS");

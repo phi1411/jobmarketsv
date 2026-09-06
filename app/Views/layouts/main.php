@@ -9,6 +9,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/style.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/style.css') ? filemtime(BASE_PATH . '/public/assets/css/style.css') : time() ?>">
+    <?php
+    $isGlobalChatEnabled = class_exists(\JobMarket\Facades\Config::class) && \JobMarket\Facades\Config::isGeminiEnabled();
+    $isCompanyChatEnabled = class_exists(\JobMarket\Facades\Config::class) && \JobMarket\Facades\Config::isGeminiCompanyEnabled();
+    $isChatbotPage = $isGlobalChatEnabled && (
+        in_array($currentPage ?? '', ['home', 'jobs', 'job_detail'], true)
+        || str_starts_with($currentPage ?? '', 'student_')
+        || (str_starts_with($currentPage ?? '', 'company_') && $isCompanyChatEnabled)
+    );
+    ?>
+    <?php if ($isChatbotPage): ?>
+    <link rel="stylesheet" href="/assets/css/chatbot.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/chatbot.css') ? filemtime(BASE_PATH . '/public/assets/css/chatbot.css') : time() ?>">
+    <?php endif; ?>
     <script src="/assets/js/api.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/api.js') ? filemtime(BASE_PATH . '/public/assets/js/api.js') : time() ?>"></script>
 </head>
 <body>
@@ -93,5 +105,9 @@
 
     <!-- Scripts -->
     <script src="/assets/js/main.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/main.js') ? filemtime(BASE_PATH . '/public/assets/js/main.js') : time() ?>"></script>
+    <?php if ($isChatbotPage): ?>
+    <script>window.__CHATBOT_CONFIG__ = { enabled: <?= $isGlobalChatEnabled ? 'true' : 'false' ?>, companyEnabled: <?= $isCompanyChatEnabled ? 'true' : 'false' ?> };</script>
+    <script src="/assets/js/chatbot.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/chatbot.js') ? filemtime(BASE_PATH . '/public/assets/js/chatbot.js') : time() ?>"></script>
+    <?php endif; ?>
 </body>
 </html>
