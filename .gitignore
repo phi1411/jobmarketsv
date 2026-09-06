@@ -6,3 +6,14 @@
 *.log
 .DS_Store
 Thumbs.db
+/storage/app/cv/
+/storage/app/uploads/
+/storage/app/resumes/
+/backups/
+*.sql
+*.sqlite
+*.db
+*.pem
+*.key
+*.p12
+*.pfx
