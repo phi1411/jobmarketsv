@@ -14,7 +14,10 @@ class Response
     const HTTP_METHOD_NOT_ALLOWED = 405;
     const HTTP_CONFLICT = 409;
     const HTTP_UNPROCESSABLE_ENTITY = 422;
+    const HTTP_TOO_MANY_REQUESTS = 429;
     const HTTP_INTERNAL_SERVER_ERROR = 500;
+    const HTTP_SERVICE_UNAVAILABLE = 503;
+    const HTTP_GATEWAY_TIMEOUT = 504;
 
     public static array $statusTexts = [
         200 => "OK",
@@ -27,7 +30,10 @@ class Response
         405 => "Method Not Allowed",
         409 => "Conflict",
         422 => "Unprocessable Entity",
-        500 => "Internal Server Error"
+        429 => "Too Many Requests",
+        500 => "Internal Server Error",
+        503 => "Service Unavailable",
+        504 => "Gateway Timeout"
     ];
 
     private mixed $payload;
@@ -87,7 +93,7 @@ class Response
         return self::success($data, $message, self::HTTP_CREATED, $meta);
     }
 
-    public static function error(string $message = "Đã có lỗi xảy ra", int $statusCode = self::HTTP_BAD_REQUEST, ?array $errors = null): static
+    public static function error(string $message = "Đã có lỗi xảy ra", int $statusCode = self::HTTP_BAD_REQUEST, ?array $errors = null, array $headers = []): static
     {
         $payload = [
             "success" => false,
@@ -96,7 +102,7 @@ class Response
             "code"    => $statusCode
         ];
 
-        return new static($payload, $statusCode);
+        return new static($payload, $statusCode, $headers);
     }
 
     public static function html(string $html, int $statusCode = self::HTTP_OK, array $headers = []): static
@@ -178,6 +184,12 @@ class Response
             }
         }
         return null;
+    }
+
+    public function withHeader(string $name, string $value): static
+    {
+        $this->headers[$name] = $value;
+        return $this;
     }
 
     public function send(): void

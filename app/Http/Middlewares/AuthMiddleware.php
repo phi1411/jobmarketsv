@@ -17,7 +17,7 @@ class AuthMiddleware implements MiddlewareInterface
      */
     private array $publicRoutes = [
         "GET"  => ["/", "/jobs", "/categories", "/skills", "/locations", "/developers", "/viec-lam", "/login", "/register", "/logout", "/auth/google/start", "/auth/google/callback"],
-        "POST" => ["/login", "/register"]
+        "POST" => ["/login", "/register", "/assistant/chat"]
     ];
 
     public function __invoke(Request $request): Response

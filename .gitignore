@@ -1,6 +1,7 @@
 /vendor/
 .env
 /storage/logs/
+/storage/app/rate_limits/
 *.log
 .DS_Store
 Thumbs.db

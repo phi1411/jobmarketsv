@@ -2,6 +2,8 @@
 
 namespace JobMarket\Http;
 
+use JobMarket\Facades\Config;
+
 class Request
 {
     private ?array $user = null;
@@ -94,5 +96,41 @@ class Request
         }
 
         return str_contains($accept, "text/html");
+    }
+
+    public function getClientIp(?array $trustedProxies = null): string
+    {
+        $remoteAddr = $this->server['REMOTE_ADDR'] ?? '127.0.0.1';
+        if (!filter_var($remoteAddr, FILTER_VALIDATE_IP)) {
+            $remoteAddr = '127.0.0.1';
+        }
+
+        $trusted = $trustedProxies ?? (class_exists(Config::class) ? Config::trustedProxies() : []);
+
+        // Inspect X-Forwarded-For only when REMOTE_ADDR is explicitly listed in TRUSTED_PROXIES
+        if (!empty($trusted) && in_array($remoteAddr, $trusted, true)) {
+            if (!empty($this->server['HTTP_X_FORWARDED_FOR'])) {
+                $rawIps = explode(',', (string)$this->server['HTTP_X_FORWARDED_FOR']);
+                $parsedIps = [];
+                foreach ($rawIps as $ipStr) {
+                    $trimmed = trim($ipStr);
+                    if (filter_var($trimmed, FILTER_VALIDATE_IP)) {
+                        $parsedIps[] = $trimmed;
+                    }
+                }
+
+                // Traverse from right to left: skip trusted proxies, pick first valid non-trusted IP
+                for ($i = count($parsedIps) - 1; $i >= 0; $i--) {
+                    $ip = $parsedIps[$i];
+                    if (in_array($ip, $trusted, true)) {
+                        continue;
+                    }
+                    return $ip;
+                }
+            }
+        }
+
+        // Default / fallback to REMOTE_ADDR when no safe client IP exists
+        return $remoteAddr;
     }
 }
