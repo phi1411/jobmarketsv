@@ -200,7 +200,7 @@ async function loadJobs() {
         container.innerHTML = jobs.map(job => `
             <div class="job-card" style="flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;">
                 <div style="display:flex;gap:1.25rem;align-items:center;">
-                    <div class="company-logo">${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : "J")}</div>
+                    ${job.company_logo ? `<img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company_name)}" class="company-logo" onerror="this.outerHTML='<div class=\\'company-logo\\'>${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : 'J')}</div>'">` : `<div class="company-logo">${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : "J")}</div>`}
                     <div>
                         <h2 class="job-title" style="font-size:1.15rem;margin-bottom:0.35rem;">
                             <a href="/viec-lam/${encodeURIComponent(job.id)}">${escapeHtml(job.title)}</a>

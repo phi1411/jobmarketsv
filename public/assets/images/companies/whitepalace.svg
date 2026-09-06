@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+        <rect width="200" height="200" rx="30" fill="#12233b"/>
+        <polygon points="100,38 120,60 100,75 80,60" fill="none" stroke="#d4af37" stroke-width="3"/>
+        <text x="100" y="112" font-family="Times New Roman, Georgia, serif" font-size="21" font-weight="900" fill="#d4af37" text-anchor="middle" letter-spacing="3">WHITE</text>
+        <text x="100" y="136" font-family="Times New Roman, Georgia, serif" font-size="21" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="3">PALACE</text>
+        <text x="100" y="162" font-family="Arial, sans-serif" font-size="10" font-weight="600" fill="#d4af37" text-anchor="middle" letter-spacing="2">CONVENTION CENTER</text>
+    </svg>

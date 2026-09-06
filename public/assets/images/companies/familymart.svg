@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+        <rect width="200" height="200" rx="30" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+        <rect x="15" y="25" width="170" height="50" rx="10" fill="#007cc2"/>
+        <rect x="15" y="85" width="170" height="50" rx="10" fill="#00a651"/>
+        <text x="100" y="168" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="900" fill="#007cc2" text-anchor="middle" letter-spacing="1">Family<tspan fill="#00a651">Mart</tspan></text>
+        <circle cx="100" cy="80" r="14" fill="#ffffff"/>
+        <polygon points="95,73 107,80 95,87" fill="#007cc2"/>
+    </svg>
