@@ -145,6 +145,22 @@ function formatDate(dateString) {
     return date.toLocaleDateString("vi-VN");
 }
 
+function formatDateTime(dateString) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function formatBytes(bytes) {
+    if (!bytes || bytes <= 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+}
+
 function getShiftLabel(shift) {
     const map = {
         "morning": "Ca Sáng (08:00 - 12:00)",
@@ -203,30 +219,79 @@ function getVerificationBadge(status) {
     return `<span class="status-badge ${s.modifier}"><span class="status-dot"></span>${escapeHtml(s.label)}</span>`;
 }
 
-// 5. Protected CV Delivery Helper (CV-P0-02)
-async function viewApplicationCv(appId) {
+// 7. Protected CV Delivery Helper (CV-P0-02 & CV-P1-01)
+async function viewApplicationCv(appId, btnElement = null) {
     const token = TokenStorage.getToken();
     if (!token) {
         showToast("Vui lòng đăng nhập để xem CV.", "error");
         return;
     }
+
+    let origHtml = "";
+    let isBtn = false;
+    if (btnElement && btnElement instanceof HTMLElement) {
+        isBtn = true;
+        origHtml = btnElement.innerHTML;
+        btnElement.disabled = true;
+        btnElement.innerHTML = `⏳ Đang mở...`;
+    }
+
     try {
         const response = await fetch(`/applications/${encodeURIComponent(appId)}/cv`, {
             headers: {
                 "Authorization": `Bearer ${token}`
             }
         });
+
         if (!response.ok) {
-            const errData = await response.json().catch(() => null);
-            const msg = (errData && errData.message) ? errData.message : `Không thể tải CV (${response.status})`;
+            let msg = `Không thể tải CV (${response.status})`;
+            try {
+                const errData = await response.json();
+                if (errData && errData.message) {
+                    msg = errData.message;
+                }
+            } catch (_) {}
+
+            if (response.status === 401) {
+                msg = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+            } else if (response.status === 403) {
+                msg = "Bạn không có quyền truy cập hồ sơ CV này.";
+            } else if (response.status === 404) {
+                msg = "Không tìm thấy tệp CV đã nộp cho đơn ứng tuyển này.";
+            }
+
             showToast(msg, "error");
             return;
         }
+
         const blob = await response.blob();
         const blobUrl = URL.createObjectURL(blob);
-        window.open(blobUrl, "_blank");
+        
+        // Open safely in new tab or trigger click fallback
+        const win = window.open(blobUrl, "_blank");
+        if (!win || win.closed || typeof win.closed === "undefined") {
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => {
+                document.body.removeChild(link);
+            }, 100);
+        }
+
+        setTimeout(() => {
+            URL.revokeObjectURL(blobUrl);
+        }, 60000);
     } catch (err) {
-        showToast("Lỗi kết nối khi tải CV.", "error");
+        console.error("Error fetching CV snapshot:", err);
+        showToast("Lỗi kết nối máy chủ khi tải CV. Vui lòng thử lại sau.", "error");
+    } finally {
+        if (isBtn && btnElement) {
+            btnElement.disabled = false;
+            btnElement.innerHTML = origHtml;
+        }
     }
 }
 
@@ -237,6 +302,8 @@ if (typeof window !== "undefined") {
     window.showToast = showToast;
     window.formatCurrency = formatCurrency;
     window.formatDate = formatDate;
+    window.formatDateTime = formatDateTime;
+    window.formatBytes = formatBytes;
     window.getShiftLabel = getShiftLabel;
     window.getWorkTypeLabel = getWorkTypeLabel;
     window.getAppStatusBadge = getAppStatusBadge;

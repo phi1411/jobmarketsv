@@ -237,7 +237,7 @@ async function loadCompanyApplications(page = 1) {
 
                             <div class="row-actions">
                                 ${app.has_cv_snapshot ? `
-                                    <button onclick="viewApplicationCv('${escapeHtml(app.id)}')" class="btn btn-outline btn-sm row-action-btn" style="display:inline-flex;align-items:center;gap:0.35rem;">
+                                    <button onclick="viewApplicationCv('${escapeHtml(app.id)}', this)" class="btn btn-outline btn-sm row-action-btn" style="display:inline-flex;align-items:center;gap:0.35rem;">
                                         📄 Xem CV
                                     </button>
                                 ` : ''}
@@ -254,7 +254,7 @@ async function loadCompanyApplications(page = 1) {
                             <div style="min-width:0;overflow-wrap:anywhere;"><strong>SĐT:</strong> ${escapeHtml(app.student_phone || "Chưa cập nhật")}</div>
                             <div style="min-width:0;word-break:break-all;overflow-wrap:anywhere;"><strong>Email:</strong> ${escapeHtml(app.student_email || "Chưa cập nhật")}</div>
                             <div style="min-width:0;overflow-wrap:anywhere;"><strong>Ca mong muốn:</strong> <strong>${shiftLabel}</strong></div>
-                            <div style="min-width:0;overflow-wrap:anywhere;"><strong>CV:</strong> ${app.has_cv_snapshot ? `<button onclick="viewApplicationCv('${escapeHtml(app.id)}')" style="background:none;border:none;padding:0;color:var(--primary);text-decoration:underline;cursor:pointer;font-size:inherit;">📄 Xem CV (${escapeHtml(app.cv_file_name || 'PDF')})</button>` : (app.cv_url_snapshot ? `<a href="${escapeHtml(app.cv_url_snapshot)}" target="_blank" style="color:var(--primary);text-decoration:underline;">Xem liên kết CV</a>` : '<span style="color:var(--text-muted)">Không có</span>')}</div>
+                            <div style="min-width:0;overflow-wrap:anywhere;"><strong>CV:</strong> ${app.has_cv_snapshot ? `<button onclick="viewApplicationCv('${escapeHtml(app.id)}', this)" style="background:none;border:none;padding:0;color:var(--primary);text-decoration:underline;cursor:pointer;font-size:inherit;display:inline-flex;align-items:center;gap:0.25rem;">📄 Xem CV (${escapeHtml(app.cv_file_name || 'PDF')})</button>` : '<span style="color:var(--text-muted)">Không có CV lưu trữ</span>'}</div>
                         </div>
 
                         <!-- Cover Letter -->
