@@ -283,6 +283,7 @@ return [
     // Admin Audit Logs
     ["GET", "/admin/audit-logs", [AdminController::class, "auditLogs"]],
 
-    // Read-only Gemini AI Assistant (CHAT-P0-01, CHAT-P0-02)
-    ["POST", "/assistant/chat", [AssistantController::class, "chat"]]
+    // Read-only Gemini AI Assistant (CHAT-P0-01, CHAT-P0-02, CHAT-P2-01)
+    ["POST", "/assistant/chat", [AssistantController::class, "chat"]],
+    ["POST", "/assistant/feedback", [AssistantController::class, "feedback"]]
 ];

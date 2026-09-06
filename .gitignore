@@ -2,6 +2,7 @@
 .env
 /storage/logs/
 /storage/app/rate_limits/
+/storage/app/telemetry/
 *.log
 .DS_Store
 Thumbs.db

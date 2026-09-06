@@ -33,11 +33,12 @@ class AssistantService
      *
      * @param mixed $rawMessage User input message
      * @param mixed $rawHistory Conversation history turns
+     * @param string $role User role ('guest', 'student', 'developer', 'company')
      * @return array [ 'answer' => string, 'job_links' => array ]
      * @throws ValidationException
      * @throws GeminiException
      */
-    public function handleChat(mixed $rawMessage, mixed $rawHistory = null): array
+    public function handleChat(mixed $rawMessage, mixed $rawHistory = null, string $role = 'guest'): array
     {
         // 1. Validate user message
         $message = $this->validateMessage($rawMessage);
@@ -50,11 +51,16 @@ class AssistantService
             throw new GeminiUnavailableException("Tính năng trợ lý AI hiện đang tạm tắt hoặc chưa sẵn sàng.");
         }
 
-        // 4. Retrieve public published jobs for safe server context
-        $vettedJobs = $this->getPublicJobContext($message);
+        // 4. Retrieve context based on role
+        // For guest and student: get public published jobs for safe server context
+        // For company: NO job search context, NO applicant data, NO CV data, NO notes
+        $vettedJobs = [];
+        if ($role !== 'company') {
+            $vettedJobs = $this->getPublicJobContext($message);
+        }
 
         // 5. Construct server-owned Vietnamese system instruction
-        $systemInstruction = $this->buildSystemInstruction($vettedJobs);
+        $systemInstruction = $this->buildSystemInstruction($role, $vettedJobs);
 
         // 6. Format contents for Gemini
         $contents = $this->formatContents($history, $message);
@@ -70,8 +76,8 @@ class AssistantService
             ];
         }
 
-        // 9. Extract and verify safe server-owned job links
-        $jobLinks = $this->resolveSafeJobLinks($response->text, $vettedJobs);
+        // 9. Extract and verify safe server-owned job links (for guest/student only)
+        $jobLinks = ($role !== 'company') ? $this->resolveSafeJobLinks($response->text, $vettedJobs) : [];
 
         return [
             "answer"    => $response->text,
@@ -300,8 +306,27 @@ class AssistantService
         return !empty($matched) ? implode(" ", array_slice($matched, 0, 2)) : null;
     }
 
-    private function buildSystemInstruction(array $vettedJobs): string
+    public function buildSystemInstruction(string $role = 'guest', array $vettedJobs = []): string
     {
+        if ($role === 'company') {
+            $instruction = "Bạn là trợ lý ảo JobMarketSV dành riêng cho Nhà tuyển dụng / Doanh nghiệp.\n";
+            $instruction .= "Nhiệm vụ của bạn là giải đáp thắc mắc và hướng dẫn sử dụng các tính năng trên Cổng Doanh nghiệp (Company Portal) của JobMarketSV.\n";
+            $instruction .= "Quy tắc bắt buộc:\n";
+            $instruction .= "1. Trả lời bằng tiếng Việt lịch sự, chuyên nghiệp, rõ ràng và súc tích.\n";
+            $instruction .= "2. Chỉ giải thích và hướng dẫn các thao tác quản lý hiện có trên nền tảng:\n";
+            $instruction .= "   - Quản lý hồ sơ doanh nghiệp (Company Profile): cập nhật thông tin giới thiệu, địa chỉ, logo, website.\n";
+            $instruction .= "   - Trạng thái xác minh (Verification Status): giải thích quy trình xét duyệt doanh nghiệp chính thức (verified) bởi ban quản trị để tăng độ tin cậy và hiển thị tên công ty công khai.\n";
+            $instruction .= "   - Đăng và quản lý tin tuyển dụng (Job Postings): tạo việc làm mới, cấu hình ca làm, mức lương, hạn nộp, chỉnh sửa hoặc đóng tin tuyển dụng khi đã đủ người.\n";
+            $instruction .= "   - Quản lý danh sách ứng viên (Applications): giải thích ý nghĩa các trạng thái đơn ứng tuyển (chờ duyệt - pending, đã xem - viewed, phù hợp/mời phỏng vấn - shortlisted, chấp nhận - accepted, từ chối - rejected, đã rút đơn - withdrawn).\n";
+            $instruction .= "3. Bạn là trợ lý chỉ đọc (read-only): KHÔNG thể thay đổi tin tuyển dụng, cập nhật trạng thái đơn ứng tuyển, gửi email hay thực hiện giao dịch thay cho nhà tuyển dụng. Hãy hướng dẫn người dùng tự thao tác trên trang /company/*.\n";
+            $instruction .= "4. Ranh giới bảo mật tuyệt đối:\n";
+            $instruction .= "   - Tuyệt đối KHÔNG yêu cầu, tiếp nhận, xử lý hoặc đưa ra thông tin cá nhân của ứng viên (CCCD, số điện thoại riêng, nội dung CV riêng tư).\n";
+            $instruction .= "   - Tuyệt đối KHÔNG tiết lộ thông tin của các doanh nghiệp khác hoặc thông tin quản trị hệ thống (Admin).\n";
+            $instruction .= "   - Không yêu cầu mật khẩu, API key hay mã token bảo mật.\n";
+            return $instruction;
+        }
+
+        // Default Guest / Student / Developer instruction
         $instruction = "Bạn là trợ lý ảo JobMarketSV, chuyên hỗ trợ sinh viên và người tìm việc giải đáp thắc mắc về việc làm bán thời gian (part-time) tại Việt Nam.\n";
         $instruction .= "Quy tắc bắt buộc:\n";
         $instruction .= "1. Trả lời bằng tiếng Việt lịch sự, thân thiện, rõ ràng, ngắn gọn và thực tế.\n";
