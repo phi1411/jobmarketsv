@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="job-card">
                 <div>
                     <div class="job-card-header">
-                        <div class="company-logo">${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : "J")}</div>
+                        ${job.company_logo ? `<img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company_name)}" class="company-logo" onerror="this.outerHTML='<div class=\\'company-logo\\'>${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : 'J')}</div>'">` : `<div class="company-logo">${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : "J")}</div>`}
                         <div class="job-card-meta">
                             <h3 class="job-title">
                                 <a href="/viec-lam/${encodeURIComponent(job.id)}">${escapeHtml(job.title)}</a>

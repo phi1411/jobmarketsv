@@ -167,8 +167,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Update Title & Meta
         document.title = `${job.title} | JobMarket SV`;
         document.getElementById("job-title").innerText = job.title;
-        document.getElementById("job-company-name").innerText = job.company_name || "Nhà tuyển dụng";
-        document.getElementById("job-company-logo").innerText = (job.company_name ? job.company_name.substring(0, 1) : "J");
+        const logoEl = document.getElementById("job-company-logo");
+        if (job.company_logo) {
+            logoEl.innerHTML = `<img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company_name)}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" onerror="this.outerHTML='${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : 'J')}'">`;
+        } else {
+            logoEl.innerText = (job.company_name ? job.company_name.substring(0, 1) : "J");
+        }
 
         // Badges
         document.getElementById("job-badges-header").innerHTML = `

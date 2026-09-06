@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+        <rect width="200" height="200" rx="30" fill="#1b120c"/>
+        <circle cx="100" cy="80" r="44" fill="#ea8025"/>
+        <path d="M78 82 C78 98 90 106 100 106 C110 106 122 98 122 82 L78 82 Z" fill="#ffffff"/>
+        <path d="M122 85 C128 85 132 89 132 93 C132 97 128 101 122 101" stroke="#ffffff" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M92 68 Q95 62 92 56" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M100 68 Q103 60 100 54" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M108 68 Q111 62 108 56" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <text x="100" y="148" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="900" fill="#ea8025" text-anchor="middle" letter-spacing="1">THE COFFEE</text>
+        <text x="100" y="168" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="1">HOUSE</text>
+    </svg>

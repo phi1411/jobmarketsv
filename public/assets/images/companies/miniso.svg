@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+        <rect width="200" height="200" rx="30" fill="#e4002b"/>
+        <!-- Shopping bag handle -->
+        <path d="M80 60 C80 45 120 45 120 60" stroke="#ffffff" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <!-- Smile / Winking eye -->
+        <path d="M82 85 Q100 105 118 85" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <circle cx="85" cy="75" r="4" fill="#ffffff"/>
+        <circle cx="115" cy="75" r="4" fill="#ffffff"/>
+        <text x="100" y="145" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="2">MINISO</text>
+    </svg>

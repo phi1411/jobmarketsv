@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+        <rect width="200" height="200" rx="30" fill="#a3080c"/>
+        <rect x="35" y="25" width="130" height="150" rx="15" fill="#ffffff"/>
+        <rect x="55" y="25" width="25" height="150" fill="#a3080c"/>
+        <rect x="120" y="25" width="25" height="150" fill="#a3080c"/>
+        <rect x="30" y="70" width="140" height="60" rx="10" fill="#a3080c"/>
+        <text x="100" y="115" font-family="Impact, Arial Black, sans-serif" font-size="44" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="3">KFC</text>
+    </svg>
