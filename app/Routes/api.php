@@ -2,6 +2,7 @@
 
 use JobMarket\Http\Controllers\AdminController;
 use JobMarket\Http\Controllers\ApplicationController;
+use JobMarket\Http\Controllers\AssistantController;
 use JobMarket\Http\Controllers\AuthenticationController;
 use JobMarket\Http\Controllers\CategoryController;
 use JobMarket\Http\Controllers\CompanyController;
@@ -280,5 +281,8 @@ return [
     ["PUT", "/admin/jobs/{id:[0-9a-zA-Z\-_]+}/moderation", [AdminController::class, "moderateJob"]],
 
     // Admin Audit Logs
-    ["GET", "/admin/audit-logs", [AdminController::class, "auditLogs"]]
+    ["GET", "/admin/audit-logs", [AdminController::class, "auditLogs"]],
+
+    // Read-only Gemini AI Assistant (CHAT-P0-01, CHAT-P0-02)
+    ["POST", "/assistant/chat", [AssistantController::class, "chat"]]
 ];
