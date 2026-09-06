@@ -200,10 +200,11 @@ Affected pages/components:
 
 Implementation scope:
 
-- Document production storage path/permissions outside webroot.
+- Document production storage path/permissions outside webroot in `docs/CV_OPERATIONS.md`.
 - Document backup/restore for DB and private CV files as one recoverable unit.
 - Define a retention decision for withdrawn applications and account deletion; do not implement automated deletion in this task.
 - Document how production malware scanning will be added later if upload volume grows.
+- Comprehensive guide created: [`docs/CV_OPERATIONS.md`](CV_OPERATIONS.md).
 
 Do NOT change:
 
