@@ -64,6 +64,11 @@ class Request
         return $this->postParams[$key] ?? $default;
     }
 
+    public function file(string $key): ?array
+    {
+        return $this->files[$key] ?? null;
+    }
+
     public function all(): array
     {
         return array_merge($this->getParams, $this->postParams);

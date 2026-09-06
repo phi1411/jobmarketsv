@@ -74,6 +74,13 @@ class ProfileService
             $data["profile_completion_percent"],
             $data["id"],
             $data["email"],
+            $data["cv_storage_path"],
+            $data["cv_original_name"],
+            $data["cv_mime_type"],
+            $data["cv_file_size"],
+            $data["cv_uploaded_at"],
+            $data["active_cv"],
+            $data["cv_url"],
             $data["created_at"],
             $data["updated_at"]
         );
@@ -239,16 +246,6 @@ class ProfileService
         }
         if (isset($data["certificates"])) {
             $profile->setCertificates(trim((string)$data["certificates"]));
-        }
-
-        // 12. CV URL (Validate URL format, NO file upload in this milestone)
-        if (isset($data["cv_url"]) && !empty($data["cv_url"])) {
-            $cvUrl = trim((string)$data["cv_url"]);
-            if (!filter_var($cvUrl, FILTER_VALIDATE_URL)) {
-                $errors["cv_url"][] = "Đường dẫn CV (cv_url) phải là một URL hợp lệ.";
-            } else {
-                $profile->setCvUrl($cvUrl);
-            }
         }
 
         if (!empty($errors)) {

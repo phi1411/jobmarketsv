@@ -24,6 +24,11 @@ class Profile
     private ?string $education = null;
     private ?string $certificates = null;
     private ?string $cv_url = null;
+    private ?string $cv_storage_path = null;
+    private ?string $cv_original_name = null;
+    private ?string $cv_mime_type = null;
+    private ?int $cv_file_size = null;
+    private ?string $cv_uploaded_at = null;
     private int $profile_completion_percent = 0;
     private ?string $created_at = null;
     private ?string $updated_at = null;
@@ -83,6 +88,11 @@ class Profile
         $profile->education = $data["education"] ?? null;
         $profile->certificates = $data["certificates"] ?? null;
         $profile->cv_url = $data["cv_url"] ?? null;
+        $profile->cv_storage_path = $data["cv_storage_path"] ?? null;
+        $profile->cv_original_name = $data["cv_original_name"] ?? null;
+        $profile->cv_mime_type = $data["cv_mime_type"] ?? null;
+        $profile->cv_file_size = isset($data["cv_file_size"]) && $data["cv_file_size"] !== null ? (int)$data["cv_file_size"] : null;
+        $profile->cv_uploaded_at = $data["cv_uploaded_at"] ?? null;
         $profile->email = $data["email"] ?? null;
         $profile->created_at = $data["created_at"] ?? null;
         $profile->updated_at = $data["updated_at"] ?? null;
@@ -107,13 +117,13 @@ class Profile
         if (!empty(trim((string)$this->bio))) $percent += 10;
         if (!empty($this->skill_ids) || !empty(trim((string)$this->skills))) $percent += 15;
         if (!empty($this->available_schedule)) $percent += 15;
-        if (!empty(trim((string)$this->cv_url))) $percent += 10;
+        if (!empty(trim((string)$this->cv_url)) || !empty($this->cv_storage_path)) $percent += 10;
 
         return min(100, $percent);
     }
 
     /**
-     * Private format (for student owner only, includes phone, email, cv_url)
+     * Private format (for student owner only, includes phone, email, cv_url, active_cv)
      */
     public function toArrayPrivate(): array
     {
@@ -140,6 +150,12 @@ class Profile
             "education"                  => $this->education,
             "certificates"               => $this->certificates,
             "cv_url"                     => $this->cv_url,
+            "active_cv"                  => $this->cv_storage_path ? [
+                "file_name"   => $this->cv_original_name,
+                "file_size"   => $this->cv_file_size ?? 0,
+                "mime_type"   => $this->cv_mime_type ?? "application/pdf",
+                "uploaded_at" => $this->cv_uploaded_at,
+            ] : null,
             "profile_completion_percent" => $this->calculateCompletionPercent(),
             "created_at"                 => $this->created_at,
             "updated_at"                 => $this->updated_at,
@@ -193,6 +209,11 @@ class Profile
     public function getEducation(): ?string { return $this->education; }
     public function getCertificates(): ?string { return $this->certificates; }
     public function getCvUrl(): ?string { return $this->cv_url; }
+    public function getCvStoragePath(): ?string { return $this->cv_storage_path; }
+    public function getCvOriginalName(): ?string { return $this->cv_original_name; }
+    public function getCvMimeType(): ?string { return $this->cv_mime_type; }
+    public function getCvFileSize(): ?int { return $this->cv_file_size; }
+    public function getCvUploadedAt(): ?string { return $this->cv_uploaded_at; }
     public function getProfileCompletionPercent(): int { return $this->profile_completion_percent; }
     public function getEmail(): ?string { return $this->email; }
     public function getCreatedAt(): ?string { return $this->created_at; }
@@ -216,5 +237,10 @@ class Profile
     public function setEducation(?string $val): self { $this->education = $val; return $this; }
     public function setCertificates(?string $val): self { $this->certificates = $val; return $this; }
     public function setCvUrl(?string $val): self { $this->cv_url = $val; return $this; }
+    public function setCvStoragePath(?string $val): self { $this->cv_storage_path = $val; return $this; }
+    public function setCvOriginalName(?string $val): self { $this->cv_original_name = $val; return $this; }
+    public function setCvMimeType(?string $val): self { $this->cv_mime_type = $val; return $this; }
+    public function setCvFileSize(?int $val): self { $this->cv_file_size = $val; return $this; }
+    public function setCvUploadedAt(?string $val): self { $this->cv_uploaded_at = $val; return $this; }
     public function setEmail(?string $val): self { $this->email = $val; return $this; }
 }
