@@ -18,6 +18,7 @@ use JobMarket\Http\Controllers\ReviewController;
 use JobMarket\Http\Controllers\SearchController;
 use JobMarket\Http\Controllers\SkillController;
 use JobMarket\Http\Controllers\StatisticController;
+use JobMarket\Http\Controllers\StudentCvController;
 use JobMarket\Http\Controllers\SubscriptionController;
 
 return [
@@ -131,6 +132,11 @@ return [
     // Update the student's own private profile information
     ["PUT", "/student/profile", [ProfileController::class, "update"]],
     ["PATCH", "/student/profile", [ProfileController::class, "update"]],
+
+    // Student Active CV Management (CV-P0-01)
+    ["GET", "/student/cv", [StudentCvController::class, "show"]],
+    ["POST", "/student/cv", [StudentCvController::class, "upload"]],
+    ["DELETE", "/student/cv", [StudentCvController::class, "destroy"]],
 
     // Update the user's password
     ["PUT", "/profile/password", [ProfileController::class, "passUpdate"]],

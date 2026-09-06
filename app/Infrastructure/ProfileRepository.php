@@ -60,13 +60,15 @@ class ProfileRepository implements ProfileRepositoryInterface
                 `university`, `major`, `academic_year`, `bio`, `location_id`, 
                 `preferred_location`, `preferred_locations`, `available_schedule`, 
                 `skills`, `skill_ids`, `work_experience`, `education`, `certificates`, 
-                `cv_url`, `profile_completion_percent`
+                `cv_url`, `profile_completion_percent`,
+                `cv_storage_path`, `cv_original_name`, `cv_mime_type`, `cv_file_size`, `cv_uploaded_at`
             ) VALUES (
                 ?, ?, ?, ?, ?, ?, 
                 ?, ?, ?, ?, ?, 
                 ?, ?, ?, 
                 ?, ?, ?, ?, ?, 
-                ?, ?
+                ?, ?,
+                ?, ?, ?, ?, ?
             ) ON DUPLICATE KEY UPDATE
                 `full_name` = VALUES(`full_name`),
                 `phone` = VALUES(`phone`),
@@ -87,6 +89,11 @@ class ProfileRepository implements ProfileRepositoryInterface
                 `certificates` = VALUES(`certificates`),
                 `cv_url` = VALUES(`cv_url`),
                 `profile_completion_percent` = VALUES(`profile_completion_percent`),
+                `cv_storage_path` = VALUES(`cv_storage_path`),
+                `cv_original_name` = VALUES(`cv_original_name`),
+                `cv_mime_type` = VALUES(`cv_mime_type`),
+                `cv_file_size` = VALUES(`cv_file_size`),
+                `cv_uploaded_at` = VALUES(`cv_uploaded_at`),
                 `updated_at` = NOW()"
         );
 
@@ -114,13 +121,54 @@ class ProfileRepository implements ProfileRepositoryInterface
             $profile->getEducation(),
             $profile->getCertificates(),
             $profile->getCvUrl(),
-            $profile->getProfileCompletionPercent()
+            $profile->getProfileCompletionPercent(),
+            $profile->getCvStoragePath(),
+            $profile->getCvOriginalName(),
+            $profile->getCvMimeType(),
+            $profile->getCvFileSize(),
+            $profile->getCvUploadedAt(),
         ]);
 
         // Also sync name in users table if full_name is present
         if (!empty($profile->getFullName())) {
             $userStmt = $this->db->prepare("UPDATE `users` SET `name` = ? WHERE `id` = ?");
             $userStmt->execute([$profile->getFullName(), $profile->getUserId()]);
+        }
+    }
+
+    public function updateCvMetadata(string $userId, ?array $cvData): void
+    {
+        if ($cvData === null) {
+            $stmt = $this->db->prepare(
+                "UPDATE `student_profiles` SET
+                    `cv_storage_path` = NULL,
+                    `cv_original_name` = NULL,
+                    `cv_mime_type` = NULL,
+                    `cv_file_size` = NULL,
+                    `cv_uploaded_at` = NULL,
+                    `updated_at` = NOW()
+                 WHERE `user_id` = ?"
+            );
+            $stmt->execute([$userId]);
+        } else {
+            $stmt = $this->db->prepare(
+                "UPDATE `student_profiles` SET
+                    `cv_storage_path` = ?,
+                    `cv_original_name` = ?,
+                    `cv_mime_type` = ?,
+                    `cv_file_size` = ?,
+                    `cv_uploaded_at` = ?,
+                    `updated_at` = NOW()
+                 WHERE `user_id` = ?"
+            );
+            $stmt->execute([
+                $cvData['storage_path'] ?? null,
+                $cvData['original_name'] ?? null,
+                $cvData['mime_type'] ?? null,
+                $cvData['file_size'] ?? null,
+                $cvData['uploaded_at'] ?? date('Y-m-d H:i:s'),
+                $userId
+            ]);
         }
     }
 
