@@ -103,7 +103,7 @@
 
 <!-- Apply Job Modal -->
 <div id="apply-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
-    <div style="background:#fff;border-radius:var(--radius);max-width:550px;width:100%;padding:2rem;box-shadow:var(--shadow);position:relative;max-height:90vh;overflow-y:auto;">
+    <div style="background:#fff;border-radius:var(--radius);max-width:550px;width:100%;padding:1.5rem;box-shadow:var(--shadow);position:relative;max-height:90vh;overflow-y:auto;box-sizing:border-box;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
             <h3 style="font-size:1.2rem;font-weight:700;color:var(--dark);margin:0;">Ứng Tuyển Việc Làm</h3>
             <button type="button" onclick="closeApplyModal()" class="modal-close-btn" aria-label="Đóng hộp thoại">&times;</button>
@@ -115,27 +115,50 @@
         </div>
 
         <div id="apply-cv-readiness" style="margin-bottom:1.25rem;">
-            <div id="apply-cv-loading" style="display:flex;align-items:center;gap:0.5rem;font-size:0.88rem;color:var(--text-muted);padding:0.75rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);">
-                <span>⏳ Đang kiểm tra hồ sơ CV...</span>
+            <!-- Loading State -->
+            <div id="apply-cv-loading" style="display:flex;align-items:center;gap:0.6rem;font-size:0.88rem;color:var(--text-muted);padding:0.85rem 1rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);">
+                <span>⏳ Đang kiểm tra tệp CV trong hồ sơ của bạn...</span>
             </div>
-            <div id="apply-cv-ready" style="display:none;padding:0.75rem 1rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--radius-sm);">
-                <div style="font-size:0.88rem;font-weight:600;color:#166534;display:flex;align-items:center;gap:0.5rem;">
+
+            <!-- Ready State (Active CV exists) -->
+            <div id="apply-cv-ready" style="display:none;padding:0.85rem 1rem;background:#f0fdf4;border:1px solid #86efac;border-left:4px solid #10b981;border-radius:var(--radius-sm);">
+                <div style="font-size:0.9rem;font-weight:700;color:#166534;display:flex;align-items:center;gap:0.5rem;">
                     <span>📄</span>
-                    <span>CV đính kèm: <strong id="apply-cv-name"></strong></span>
+                    <span>CV đính kèm: <strong id="apply-cv-name" style="word-break:break-all;"></strong></span>
                 </div>
-                <div style="font-size:0.8rem;color:#15803d;margin-top:0.25rem;">
-                    Phiên bản CV hiện tại sẽ được lưu giữ bất biến cùng đơn ứng tuyển này.
+                <div style="font-size:0.82rem;color:#15803d;margin-top:0.35rem;line-height:1.4;">
+                    ✓ Bản sao CV hiện tại của bạn sẽ được lưu giữ bất biến cùng đơn ứng tuyển này và chuyển tới nhà tuyển dụng.
                 </div>
             </div>
-            <div id="apply-cv-missing" style="display:none;padding:0.75rem 1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:var(--radius-sm);">
-                <div style="font-size:0.88rem;font-weight:600;color:#991b1b;display:flex;align-items:center;gap:0.5rem;">
+
+            <!-- Missing State (No active CV) -->
+            <div id="apply-cv-missing" style="display:none;padding:0.85rem 1rem;background:#fef2f2;border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:var(--radius-sm);">
+                <div style="font-size:0.9rem;font-weight:700;color:#991b1b;display:flex;align-items:center;gap:0.5rem;">
                     <span>⚠️</span>
                     <span>Bạn chưa có CV trong hồ sơ</span>
                 </div>
-                <div style="font-size:0.8rem;color:#b91c1c;margin-top:0.25rem;margin-bottom:0.5rem;">
-                    Vui lòng tải lên CV định dạng PDF trong hồ sơ trước khi nộp đơn ứng tuyển.
+                <div style="font-size:0.82rem;color:#b91c1c;margin:0.35rem 0 0.6rem;line-height:1.4;">
+                    Nhà tuyển dụng yêu cầu hồ sơ có đính kèm CV (định dạng PDF). Vui lòng tải lên CV trước khi gửi đơn ứng tuyển.
                 </div>
-                <a href="/profile" class="btn btn-outline btn-sm" style="font-size:0.8rem;padding:0.25rem 0.5rem;display:inline-block;">Tải lên CV ngay &rarr;</a>
+                <div>
+                    <a href="/profile" class="btn btn-primary btn-sm" style="font-size:0.82rem;padding:0.35rem 0.75rem;display:inline-flex;align-items:center;gap:0.35rem;">
+                        Tải lên CV trong hồ sơ ngay &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Error State (API or network error) -->
+            <div id="apply-cv-error" style="display:none;padding:0.85rem 1rem;background:#fff1f2;border:1px solid #fecdd3;border-left:4px solid #e11d48;border-radius:var(--radius-sm);">
+                <div style="font-size:0.9rem;font-weight:700;color:#9f1239;display:flex;align-items:center;gap:0.5rem;">
+                    <span>⚠️</span>
+                    <span>Không thể kiểm tra tệp CV</span>
+                </div>
+                <div id="apply-cv-error-msg" style="font-size:0.82rem;color:#be123c;margin:0.35rem 0 0.5rem;line-height:1.4;">
+                    Đã xảy ra lỗi khi kiểm tra thông tin CV.
+                </div>
+                <button type="button" class="btn btn-outline btn-sm" style="font-size:0.8rem;padding:0.25rem 0.6rem;" onclick="checkCvReadiness()">
+                    Thử lại
+                </button>
             </div>
         </div>
 
@@ -161,7 +184,7 @@
 
             <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:1rem;border-top:1px solid var(--border);">
                 <button type="button" onclick="closeApplyModal()" class="btn btn-outline btn-sm">Hủy</button>
-                <button type="submit" id="btn-submit-apply" class="btn btn-primary btn-sm">
+                <button type="submit" id="btn-submit-apply" class="btn btn-primary btn-sm" disabled style="opacity:0.6;cursor:not-allowed;">
                     Gửi Đơn Ứng Tuyển
                 </button>
             </div>
@@ -266,40 +289,87 @@ async function openApplyModal() {
     document.getElementById("apply-modal-company").innerText = currentJobData ? (currentJobData.company_name || "Nhà tuyển dụng") : "";
     if (currentJobData && currentJobData.shift_type) {
         const sel = document.getElementById("apply-shift");
-        if (sel.querySelector(`option[value="${currentJobData.shift_type}"]`)) {
+        if (sel && sel.querySelector(`option[value="${currentJobData.shift_type}"]`)) {
             sel.value = currentJobData.shift_type;
         }
     }
-    document.getElementById("apply-error-box").style.display = "none";
+    const errBox = document.getElementById("apply-error-box");
+    if (errBox) errBox.style.display = "none";
 
+    modal.style.display = "flex";
+    await checkCvReadiness();
+}
+
+async function checkCvReadiness() {
     const cvLoading = document.getElementById("apply-cv-loading");
     const cvReady = document.getElementById("apply-cv-ready");
     const cvMissing = document.getElementById("apply-cv-missing");
+    const cvError = document.getElementById("apply-cv-error");
     const btnSubmit = document.getElementById("btn-submit-apply");
 
-    cvLoading.style.display = "flex";
-    cvReady.style.display = "none";
-    cvMissing.style.display = "none";
-    btnSubmit.disabled = true;
+    if (cvLoading) cvLoading.style.display = "flex";
+    if (cvReady) cvReady.style.display = "none";
+    if (cvMissing) cvMissing.style.display = "none";
+    if (cvError) cvError.style.display = "none";
 
-    modal.style.display = "flex";
+    if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.style.opacity = "0.6";
+        btnSubmit.style.cursor = "not-allowed";
+    }
 
     try {
         const cvRes = await apiRequest("/student/cv", { requireAuth: true });
-        cvLoading.style.display = "none";
-        if (cvRes && cvRes.success && cvRes.data && cvRes.data.file_name) {
-            const kbSize = (cvRes.data.file_size / 1024).toFixed(1);
-            document.getElementById("apply-cv-name").innerText = `${cvRes.data.file_name} (${kbSize} KB)`;
-            cvReady.style.display = "block";
-            btnSubmit.disabled = false;
+        if (cvLoading) cvLoading.style.display = "none";
+
+        if (cvRes && cvRes.success) {
+            if (cvRes.data && cvRes.data.file_name) {
+                const formattedSize = typeof formatBytes === "function"
+                    ? formatBytes(cvRes.data.file_size)
+                    : `${(cvRes.data.file_size / 1024).toFixed(1)} KB`;
+                document.getElementById("apply-cv-name").innerText = `${cvRes.data.file_name} (${formattedSize})`;
+                if (cvReady) cvReady.style.display = "block";
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.style.opacity = "1";
+                    btnSubmit.style.cursor = "pointer";
+                }
+            } else {
+                if (cvMissing) cvMissing.style.display = "block";
+                if (btnSubmit) {
+                    btnSubmit.disabled = true;
+                    btnSubmit.style.opacity = "0.6";
+                    btnSubmit.style.cursor = "not-allowed";
+                }
+            }
         } else {
-            cvMissing.style.display = "block";
-            btnSubmit.disabled = true;
+            if (cvError) {
+                const msgEl = document.getElementById("apply-cv-error-msg");
+                if (msgEl) msgEl.innerText = (cvRes && cvRes.message) ? cvRes.message : "Không thể kiểm tra tệp CV.";
+                cvError.style.display = "block";
+            } else if (cvMissing) {
+                cvMissing.style.display = "block";
+            }
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.style.opacity = "0.6";
+                btnSubmit.style.cursor = "not-allowed";
+            }
         }
     } catch (err) {
-        cvLoading.style.display = "none";
-        cvMissing.style.display = "block";
-        btnSubmit.disabled = true;
+        if (cvLoading) cvLoading.style.display = "none";
+        if (cvError) {
+            const msgEl = document.getElementById("apply-cv-error-msg");
+            if (msgEl) msgEl.innerText = "Lỗi kết nối máy chủ khi kiểm tra hồ sơ CV.";
+            cvError.style.display = "block";
+        } else if (cvMissing) {
+            cvMissing.style.display = "block";
+        }
+        if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.style.opacity = "0.6";
+            btnSubmit.style.cursor = "not-allowed";
+        }
     }
 }
 
@@ -308,55 +378,85 @@ function closeApplyModal() {
     if (modal) modal.style.display = "none";
 }
 
+// Close apply modal on backdrop click & ESC key
+window.addEventListener("click", (e) => {
+    const modal = document.getElementById("apply-modal");
+    if (modal && e.target === modal) {
+        closeApplyModal();
+    }
+});
+
+window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        closeApplyModal();
+    }
+});
+
 async function submitApplication(e) {
     e.preventDefault();
     const btn = document.getElementById("btn-submit-apply");
     const errBox = document.getElementById("apply-error-box");
-    errBox.style.display = "none";
+    if (errBox) errBox.style.display = "none";
 
     btn.disabled = true;
+    btn.style.opacity = "0.6";
+    btn.style.cursor = "not-allowed";
     btn.innerText = "Đang gửi đơn...";
 
     const shift = document.getElementById("apply-shift").value;
     const coverLetter = document.getElementById("apply-cover-letter").value.trim();
 
-    const res = await apiRequest(`/jobs/${encodeURIComponent(currentJobId)}/applications`, {
-        method: "POST",
-        body: {
-            preferred_shift: shift,
-            cover_letter: coverLetter
-        },
-        requireAuth: true
-    });
+    try {
+        const res = await apiRequest(`/jobs/${encodeURIComponent(currentJobId)}/applications`, {
+            method: "POST",
+            body: {
+                preferred_shift: shift,
+                cover_letter: coverLetter
+            },
+            requireAuth: true
+        });
 
-    btn.disabled = false;
-    btn.innerText = "Gửi Đơn Ứng Tuyển";
-
-    if (res && res.success) {
-        closeApplyModal();
-        showToast("Ứng tuyển thành công! Nhà tuyển dụng sẽ xem xét hồ sơ của bạn.", "success");
-        // Update apply buttons
-        const btnTop = document.getElementById("btn-apply-top");
-        const btnBottom = document.getElementById("btn-apply-bottom");
-        if (btnTop) {
-            btnTop.innerText = "✅ Đã Ứng Tuyển";
-            btnTop.disabled = true;
-            btnTop.classList.remove("btn-primary");
-            btnTop.classList.add("btn-secondary");
+        if (res && res.success) {
+            closeApplyModal();
+            showToast("Ứng tuyển thành công! Nhà tuyển dụng sẽ xem xét hồ sơ của bạn.", "success");
+            // Update apply buttons
+            const btnTop = document.getElementById("btn-apply-top");
+            const btnBottom = document.getElementById("btn-apply-bottom");
+            if (btnTop) {
+                btnTop.innerText = "✅ Đã Ứng Tuyển";
+                btnTop.disabled = true;
+                btnTop.classList.remove("btn-primary");
+                btnTop.classList.add("btn-secondary");
+            }
+            if (btnBottom) {
+                btnBottom.innerText = "✅ Đã Ứng Tuyển";
+                btnBottom.disabled = true;
+                btnBottom.classList.remove("btn-primary");
+                btnBottom.classList.add("btn-secondary");
+            }
+        } else {
+            let msg = (res && res.message) ? res.message : "Ứng tuyển không thành công.";
+            if (res && res.errors) {
+                msg += " " + Object.values(res.errors).flat().map(escapeHtml).join(" ");
+            }
+            if (errBox) {
+                errBox.innerText = msg;
+                errBox.style.display = "block";
+            }
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            btn.style.cursor = "pointer";
+            btn.innerText = "Gửi Đơn Ứng Tuyển";
         }
-        if (btnBottom) {
-            btnBottom.innerText = "✅ Đã Ứng Tuyển";
-            btnBottom.disabled = true;
-            btnBottom.classList.remove("btn-primary");
-            btnBottom.classList.add("btn-secondary");
+    } catch (err) {
+        if (errBox) {
+            errBox.innerText = "Lỗi kết nối máy chủ khi gửi đơn ứng tuyển.";
+            errBox.style.display = "block";
         }
-    } else {
-        let msg = (res && res.message) ? res.message : "Ứng tuyển không thành công.";
-        if (res && res.errors) {
-            msg += " " + Object.values(res.errors).flat().map(escapeHtml).join(" ");
-        }
-        errBox.innerText = msg;
-        errBox.style.display = "block";
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
+        btn.innerText = "Gửi Đơn Ứng Tuyển";
     }
 }
 

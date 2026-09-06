@@ -147,42 +147,52 @@
                     <!-- State 3: Empty State (No CV uploaded) -->
                     <div id="cv-state-empty" style="display:none;padding:2rem 1.5rem;background:#f8fafc;border:2px dashed #cbd5e1;border-radius:var(--radius);text-align:center;cursor:pointer;transition:border-color 0.2s;"
                          onclick="document.getElementById('cv-file-input').click();">
-                        <div style="width:48px;height:48px;margin:0 auto 0.75rem;border-radius:50%;background:#e0e7ff;display:flex;align-items:center;justify-content:center;color:var(--primary);">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <div style="width:52px;height:52px;margin:0 auto 0.75rem;border-radius:50%;background:#e0e7ff;display:flex;align-items:center;justify-content:center;color:var(--primary);">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                 <polyline points="17 8 12 3 7 8"></polyline>
                                 <line x1="12" y1="3" x2="12" y2="15"></line>
                             </svg>
                         </div>
-                        <div style="font-weight:600;color:var(--dark);margin-bottom:0.25rem;">Kéo thả file PDF vào đây hoặc bấm để chọn tệp</div>
-                        <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.75rem;">Hệ thống chỉ chấp nhận định dạng PDF chuẩn, dung lượng tối đa 5 MB.</p>
-                        <button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation(); document.getElementById('cv-file-input').click();">
-                            Chọn tệp PDF từ máy tính
-                        </button>
+                        <div style="font-weight:700;color:var(--dark);font-size:1.05rem;margin-bottom:0.35rem;">Chưa có CV trong hồ sơ</div>
+                        <p style="font-size:0.875rem;color:var(--text-muted);margin:0 auto 0.75rem;max-width:480px;line-height:1.5;">
+                            Tải lên tệp CV (định dạng PDF) để hoàn thiện hồ sơ và sẵn sàng nộp đơn ứng tuyển việc làm.
+                        </p>
+                        <div style="display:inline-flex;align-items:center;gap:0.5rem;font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem;">
+                            <span>📄 Định dạng: <strong>PDF (.pdf)</strong></span>
+                            <span>&bull;</span>
+                            <span>Dung lượng tối đa: <strong>5 MB</strong></span>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation(); document.getElementById('cv-file-input').click();">
+                                📤 Chọn tệp PDF từ máy tính
+                            </button>
+                        </div>
                     </div>
 
                     <!-- State 4: Active CV State (File uploaded) -->
                     <div id="cv-state-active" style="display:none;padding:1.25rem;background:#ffffff;border:1px solid #10b981;border-left:5px solid #10b981;border-radius:var(--radius);box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-                        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
                             <div style="display:flex;align-items:center;gap:1rem;min-width:240px;">
-                                <div style="width:44px;height:52px;background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#ef4444;font-weight:800;font-size:0.8rem;flex-shrink:0;">
-                                    PDF
+                                <div style="width:48px;height:56px;background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ef4444;flex-shrink:0;">
+                                    <span style="font-size:1.2rem;line-height:1;">📄</span>
+                                    <span style="font-weight:800;font-size:0.7rem;margin-top:2px;">PDF</span>
                                 </div>
                                 <div>
-                                    <div id="cv-active-name" style="font-weight:700;color:var(--dark);word-break:break-all;font-size:0.95rem;">ten_file_cv.pdf</div>
-                                    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:0.25rem;font-size:0.8rem;color:var(--text-muted);">
+                                    <div id="cv-active-name" style="font-weight:700;color:var(--dark);word-break:break-all;font-size:1rem;">ten_file_cv.pdf</div>
+                                    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:0.25rem;font-size:0.82rem;color:var(--text-muted);">
                                         <span id="cv-active-size">0 KB</span>
                                         <span>&bull;</span>
                                         <span id="cv-active-date">Đã tải lên: 01/01/2026</span>
                                     </div>
                                     <div style="margin-top:0.4rem;">
-                                        <span style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.15rem 0.5rem;background:#d1fae5;color:#065f46;border-radius:4px;font-size:0.75rem;font-weight:600;">
-                                            ✓ CV đang hoạt động
+                                        <span style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.2rem 0.6rem;background:#d1fae5;color:#065f46;border-radius:4px;font-size:0.78rem;font-weight:600;">
+                                            ✓ CV đang hoạt động (Sẵn sàng ứng tuyển)
                                         </span>
                                     </div>
                                 </div>
                             </div>
-                            <div style="display:flex;align-items:center;gap:0.5rem;">
+                            <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
                                 <button type="button" id="btn-replace-cv" class="btn btn-outline btn-sm" onclick="document.getElementById('cv-file-input').click();">
                                     Thay thế CV
                                 </button>
@@ -506,8 +516,10 @@ function renderCvState(activeCv) {
         if (activeEl) {
             activeEl.style.display = "block";
             document.getElementById("cv-active-name").textContent = activeCv.file_name;
-            document.getElementById("cv-active-size").textContent = formatBytes(activeCv.file_size);
-            document.getElementById("cv-active-date").textContent = "Đã tải lên: " + formatDate(activeCv.uploaded_at);
+            const sizeStr = typeof formatBytes === "function" ? formatBytes(activeCv.file_size) : (activeCv.file_size + " B");
+            document.getElementById("cv-active-size").textContent = sizeStr;
+            const dateStr = typeof formatDateTime === "function" ? formatDateTime(activeCv.uploaded_at) : formatDate(activeCv.uploaded_at);
+            document.getElementById("cv-active-date").textContent = "Đã tải lên: " + (dateStr || "Gần đây");
         }
     } else {
         if (emptyEl) emptyEl.style.display = "block";
@@ -537,7 +549,7 @@ function showCvFeedback(message, type = "success") {
 async function handleCvUpload(file) {
     if (!file) return;
 
-    // Client-side quick checks
+    // Client-side quick validation
     if (!file.name.toLowerCase().endsWith(".pdf") && file.type !== "application/pdf") {
         showCvFeedback("Định dạng tệp không hợp lệ. Hệ thống chỉ chấp nhận tệp PDF (.pdf).", "error");
         return;
@@ -559,35 +571,43 @@ async function handleCvUpload(file) {
     const formData = new FormData();
     formData.append("cv_file", file);
 
-    const res = await apiRequest("/student/cv", {
-        method: "POST",
-        body: formData,
-        requireAuth: true
-    });
+    try {
+        const res = await apiRequest("/student/cv", {
+            method: "POST",
+            body: formData,
+            requireAuth: true
+        });
 
-    if (uploadingEl) uploadingEl.style.display = "none";
+        if (uploadingEl) uploadingEl.style.display = "none";
 
-    if (res && res.success && res.data) {
-        showCvFeedback("Tải lên CV thành công!", "success");
-        showToast("Tải lên CV thành công!", "success");
-        renderCvState(res.data);
+        if (res && res.success && res.data) {
+            showCvFeedback("Tải lên và lưu trữ CV thành công!", "success");
+            showToast("Tải lên CV thành công!", "success");
+            renderCvState(res.data);
 
-        // Update completion percentage
-        const profRes = await apiRequest("/student/profile", { requireAuth: true });
-        if (profRes && profRes.success && profRes.data) {
-            const pct = profRes.data.profile_completion_percent || 0;
-            document.getElementById("profile-percent-badge").innerText = `${pct}%`;
-            document.getElementById("profile-progress-bar").style.width = `${pct}%`;
+            // Update completion percentage
+            const profRes = await apiRequest("/student/profile", { requireAuth: true });
+            if (profRes && profRes.success && profRes.data) {
+                const pct = profRes.data.profile_completion_percent || 0;
+                document.getElementById("profile-percent-badge").innerText = `${pct}%`;
+                document.getElementById("profile-progress-bar").style.width = `${pct}%`;
+            }
+        } else {
+            let errMsg = (res && res.message) ? res.message : "Tải lên CV thất bại.";
+            if (res && res.errors && res.errors.cv_file) {
+                errMsg = res.errors.cv_file.join(" ");
+            }
+            showCvFeedback(errMsg, "error");
+            showToast(errMsg, "error");
+
+            // Revert to current server state
+            const currentRes = await apiRequest("/student/cv", { requireAuth: true });
+            renderCvState(currentRes && currentRes.data ? currentRes.data : null);
         }
-    } else {
-        let errMsg = (res && res.message) ? res.message : "Tải lên CV thất bại.";
-        if (res && res.errors && res.errors.cv_file) {
-            errMsg = res.errors.cv_file.join(" ");
-        }
-        showCvFeedback(errMsg, "error");
-        showToast(errMsg, "error");
-
-        // Revert to current server state
+    } catch (err) {
+        if (uploadingEl) uploadingEl.style.display = "none";
+        showCvFeedback("Lỗi kết nối khi tải lên CV. Vui lòng thử lại.", "error");
+        showToast("Lỗi kết nối khi tải lên CV.", "error");
         const currentRes = await apiRequest("/student/cv", { requireAuth: true });
         renderCvState(currentRes && currentRes.data ? currentRes.data : null);
     }
@@ -602,27 +622,48 @@ async function handleDeleteCv() {
         return;
     }
 
-    const res = await apiRequest("/student/cv", {
-        method: "DELETE",
-        requireAuth: true
-    });
+    const btnDelete = document.getElementById("btn-delete-cv");
+    const btnReplace = document.getElementById("btn-replace-cv");
+    const origText = btnDelete ? btnDelete.innerText : "Xóa CV";
 
-    if (res && res.success) {
-        showCvFeedback("Đã xóa CV khỏi hồ sơ.", "success");
-        showToast("Đã xóa CV thành công.", "success");
-        renderCvState(null);
+    if (btnDelete) {
+        btnDelete.disabled = true;
+        btnDelete.innerText = "Đang xóa...";
+    }
+    if (btnReplace) btnReplace.disabled = true;
 
-        // Update completion percentage
-        const profRes = await apiRequest("/student/profile", { requireAuth: true });
-        if (profRes && profRes.success && profRes.data) {
-            const pct = profRes.data.profile_completion_percent || 0;
-            document.getElementById("profile-percent-badge").innerText = `${pct}%`;
-            document.getElementById("profile-progress-bar").style.width = `${pct}%`;
+    try {
+        const res = await apiRequest("/student/cv", {
+            method: "DELETE",
+            requireAuth: true
+        });
+
+        if (res && res.success) {
+            showCvFeedback("Đã xóa CV khỏi hồ sơ.", "success");
+            showToast("Đã xóa CV thành công.", "success");
+            renderCvState(null);
+
+            // Update completion percentage
+            const profRes = await apiRequest("/student/profile", { requireAuth: true });
+            if (profRes && profRes.success && profRes.data) {
+                const pct = profRes.data.profile_completion_percent || 0;
+                document.getElementById("profile-percent-badge").innerText = `${pct}%`;
+                document.getElementById("profile-progress-bar").style.width = `${pct}%`;
+            }
+        } else {
+            const errMsg = (res && res.message) ? res.message : "Xóa CV thất bại.";
+            showCvFeedback(errMsg, "error");
+            showToast(errMsg, "error");
         }
-    } else {
-        const errMsg = (res && res.message) ? res.message : "Xóa CV thất bại.";
-        showCvFeedback(errMsg, "error");
-        showToast(errMsg, "error");
+    } catch (err) {
+        showCvFeedback("Lỗi kết nối máy chủ khi xóa CV.", "error");
+        showToast("Lỗi kết nối máy chủ khi xóa CV.", "error");
+    } finally {
+        if (btnDelete) {
+            btnDelete.disabled = false;
+            btnDelete.innerText = origText;
+        }
+        if (btnReplace) btnReplace.disabled = false;
     }
 }
 </script>

@@ -149,19 +149,25 @@ async function loadApplications(page = 1) {
                         ` : ''}
 
                         ${app.has_cv_snapshot ? `
-                            <div style="font-size:0.82rem;color:var(--text);margin-top:0.25rem;">
-                                📄 CV đã nộp: <strong>${escapeHtml(app.cv_file_name || 'Bản sao PDF')}</strong>
+                            <div style="font-size:0.82rem;color:var(--text);margin-top:0.35rem;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
+                                <span>📄 CV đã nộp:</span>
+                                <strong style="color:var(--dark);word-break:break-all;">${escapeHtml(app.cv_file_name || 'Bản sao PDF')}</strong>
+                                ${app.cv_file_size ? `<span style="color:var(--text-muted);font-size:0.78rem;">(${typeof formatBytes === 'function' ? formatBytes(app.cv_file_size) : app.cv_file_size + ' B'})</span>` : ''}
                             </div>
                         ` : (app.cv_url_snapshot ? `
-                            <div style="font-size:0.8rem;color:var(--text-muted);">
-                                CV đính kèm lúc nộp: <a href="${escapeHtml(app.cv_url_snapshot)}" target="_blank" style="text-decoration:underline;">Xem liên kết CV</a>
+                            <div style="font-size:0.8rem;color:var(--text-muted);margin-top:0.35rem;">
+                                CV đính kèm lúc nộp: <a href="${escapeHtml(app.cv_url_snapshot)}" target="_blank" rel="noopener noreferrer" style="text-decoration:underline;">Xem liên kết CV</a>
                             </div>
-                        ` : '')}
+                        ` : `
+                            <div style="font-size:0.8rem;color:var(--text-muted);margin-top:0.35rem;">
+                                Không có tệp CV đính kèm
+                            </div>
+                        `)}
                     </div>
 
-                    <div class="row-actions" style="flex-direction:column;align-items:flex-end;">
+                    <div class="row-actions student-app-actions">
                         ${app.has_cv_snapshot ? `
-                            <button onclick="viewApplicationCv('${escapeHtml(app.id)}')" class="btn btn-outline btn-sm row-action-btn" style="display:inline-flex;align-items:center;gap:0.35rem;">
+                            <button onclick="viewApplicationCv('${escapeHtml(app.id)}', this)" class="btn btn-outline btn-sm row-action-btn" style="display:inline-flex;align-items:center;gap:0.35rem;">
                                 📄 Xem CV đã nộp
                             </button>
                         ` : ''}
