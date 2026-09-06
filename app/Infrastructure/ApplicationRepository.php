@@ -34,8 +34,9 @@ class ApplicationRepository implements ApplicationRepositoryInterface
         $stmt = $this->db->prepare(
             "INSERT INTO `applications` (
                 `id`, `job_id`, `developer_id`, `cover_letter`, `resume`, 
-                `preferred_shift`, `status`, `employer_note`, `applied_at`
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                `preferred_shift`, `status`, `employer_note`, `applied_at`,
+                `cv_storage_path`, `cv_original_name`, `cv_file_size`, `cv_mime_type`
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
 
         $stmt->execute([
@@ -47,7 +48,11 @@ class ApplicationRepository implements ApplicationRepositoryInterface
             $application->getPreferredShift(),
             $application->getStatus(),
             $application->getEmployerNote(),
-            $application->getAppliedAt() ?? date("Y-m-d H:i:s")
+            $application->getAppliedAt() ?? date("Y-m-d H:i:s"),
+            $application->getCvStoragePath(),
+            $application->getCvOriginalName(),
+            $application->getCvFileSize(),
+            $application->getCvMimeType()
         ]);
     }
 

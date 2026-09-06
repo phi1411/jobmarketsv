@@ -8,13 +8,19 @@ class Application
     private string $job_id;
     private string $developer_id; // Represents student_user_id
     private ?string $cover_letter = null;
-    private ?string $resume = null; // Represents cv_url_snapshot
+    private ?string $resume = null; // Represents legacy cv_url_snapshot
     private ?string $preferred_shift = null;
     private string $status = "pending";
     private ?string $employer_note = null;
     private ?string $applied_at = null;
     private ?string $created_at = null;
     private ?string $updated_at = null;
+
+    // CV Snapshot metadata (CV-P0-02)
+    private ?string $cv_storage_path = null;
+    private ?string $cv_original_name = null;
+    private ?int $cv_file_size = null;
+    private ?string $cv_mime_type = null;
 
     // Joined metadata (read-only for presentation)
     private ?string $job_title = null;
@@ -48,10 +54,18 @@ class Application
         string $developer_id,
         ?string $cover_letter = null,
         ?string $resume = null,
-        ?string $preferred_shift = null
+        ?string $preferred_shift = null,
+        ?string $cv_storage_path = null,
+        ?string $cv_original_name = null,
+        ?int $cv_file_size = null,
+        ?string $cv_mime_type = null
     ): static {
         $app = new static($job_id, $developer_id, $cover_letter, $resume, "pending");
         $app->preferred_shift = $preferred_shift;
+        $app->cv_storage_path = $cv_storage_path;
+        $app->cv_original_name = $cv_original_name;
+        $app->cv_file_size = $cv_file_size;
+        $app->cv_mime_type = $cv_mime_type;
         return $app;
     }
 
@@ -81,6 +95,12 @@ class Application
         $app->student_university = $data["student_university"] ?? ($data["university"] ?? null);
         $app->student_major = $data["student_major"] ?? ($data["major"] ?? null);
 
+        // CV Snapshot
+        $app->cv_storage_path = $data["cv_storage_path"] ?? null;
+        $app->cv_original_name = $data["cv_original_name"] ?? null;
+        $app->cv_file_size = isset($data["cv_file_size"]) && $data["cv_file_size"] !== null ? (int)$data["cv_file_size"] : null;
+        $app->cv_mime_type = $data["cv_mime_type"] ?? null;
+
         return $app;
     }
 
@@ -105,6 +125,7 @@ class Application
     /**
      * Presentation array for Student:
      * NEVER returns employer_note or internal company private notes.
+     * Never exposes raw cv_storage_path.
      */
     public function toArrayForStudent(): array
     {
@@ -117,6 +138,10 @@ class Application
             "cover_letter"    => $this->cover_letter,
             "cv_url_snapshot" => $this->resume,
             "resume"          => $this->resume,
+            "has_cv_snapshot" => !empty($this->cv_storage_path),
+            "cv_file_name"    => $this->cv_original_name,
+            "cv_file_size"    => $this->cv_file_size,
+            "cv_mime_type"    => $this->cv_mime_type,
             "preferred_shift" => $this->preferred_shift,
             "status"          => $this->status,
             "applied_at"      => $this->applied_at,
@@ -127,7 +152,8 @@ class Application
 
     /**
      * Presentation array for Employer / Company:
-     * Includes employer_note, student details, and CV snapshot.
+     * Includes employer_note, student details, and CV snapshot indicators.
+     * Never exposes raw cv_storage_path.
      */
     public function toArrayForCompany(): array
     {
@@ -144,6 +170,10 @@ class Application
             "cover_letter"       => $this->cover_letter,
             "cv_url_snapshot"    => $this->resume,
             "resume"             => $this->resume,
+            "has_cv_snapshot"    => !empty($this->cv_storage_path),
+            "cv_file_name"       => $this->cv_original_name,
+            "cv_file_size"       => $this->cv_file_size,
+            "cv_mime_type"       => $this->cv_mime_type,
             "preferred_shift"    => $this->preferred_shift,
             "status"             => $this->status,
             "employer_note"      => $this->employer_note,
@@ -166,6 +196,12 @@ class Application
     public function getJobTitle(): ?string { return $this->job_title; }
     public function getCompanyId(): ?string { return $this->company_id; }
     public function getCompanyName(): ?string { return $this->company_name; }
+
+    // CV Snapshot getters
+    public function getCvStoragePath(): ?string { return $this->cv_storage_path; }
+    public function getCvOriginalName(): ?string { return $this->cv_original_name; }
+    public function getCvFileSize(): ?int { return $this->cv_file_size; }
+    public function getCvMimeType(): ?string { return $this->cv_mime_type; }
 
     public function setPreferredShift(?string $shift): self { $this->preferred_shift = $shift; return $this; }
     public function setEmployerNote(?string $note): self { $this->employer_note = $note; return $this; }

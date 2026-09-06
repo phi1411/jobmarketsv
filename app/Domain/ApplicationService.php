@@ -4,6 +4,7 @@ namespace JobMarket\Domain;
 
 use JobMarket\Domain\Application\Application;
 use JobMarket\Domain\Application\ApplicationRepositoryInterface;
+use JobMarket\Domain\Cv\CvStorageService;
 use JobMarket\Exceptions\AppException;
 use JobMarket\Exceptions\AuthorizationException;
 use JobMarket\Exceptions\NotFoundException;
@@ -22,19 +23,22 @@ class ApplicationService
     private CompanyRepository $companyRepo;
     private ProfileRepository $profileRepo;
     private NotificationService $notificationService;
+    private CvStorageService $cvStorageService;
 
     public function __construct(
         ?ApplicationRepository $applicationRepo = null,
         ?JobRepository $jobRepo = null,
         ?CompanyRepository $companyRepo = null,
         ?ProfileRepository $profileRepo = null,
-        ?NotificationService $notificationService = null
+        ?NotificationService $notificationService = null,
+        ?CvStorageService $cvStorageService = null
     ) {
         $this->applicationRepo = $applicationRepo ?? new ApplicationRepository();
         $this->jobRepo = $jobRepo ?? new JobRepository();
         $this->companyRepo = $companyRepo ?? new CompanyRepository();
         $this->profileRepo = $profileRepo ?? new ProfileRepository();
         $this->notificationService = $notificationService ?? new NotificationService();
+        $this->cvStorageService = $cvStorageService ?? new CvStorageService();
     }
 
     /**
@@ -84,23 +88,34 @@ class ApplicationService
             throw new ValidationException(["cover_letter" => ["Thư ứng tuyển không được vượt quá 3000 ký tự."]]);
         }
 
-        // 5. Snapshot CV URL from student profile
+        // 5. Server-owned active CV selection from student profile (CV-P0-02)
+        // Disregard any client-supplied CV parameters (cv_url_snapshot, resume, cv_url, cv_storage_path, file_id, path, user_id)
         $studentProfile = $this->profileRepo->findByUserId($studentUserId);
-        $cvSnapshot = $studentProfile["cv_url"] ?? null;
-        if (isset($data["cv_url_snapshot"]) && !empty($data["cv_url_snapshot"])) {
-            $inputCv = trim((string)$data["cv_url_snapshot"]);
-            if (filter_var($inputCv, FILTER_VALIDATE_URL)) {
-                $cvSnapshot = $inputCv;
-            }
-        } elseif (isset($data["resume"]) && !empty($data["resume"])) {
-            $inputCv = trim((string)$data["resume"]);
-            if (filter_var($inputCv, FILTER_VALIDATE_URL)) {
-                $cvSnapshot = $inputCv;
-            }
+        $cvStoragePath = $studentProfile["cv_storage_path"] ?? null;
+        if (empty($cvStoragePath)) {
+            throw new ValidationException(["cv_file" => ["Bạn chưa có CV tải lên trong hồ sơ. Vui lòng tải lên CV định dạng PDF trước khi ứng tuyển."]]);
+        }
+        if (!$this->cvStorageService->fileExists($cvStoragePath)) {
+            throw new ValidationException(["cv_file" => ["Tệp CV trong hồ sơ không tồn tại hoặc đã bị xóa. Vui lòng tải lên lại CV trước khi ứng tuyển."]]);
         }
 
+        $cvOriginalName = $studentProfile["cv_original_name"] ?? "cv.pdf";
+        $cvFileSize = isset($studentProfile["cv_file_size"]) && $studentProfile["cv_file_size"] !== null ? (int)$studentProfile["cv_file_size"] : null;
+        $cvMimeType = $studentProfile["cv_mime_type"] ?? "application/pdf";
+
         // 6. Create application Entity & persist with transaction
-        $app = Application::create($jobId, $studentUserId, $coverLetter, $cvSnapshot, $preferredShift);
+        // Do NOT copy student_profiles.cv_url into applications.resume or cv_url_snapshot for new applications
+        $app = Application::create(
+            $jobId,
+            $studentUserId,
+            $coverLetter,
+            null,
+            $preferredShift,
+            $cvStoragePath,
+            $cvOriginalName,
+            $cvFileSize,
+            $cvMimeType
+        );
 
         $db = $this->applicationRepo->getDb();
         $db->beginTransaction();
@@ -359,5 +374,52 @@ class ApplicationService
 
         $fresh = $this->applicationRepo->findById($id);
         return Application::fromArray($fresh)->toArrayForStudent();
+    }
+
+    /**
+     * Get protected CV document file info for authorized streaming (CV-P0-02)
+     */
+    public function getCvDocument(array $user, string $id): array
+    {
+        $row = $this->applicationRepo->findById($id);
+        if (!$row) {
+            throw new NotFoundException("Không tìm thấy thông tin đơn ứng tuyển.");
+        }
+
+        $role = $user["role"] ?? "";
+
+        // Strictly authorize: student applicant or job-owning employer
+        if ($role === "student" || $role === "developer") {
+            if ($row["developer_id"] !== $user["id"]) {
+                throw new AuthorizationException("Bạn không có quyền truy cập CV của đơn ứng tuyển này.");
+            }
+        } elseif ($role === "company") {
+            $company = $this->companyRepo->findByUserId($user["id"]);
+            if (!$company || $row["company_id"] !== $company["id"]) {
+                throw new AuthorizationException("Bạn không có quyền truy cập CV của đơn ứng tuyển này.");
+            }
+        } else {
+            // Admin, guest, or any other role forbidden
+            throw new AuthorizationException("Bạn không có quyền truy cập tài liệu CV này.");
+        }
+
+        $cvStoragePath = $row["cv_storage_path"] ?? null;
+        if (empty($cvStoragePath) || !$this->cvStorageService->fileExists($cvStoragePath)) {
+            throw new NotFoundException("Tệp CV không tồn tại trên hệ thống.");
+        }
+
+        $absolutePath = $this->cvStorageService->getAbsolutePath($cvStoragePath);
+        $originalName = $row["cv_original_name"] ?? "cv.pdf";
+        $mimeType = $row["cv_mime_type"] ?? "application/pdf";
+        $fileSize = isset($row["cv_file_size"]) && $row["cv_file_size"] !== null
+            ? (int)$row["cv_file_size"]
+            : (file_exists($absolutePath) ? filesize($absolutePath) : 0);
+
+        return [
+            "path"          => $absolutePath,
+            "original_name" => $originalName,
+            "mime_type"     => $mimeType,
+            "file_size"     => $fileSize,
+        ];
     }
 }

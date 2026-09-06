@@ -112,7 +112,8 @@ $migrations = [
     \JobMarket\Migrations\NotificationDashboardEnhancementMigration::class,
     \JobMarket\Migrations\AdminModerationAuditMigration::class,
     \JobMarket\Migrations\OAuthIdentityMigration::class,
-    \JobMarket\Migrations\StudentCvUploadMigration::class
+    \JobMarket\Migrations\StudentCvUploadMigration::class,
+    \JobMarket\Migrations\ApplicationCvSnapshotMigration::class
 ];
 
 $ranCount = 0;

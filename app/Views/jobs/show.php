@@ -114,6 +114,31 @@
             <div id="apply-modal-company" style="font-size:0.85rem;color:var(--text-muted);"></div>
         </div>
 
+        <div id="apply-cv-readiness" style="margin-bottom:1.25rem;">
+            <div id="apply-cv-loading" style="display:flex;align-items:center;gap:0.5rem;font-size:0.88rem;color:var(--text-muted);padding:0.75rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);">
+                <span>⏳ Đang kiểm tra hồ sơ CV...</span>
+            </div>
+            <div id="apply-cv-ready" style="display:none;padding:0.75rem 1rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--radius-sm);">
+                <div style="font-size:0.88rem;font-weight:600;color:#166534;display:flex;align-items:center;gap:0.5rem;">
+                    <span>📄</span>
+                    <span>CV đính kèm: <strong id="apply-cv-name"></strong></span>
+                </div>
+                <div style="font-size:0.8rem;color:#15803d;margin-top:0.25rem;">
+                    Phiên bản CV hiện tại sẽ được lưu giữ bất biến cùng đơn ứng tuyển này.
+                </div>
+            </div>
+            <div id="apply-cv-missing" style="display:none;padding:0.75rem 1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:var(--radius-sm);">
+                <div style="font-size:0.88rem;font-weight:600;color:#991b1b;display:flex;align-items:center;gap:0.5rem;">
+                    <span>⚠️</span>
+                    <span>Bạn chưa có CV trong hồ sơ</span>
+                </div>
+                <div style="font-size:0.8rem;color:#b91c1c;margin-top:0.25rem;margin-bottom:0.5rem;">
+                    Vui lòng tải lên CV định dạng PDF trong hồ sơ trước khi nộp đơn ứng tuyển.
+                </div>
+                <a href="/profile" class="btn btn-outline btn-sm" style="font-size:0.8rem;padding:0.25rem 0.5rem;display:inline-block;">Tải lên CV ngay &rarr;</a>
+            </div>
+        </div>
+
         <div id="apply-error-box" style="display:none;margin-bottom:1rem;" class="toast toast-error"></div>
 
         <form id="apply-form" onsubmit="submitApplication(event)">
@@ -131,7 +156,7 @@
             <div class="form-group" style="margin-bottom:1.5rem;">
                 <label class="form-label">Thư giới thiệu / Lời nhắn tới nhà tuyển dụng</label>
                 <textarea id="apply-cover-letter" class="form-control" rows="4" placeholder="Giới thiệu nhanh về bạn, kinh nghiệm làm thêm (nếu có) và mong muốn khi làm việc..."></textarea>
-                <small class="form-help">Hồ sơ năng lực và liên kết CV đã lưu trong hồ sơ của bạn sẽ được gửi kèm tự động.</small>
+                <small class="form-help">Bản sao CV PDF từ hồ sơ của bạn sẽ được lưu giữ bất biến cùng đơn ứng tuyển này.</small>
             </div>
 
             <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:1rem;border-top:1px solid var(--border);">
@@ -234,7 +259,7 @@ function handleApplyJob() {
     openApplyModal();
 }
 
-function openApplyModal() {
+async function openApplyModal() {
     const modal = document.getElementById("apply-modal");
     if (!modal) return;
     document.getElementById("apply-modal-job-title").innerText = currentJobData ? currentJobData.title : "";
@@ -246,7 +271,36 @@ function openApplyModal() {
         }
     }
     document.getElementById("apply-error-box").style.display = "none";
+
+    const cvLoading = document.getElementById("apply-cv-loading");
+    const cvReady = document.getElementById("apply-cv-ready");
+    const cvMissing = document.getElementById("apply-cv-missing");
+    const btnSubmit = document.getElementById("btn-submit-apply");
+
+    cvLoading.style.display = "flex";
+    cvReady.style.display = "none";
+    cvMissing.style.display = "none";
+    btnSubmit.disabled = true;
+
     modal.style.display = "flex";
+
+    try {
+        const cvRes = await apiRequest("/student/cv", { requireAuth: true });
+        cvLoading.style.display = "none";
+        if (cvRes && cvRes.success && cvRes.data && cvRes.data.file_name) {
+            const kbSize = (cvRes.data.file_size / 1024).toFixed(1);
+            document.getElementById("apply-cv-name").innerText = `${cvRes.data.file_name} (${kbSize} KB)`;
+            cvReady.style.display = "block";
+            btnSubmit.disabled = false;
+        } else {
+            cvMissing.style.display = "block";
+            btnSubmit.disabled = true;
+        }
+    } catch (err) {
+        cvLoading.style.display = "none";
+        cvMissing.style.display = "block";
+        btnSubmit.disabled = true;
+    }
 }
 
 function closeApplyModal() {
