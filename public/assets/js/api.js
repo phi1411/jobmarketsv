@@ -203,6 +203,33 @@ function getVerificationBadge(status) {
     return `<span class="status-badge ${s.modifier}"><span class="status-dot"></span>${escapeHtml(s.label)}</span>`;
 }
 
+// 5. Protected CV Delivery Helper (CV-P0-02)
+async function viewApplicationCv(appId) {
+    const token = TokenStorage.getToken();
+    if (!token) {
+        showToast("Vui lòng đăng nhập để xem CV.", "error");
+        return;
+    }
+    try {
+        const response = await fetch(`/applications/${encodeURIComponent(appId)}/cv`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            const errData = await response.json().catch(() => null);
+            const msg = (errData && errData.message) ? errData.message : `Không thể tải CV (${response.status})`;
+            showToast(msg, "error");
+            return;
+        }
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, "_blank");
+    } catch (err) {
+        showToast("Lỗi kết nối khi tải CV.", "error");
+    }
+}
+
 // Explicit window exports to prevent any scope issues
 if (typeof window !== "undefined") {
     window.escapeHtml = escapeHtml;
@@ -215,4 +242,5 @@ if (typeof window !== "undefined") {
     window.getAppStatusBadge = getAppStatusBadge;
     window.getJobStatusBadge = getJobStatusBadge;
     window.getVerificationBadge = getVerificationBadge;
+    window.viewApplicationCv = viewApplicationCv;
 }

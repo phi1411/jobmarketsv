@@ -148,14 +148,23 @@ async function loadApplications(page = 1) {
                             </div>
                         ` : ''}
 
-                        ${app.cv_url_snapshot ? `
+                        ${app.has_cv_snapshot ? `
+                            <div style="font-size:0.82rem;color:var(--text);margin-top:0.25rem;">
+                                📄 CV đã nộp: <strong>${escapeHtml(app.cv_file_name || 'Bản sao PDF')}</strong>
+                            </div>
+                        ` : (app.cv_url_snapshot ? `
                             <div style="font-size:0.8rem;color:var(--text-muted);">
                                 CV đính kèm lúc nộp: <a href="${escapeHtml(app.cv_url_snapshot)}" target="_blank" style="text-decoration:underline;">Xem liên kết CV</a>
                             </div>
-                        ` : ''}
+                        ` : '')}
                     </div>
 
                     <div class="row-actions" style="flex-direction:column;align-items:flex-end;">
+                        ${app.has_cv_snapshot ? `
+                            <button onclick="viewApplicationCv('${escapeHtml(app.id)}')" class="btn btn-outline btn-sm row-action-btn" style="display:inline-flex;align-items:center;gap:0.35rem;">
+                                📄 Xem CV đã nộp
+                            </button>
+                        ` : ''}
                         <a href="/viec-lam/${encodeURIComponent(app.job_id)}" class="btn btn-outline btn-sm row-action-btn">
                             Xem việc làm &rarr;
                         </a>

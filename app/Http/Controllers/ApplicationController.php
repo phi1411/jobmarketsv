@@ -153,4 +153,25 @@ class ApplicationController extends Controller
     {
         return $this->withdraw($request, $id);
     }
+
+    /**
+     * Protected CV streaming/download (GET /applications/{id}/cv)
+     */
+    public function downloadCv(Request $request, string $id): Response
+    {
+        $user = $request->getUser();
+        if (!$user) {
+            throw new AuthenticationException("Vui lòng đăng nhập để xem tài liệu CV.");
+        }
+
+        $doc = $this->applicationService->getCvDocument($user, $id);
+
+        $inline = ($request->getParams["download"] ?? "") !== "1";
+        return Response::file(
+            $doc["path"],
+            $doc["original_name"],
+            $doc["mime_type"],
+            $inline
+        );
+    }
 }

@@ -207,7 +207,16 @@ class StudentCvService
             "SELECT COUNT(*) FROM `student_profiles` WHERE `cv_storage_path` = ? AND `user_id` != ?"
         );
         $stmt->execute([$activeStoragePath, $userId]);
-        $hasOtherReference = ((int)$stmt->fetchColumn()) > 0;
+        $hasOtherProfileRef = ((int)$stmt->fetchColumn()) > 0;
+
+        // Check if any application snapshot references this file (CV-P0-02)
+        $stmtApp = $this->db->prepare(
+            "SELECT COUNT(*) FROM `applications` WHERE `cv_storage_path` = ?"
+        );
+        $stmtApp->execute([$activeStoragePath]);
+        $hasApplicationRef = ((int)$stmtApp->fetchColumn()) > 0;
+
+        $hasOtherReference = $hasOtherProfileRef || $hasApplicationRef;
 
         $quarantineFilename = null;
 

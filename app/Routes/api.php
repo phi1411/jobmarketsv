@@ -89,6 +89,9 @@ return [
     // Retrieve a specific application by ID
     ["GET", "/applications/{id:[0-9a-zA-Z\-_]+}", [ApplicationController::class, "show"]],
 
+    // Protected CV document delivery (CV-P0-02)
+    ["GET", "/applications/{id:[0-9a-zA-Z\-_]+}/cv", [ApplicationController::class, "downloadCv"]],
+
     // Update application status (by employer)
     ["PATCH", "/applications/{id:[0-9a-zA-Z\-_]+}/status", [ApplicationController::class, "updateStatus"]],
     ["PUT", "/applications/{id:[0-9a-zA-Z\-_]+}/status", [ApplicationController::class, "updateStatus"]],

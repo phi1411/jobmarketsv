@@ -34,6 +34,8 @@ class Response
     private int $statusCode;
     private array $headers;
     private bool $isHtml = false;
+    private bool $isFile = false;
+    private ?string $filePath = null;
 
     public function __construct(mixed $data = [], int $statusCode = self::HTTP_OK, array $headers = [], bool $isHtml = false)
     {
@@ -102,9 +104,55 @@ class Response
         return new static($html, $statusCode, $headers, true);
     }
 
+    public static function file(
+        string $filePath,
+        string $fileName = "document.pdf",
+        string $mimeType = "application/pdf",
+        bool $inline = true,
+        array $headers = []
+    ): static {
+        $asciiName = preg_replace('/[^\x20-\x7E]/', '', $fileName);
+        if (empty($asciiName)) {
+            $asciiName = "document.pdf";
+        }
+        $encodedName = rawurlencode($fileName);
+        $dispositionType = $inline ? 'inline' : 'attachment';
+        $contentDisposition = "{$dispositionType}; filename=\"{$asciiName}\"; filename*=UTF-8''{$encodedName}";
+
+        $defaultHeaders = [
+            "Content-Type"           => $mimeType,
+            "Content-Disposition"    => $contentDisposition,
+            "X-Content-Type-Options" => "nosniff",
+            "Cache-Control"          => "private, no-cache, no-store, must-revalidate",
+            "Pragma"                 => "no-cache",
+            "Expires"                => "0",
+        ];
+
+        if (file_exists($filePath)) {
+            $defaultHeaders["Content-Length"] = (string)filesize($filePath);
+        }
+
+        $allHeaders = array_merge($defaultHeaders, $headers);
+
+        $response = new static("", self::HTTP_OK, $allHeaders, false);
+        $response->isFile = true;
+        $response->filePath = $filePath;
+        return $response;
+    }
+
     public static function redirect(string $url, int $statusCode = 302): static
     {
         return new static("", $statusCode, ["Location" => $url], true);
+    }
+
+    public function isFile(): bool
+    {
+        return $this->isFile;
+    }
+
+    public function getFilePath(): ?string
+    {
+        return $this->filePath;
     }
 
     public function getStatusCode(): int
@@ -154,6 +202,13 @@ class Response
 
         // Return empty body for 204 No Content or Redirect
         if ($this->statusCode === self::HTTP_NO_CONTENT || $this->statusCode === 301 || $this->statusCode === 302) {
+            return;
+        }
+
+        if ($this->isFile && $this->filePath !== null) {
+            if (file_exists($this->filePath)) {
+                readfile($this->filePath);
+            }
             return;
         }
 
