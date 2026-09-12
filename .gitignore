@@ -1,5 +1,8 @@
 /vendor/
 .env
+.env.*
+!.env.example
+!.env.testing
 /storage/logs/
 /storage/app/rate_limits/
 /storage/app/telemetry/

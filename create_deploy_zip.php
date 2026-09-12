@@ -1,0 +1,48 @@
+<?php
+
+$zipFile = __DIR__ . '/deploy.zip';
+if (file_exists($zipFile)) {
+    unlink($zipFile);
+}
+
+$zip = new ZipArchive();
+if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+    echo "Cannot create zip\n";
+    exit(1);
+}
+
+$dirs = ['app', 'public', 'vendor'];
+$files = ['.htaccess', 'jobmarket.sql', 'migrate.php', 'dispatch_job_alerts.php', '.env.append'];
+
+$baseLen = strlen(__DIR__) + 1;
+$fileCount = 0;
+
+foreach ($dirs as $dir) {
+    $dirPath = __DIR__ . DIRECTORY_SEPARATOR . $dir;
+    if (!is_dir($dirPath)) continue;
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::SELF_FIRST
+    );
+    foreach ($iterator as $item) {
+        $relPath = substr($item->getPathname(), $baseLen);
+        $subPath = str_replace('\\', '/', $relPath);
+        if ($item->isDir()) {
+            $zip->addEmptyDir($subPath);
+        } else {
+            $zip->addFile($item->getPathname(), $subPath);
+            $fileCount++;
+        }
+    }
+}
+
+foreach ($files as $file) {
+    $filePath = __DIR__ . DIRECTORY_SEPARATOR . $file;
+    if (file_exists($filePath)) {
+        $zip->addFile($filePath, $file);
+        $fileCount++;
+    }
+}
+
+$zip->close();
+echo "Successfully created deploy.zip with {$fileCount} files. Size: " . filesize($zipFile) . " bytes\n";

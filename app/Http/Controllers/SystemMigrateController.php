@@ -19,13 +19,72 @@ class SystemMigrateController extends Controller
 
         // If deploy.zip exists, extract it first
         $zipPath = $root . '/deploy.zip';
+        $extractedCount = 0;
         if (file_exists($zipPath) && class_exists('ZipArchive')) {
             $zip = new \ZipArchive();
             if ($zip->open($zipPath) === true) {
-                $zip->extractTo($root);
+                for ($i = 0; $i < $zip->numFiles; $i++) {
+                    $entry = $zip->getNameIndex($i);
+                    $normalized = str_replace('\\', '/', $entry);
+                    $target = $root . '/' . ltrim($normalized, '/');
+                    if (substr($normalized, -1) === '/') {
+                        if (!is_dir($target)) {
+                            @mkdir($target, 0777, true);
+                        }
+                    } else {
+                        $dir = dirname($target);
+                        if (!is_dir($dir)) {
+                            @mkdir($dir, 0777, true);
+                        }
+                        $content = $zip->getFromIndex($i);
+                        file_put_contents($target, $content);
+                        $extractedCount++;
+                    }
+                }
                 $zip->close();
                 @unlink($zipPath);
             }
+        }
+
+        // Ensure storage directories exist
+        $storageDirs = [
+            $root . '/storage',
+            $root . '/storage/app',
+            $root . '/storage/app/cvs',
+            $root . '/storage/app/oauth_states',
+            $root . '/storage/app/mail-preview',
+            $root . '/storage/logs'
+        ];
+        foreach ($storageDirs as $sDir) {
+            if (!is_dir($sDir)) {
+                @mkdir($sDir, 0777, true);
+            }
+        }
+
+        // Automatically sync missing environment keys from .env.append into .env if present
+        $envAppendFile = $root . '/.env.append';
+        $envFile = $root . '/.env';
+        if (file_exists($envAppendFile) && file_exists($envFile)) {
+            $appendContent = file_get_contents($envAppendFile);
+            $lines = explode("\n", str_replace("\r", "", $appendContent));
+            $envContent = (string)file_get_contents($envFile);
+            $appended = false;
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if ($line === "" || str_starts_with($line, '#')) continue;
+                $parts = explode('=', $line, 2);
+                if (count($parts) === 2) {
+                    $key = trim($parts[0]);
+                    if (!preg_match('/^' . preg_quote($key, '/') . '=/m', $envContent)) {
+                        $envContent .= "\n" . $line;
+                        $appended = true;
+                    }
+                }
+            }
+            if ($appended) {
+                @file_put_contents($envFile, $envContent);
+            }
+            @unlink($envAppendFile);
         }
 
         $config = Config::env();
@@ -81,8 +140,12 @@ class SystemMigrateController extends Controller
                 <div style='font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;max-width:550px;margin:50px auto;padding:32px;border:1px solid #10b981;border-radius:16px;background:#f0fdf4;box-shadow:0 10px 25px -5px rgba(16,185,129,0.15);text-align:center;'>
                     <div style='font-size:48px;margin-bottom:12px;'>🎉</div>
                     <h1 style='color:#065f46;margin:0 0 8px 0;font-size:24px;'>NẠP DỮ LIỆU THÀNH CÔNG 100%!</h1>
-                    <p style='color:#047857;font-size:15px;margin-bottom:24px;'>Toàn bộ dữ liệu từ máy tính đã được đồng bộ chuẩn xác lên hosting:</p>
+                    <p style='color:#047857;font-size:15px;margin-bottom:24px;'>Toàn bộ mã nguồn mới và cơ sở dữ liệu đã được cập nhật chuẩn xác:</p>
                     <div style='background:#ffffff;border-radius:12px;padding:16px 24px;margin-bottom:24px;text-align:left;border:1px solid #bbf7d0;'>
+                        <div style='display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #e2e8f0;'>
+                            <span style='color:#475569;'>📦 Tệp mã nguồn cập nhật:</span>
+                            <strong style='color:#0f172a;'>" . ($extractedCount > 0 ? "Đã giải nén {$extractedCount} tệp" : "Đã đồng bộ") . "</strong>
+                        </div>
                         <div style='display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #e2e8f0;'>
                             <span style='color:#475569;'>💼 Tin tuyển dụng việc làm:</span>
                             <strong style='color:#0f172a;'>{$jobs} tin</strong>
