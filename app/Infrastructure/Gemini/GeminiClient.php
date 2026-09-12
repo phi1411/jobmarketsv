@@ -48,7 +48,7 @@ class GeminiClient implements GeminiClientInterface
         return $this->enabled && !empty($this->apiKey) && !empty($this->model);
     }
 
-    public function generateContent(array $contents, ?string $systemInstruction = null): GeminiResponse
+    public function generateContent(array $contents, ?string $systemInstruction = null, array $options = []): GeminiResponse
     {
         if (!$this->isAvailable()) {
             throw new GeminiUnavailableException("Dịch vụ trợ lý AI hiện đang tắt hoặc chưa được cấu hình.");
@@ -56,13 +56,32 @@ class GeminiClient implements GeminiClientInterface
 
         $url = "https://generativelanguage.googleapis.com/v1beta/models/" . rawurlencode($this->model) . ":generateContent";
 
+        $maxOutputTokens = isset($options["maxOutputTokens"]) && is_int($options["maxOutputTokens"])
+            ? max(64, min(4096, $options["maxOutputTokens"]))
+            : 800;
+        $temperature = isset($options["temperature"]) && (is_float($options["temperature"]) || is_int($options["temperature"]))
+            ? max(0.0, min(1.0, (float)$options["temperature"]))
+            : 0.2;
+        $topP = isset($options["topP"]) && (is_float($options["topP"]) || is_int($options["topP"]))
+            ? max(0.0, min(1.0, (float)$options["topP"]))
+            : 0.95;
+
+        $generationConfig = [
+            "temperature"     => $temperature,
+            "maxOutputTokens" => $maxOutputTokens,
+            "topP"            => $topP,
+        ];
+
+        if (($options["responseMimeType"] ?? null) === "application/json") {
+            $generationConfig["responseMimeType"] = "application/json";
+        }
+        if (isset($options["responseSchema"]) && is_array($options["responseSchema"])) {
+            $generationConfig["responseSchema"] = $options["responseSchema"];
+        }
+
         $body = [
             "contents" => $contents,
-            "generationConfig" => [
-                "temperature"     => 0.2,
-                "maxOutputTokens" => 800,
-                "topP"            => 0.95
-            ],
+            "generationConfig" => $generationConfig,
             "safetySettings" => [
                 [
                     "category"  => "HARM_CATEGORY_HARASSMENT",
@@ -248,10 +267,16 @@ class GeminiClient implements GeminiClientInterface
             throw new GeminiServiceException("Phản hồi văn bản từ trợ lý AI bị trống.");
         }
 
+        $usageMetadata = (isset($decoded["usageMetadata"]) && is_array($decoded["usageMetadata"]))
+            ? $decoded["usageMetadata"]
+            : null;
+
         return new GeminiResponse(
             text: trim($text),
             isBlocked: false,
-            finishReason: $finishReason
+            finishReason: $finishReason,
+            safetyNotice: null,
+            usageMetadata: $usageMetadata
         );
     }
 }

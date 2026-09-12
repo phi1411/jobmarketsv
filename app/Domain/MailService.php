@@ -1,0 +1,148 @@
+<?php
+
+namespace JobMarket\Domain;
+
+use JobMarket\Facades\Config;
+use PHPMailer\PHPMailer\PHPMailer;
+
+class MailService
+{
+    /**
+     * @return array{status:string,error:?string,preview_path:?string}
+     */
+    public function sendJobAlert(array $recipient, array $job, array $search, int $score, array $details): array
+    {
+        $subject = "Việc làm phù hợp {$score}%: " . ($job["title"] ?? "Cơ hội mới");
+        $jobUrl = Config::appUrl() . "/viec-lam/" . rawurlencode((string)$job["id"]);
+        $html = $this->renderJobAlertHtml($recipient, $job, $search, $score, $details, $jobUrl);
+
+        if (!Config::isMailConfigured()) {
+            return $this->writePreview($recipient, $job, $subject, $html);
+        }
+
+        try {
+            $config = Config::mail();
+            $mailer = new PHPMailer(true);
+            $mailer->isSMTP();
+            $mailer->Host = $config["host"];
+            $mailer->Port = $config["port"];
+            $mailer->SMTPAuth = true;
+            $mailer->Username = $config["username"];
+            $mailer->Password = $config["password"];
+            if ($config["encryption"] !== "" && $config["encryption"] !== "none") {
+                $mailer->SMTPSecure = $config["encryption"];
+            }
+            $mailer->CharSet = "UTF-8";
+            $fromAddress = str_ends_with($config["from"], ".local") ? $config["username"] : $config["from"];
+            $mailer->setFrom($fromAddress, $config["from_name"]);
+            $mailer->addAddress((string)$recipient["email"], (string)($recipient["name"] ?? ""));
+            $mailer->isHTML(true);
+            $mailer->Subject = $subject;
+            $mailer->Body = $html;
+            $mailer->AltBody = "Việc làm '{$job['title']}' phù hợp {$score}% với bộ lọc '{$search['name']}'. Xem tại: {$jobUrl}";
+            $mailer->send();
+
+            return ["status" => "sent", "error" => null, "preview_path" => null];
+        } catch (\Throwable $e) {
+            return ["status" => "failed", "error" => mb_substr($e->getMessage(), 0, 500), "preview_path" => null];
+        }
+    }
+
+    /**
+     * Sends an alert generated from the student's profile and weekly availability.
+     * @return array{status:string,error:?string,preview_path:?string}
+     */
+    public function sendProfileJobAlert(array $recipient, array $job, int $score, int $coverage, array $details): array
+    {
+        $subject = "Việc mới phù hợp hồ sơ {$score}%: " . ($job["title"] ?? "Cơ hội mới");
+        $jobUrl = Config::appUrl() . "/viec-lam/" . rawurlencode((string)$job["id"]);
+        $html = $this->renderProfileJobAlertHtml($recipient, $job, $score, $coverage, $details, $jobUrl);
+
+        if (!Config::isMailConfigured()) {
+            return $this->writePreview($recipient, $job, $subject, $html);
+        }
+
+        try {
+            $config = Config::mail();
+            $mailer = new PHPMailer(true);
+            $mailer->isSMTP();
+            $mailer->Host = $config["host"];
+            $mailer->Port = $config["port"];
+            $mailer->SMTPAuth = true;
+            $mailer->Username = $config["username"];
+            $mailer->Password = $config["password"];
+            if ($config["encryption"] !== "" && $config["encryption"] !== "none") {
+                $mailer->SMTPSecure = $config["encryption"];
+            }
+            $mailer->CharSet = "UTF-8";
+            $fromAddress = str_ends_with($config["from"], ".local") ? $config["username"] : $config["from"];
+            $mailer->setFrom($fromAddress, $config["from_name"]);
+            $mailer->addAddress((string)$recipient["email"], (string)($recipient["name"] ?? ""));
+            $mailer->isHTML(true);
+            $mailer->Subject = $subject;
+            $mailer->Body = $html;
+            $mailer->AltBody = "Việc '{$job['title']}' phù hợp {$score}% với hồ sơ và lịch rảnh của bạn. Xem tại: {$jobUrl}";
+            $mailer->send();
+            return ["status" => "sent", "error" => null, "preview_path" => null];
+        } catch (\Throwable $e) {
+            return ["status" => "failed", "error" => mb_substr($e->getMessage(), 0, 500), "preview_path" => null];
+        }
+    }
+
+    private function renderJobAlertHtml(array $recipient, array $job, array $search, int $score, array $details, string $jobUrl): string
+    {
+        $e = fn(mixed $value): string => htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
+        $reasonItems = "";
+        foreach ($details as $detail) {
+            if (($detail["matched"] ?? false) === true) {
+                $reasonItems .= "<li style=\"margin:6px 0\">" . $e($detail["label"] ?? "Tiêu chí phù hợp") . "</li>";
+            }
+        }
+
+        return "<!doctype html><html><body style=\"margin:0;background:#f4f7fb;font-family:Arial,sans-serif;color:#14213d\">"
+            . "<div style=\"max-width:620px;margin:24px auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e6eaf0\">"
+            . "<div style=\"padding:24px;background:#2563eb;color:#fff\"><strong style=\"font-size:22px\">JobMarketSV</strong><div style=\"margin-top:8px\">Có việc làm mới dành cho bạn</div></div>"
+            . "<div style=\"padding:28px\"><p>Chào " . $e($recipient["name"] ?? "bạn") . ",</p>"
+            . "<p>Tin <strong>" . $e($job["title"] ?? "") . "</strong> tại <strong>" . $e($job["company_name"] ?? "Nhà tuyển dụng") . "</strong> phù hợp với bộ lọc <strong>" . $e($search["name"] ?? "Tìm kiếm đã lưu") . "</strong>.</p>"
+            . "<div style=\"margin:20px 0;padding:16px;border-radius:12px;background:#eff6ff;text-align:center\"><div style=\"font-size:13px;color:#475569\">Mức độ phù hợp</div><div style=\"font-size:36px;font-weight:800;color:#2563eb\">{$score}%</div></div>"
+            . ($reasonItems !== "" ? "<p><strong>Điểm phù hợp nổi bật</strong></p><ul style=\"padding-left:20px;color:#475569\">{$reasonItems}</ul>" : "")
+            . "<p style=\"margin-top:26px\"><a href=\"" . $e($jobUrl) . "\" style=\"display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 20px;border-radius:9px;font-weight:700\">Xem việc làm</a></p>"
+            . "<p style=\"margin-top:28px;font-size:12px;color:#64748b\">Bạn nhận email này vì đã bật thông báo cho bộ lọc tìm kiếm trên JobMarketSV. Bạn có thể tắt email tại trang Tìm kiếm đã lưu.</p>"
+            . "</div></div></body></html>";
+    }
+
+    private function renderProfileJobAlertHtml(array $recipient, array $job, int $score, int $coverage, array $details, string $jobUrl): string
+    {
+        $e = fn(mixed $value): string => htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
+        $reasonItems = "";
+        foreach ($details as $detail) {
+            if (($detail["matched"] ?? false) === true) {
+                $reasonItems .= "<li style=\"margin:6px 0\">" . $e($detail["label"] ?? "Tiêu chí phù hợp") . ": " . $e($detail["score"] ?? "") . "%</li>";
+            }
+        }
+        return "<!doctype html><html><body style=\"margin:0;background:#f4f7fb;font-family:Arial,sans-serif;color:#14213d\">"
+            . "<div style=\"max-width:620px;margin:24px auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e6eaf0\">"
+            . "<div style=\"padding:24px;background:#2563eb;color:#fff\"><strong style=\"font-size:22px\">JobMarketSV</strong><div style=\"margin-top:8px\">Việc mới phù hợp với hồ sơ của bạn</div></div>"
+            . "<div style=\"padding:28px\"><p>Chào " . $e($recipient["name"] ?? "bạn") . ",</p>"
+            . "<p><strong>" . $e($job["title"] ?? "") . "</strong> tại <strong>" . $e($job["company_name"] ?? "Nhà tuyển dụng") . "</strong> phù hợp với kỹ năng, khu vực và lịch rảnh bạn đã khai.</p>"
+            . "<div style=\"margin:20px 0;padding:16px;border-radius:12px;background:#eff6ff;text-align:center\"><div style=\"font-size:13px;color:#475569\">Mức độ phù hợp</div><div style=\"font-size:36px;font-weight:800;color:#2563eb\">{$score}%</div><div style=\"font-size:12px;color:#64748b\">Dữ liệu đối chiếu {$coverage}%</div></div>"
+            . ($reasonItems !== "" ? "<p><strong>Điểm phù hợp nổi bật</strong></p><ul style=\"padding-left:20px;color:#475569\">{$reasonItems}</ul>" : "")
+            . "<p style=\"margin-top:26px\"><a href=\"" . $e($jobUrl) . "\" style=\"display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 20px;border-radius:9px;font-weight:700\">Xem việc làm</a></p>"
+            . "<p style=\"margin-top:28px;font-size:12px;color:#64748b\">Bạn nhận email vì đã bật Thông báo cá nhân hóa tại trang Gợi Ý Cho Bạn. Bạn có thể tắt bất cứ lúc nào.</p>"
+            . "</div></div></body></html>";
+    }
+
+    private function writePreview(array $recipient, array $job, string $subject, string $html): array
+    {
+        $dir = BASE_PATH . "/storage/app/mail-preview";
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0777, true);
+        }
+        $safeId = preg_replace('/[^a-zA-Z0-9_-]/', '_', (string)($job["id"] ?? "job"));
+        $path = $dir . "/" . date("Ymd-His") . "-" . $safeId . ".html";
+        $meta = "<!-- To: " . htmlspecialchars((string)($recipient["email"] ?? ""), ENT_QUOTES) . " | Subject: " . htmlspecialchars($subject, ENT_QUOTES) . " -->\n";
+        @file_put_contents($path, $meta . $html);
+
+        return ["status" => "preview", "error" => null, "preview_path" => $path];
+    }
+}

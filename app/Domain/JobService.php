@@ -10,6 +10,7 @@ use JobMarket\Exceptions\NotFoundException;
 use JobMarket\Exceptions\ValidationException;
 use JobMarket\Infrastructure\CompanyRepository;
 use JobMarket\Infrastructure\JobRepository;
+use JobMarket\Support\Logger;
 use JobMarket\Support\Pagination;
 
 class JobService
@@ -95,7 +96,12 @@ class JobService
         $job = Job::fromArray($data);
         $this->jobRepository->create($job);
 
-        return $this->jobRepository->findById($job->getId());
+        $created = $this->jobRepository->findById($job->getId());
+        if ($status === "published") {
+            $this->processJobAlertsSafely($created);
+        }
+
+        return $created;
     }
 
     public function updateJob(string $id, array $data, array $user): array
@@ -122,11 +128,21 @@ class JobService
             throw new ValidationException(["status" => ["Công ty chưa được xác minh nên không thể chuyển tin sang trạng thái công khai (published)."]]);
         }
 
+        $isNewlyPublished = ($existing["status"] ?? "") !== "published" && $status === "published";
+        if ($isNewlyPublished) {
+            $mergedData["published_at"] = date("Y-m-d H:i:s");
+        }
+
         $mergedData["id"] = $id;
         $job = Job::fromArray($mergedData);
         $this->jobRepository->update($job);
 
-        return $this->jobRepository->findById($id);
+        $updated = $this->jobRepository->findById($id);
+        if ($isNewlyPublished) {
+            $this->processJobAlertsSafely($updated);
+        }
+
+        return $updated;
     }
 
     public function closeJob(string $id, array $user): array
@@ -319,6 +335,28 @@ class JobService
 
         if (!empty($errors)) {
             throw new ValidationException($errors);
+        }
+    }
+
+    private function processJobAlertsSafely(array $job): void
+    {
+        try {
+            (new JobAlertService())->processPublishedJob($job);
+        } catch (\Throwable $e) {
+            // An optional delivery channel must not make a valid job publication fail.
+            Logger::error("Lỗi xử lý thông báo việc làm phù hợp sau khi đăng tin.", [
+                "job_id" => $job["id"] ?? null,
+                "error" => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            (new ProfileJobAlertService())->processPublishedJob($job);
+        } catch (\Throwable $e) {
+            Logger::error("Lỗi xử lý thông báo cá nhân hóa sau khi đăng tin.", [
+                "job_id" => $job["id"] ?? null,
+                "error" => $e->getMessage(),
+            ]);
         }
     }
 }

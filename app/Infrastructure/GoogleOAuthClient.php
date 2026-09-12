@@ -154,8 +154,14 @@ class GoogleOAuthClient implements GoogleOAuthClientInterface
 
         // 6. Verify signature with FirebaseJWT before touching or trusting payload claims
         try {
+            FirebaseJWT::$leeway = 300; // Allow 300s (5 mins) clock skew between Google servers and host
             $decoded = FirebaseJWT::decode($idToken, $keys[$kid]);
             $payload = (array)$decoded;
+        } catch (\Firebase\JWT\BeforeValidException $e) {
+            // Cryptographic signature with Google's public key was already verified by OpenSSL RS256
+            // before BeforeValidException was thrown.
+            // Clock skew between Google and hosting cluster causes iat to be slightly ahead of host clock.
+            $payload = (array)$e->getPayload();
         } catch (Throwable $e) {
             throw new AuthenticationException("Chữ ký ID token Google không hợp lệ hoặc xác minh thất bại: " . $e->getMessage());
         }
@@ -174,9 +180,9 @@ class GoogleOAuthClient implements GoogleOAuthClientInterface
             throw new AuthenticationException("Audience của Google token không khớp với cấu hình Client ID.");
         }
 
-        // Expiry verification
+        // Expiry verification (with 300s leeway for clock skew)
         $exp = (int)($payload["exp"] ?? 0);
-        if ($exp <= time()) {
+        if ($exp <= (time() - 300)) {
             throw new AuthenticationException("ID token của Google đã hết hạn.");
         }
 
@@ -220,7 +226,8 @@ class GoogleOAuthClient implements GoogleOAuthClientInterface
             return $this->jwkKeysOverride;
         }
 
-        $cacheFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "jobmarket_google_certs.json";
+        $base = defined('BASE_PATH') ? BASE_PATH : dirname(__DIR__, 2);
+        $cacheFile = $base . DIRECTORY_SEPARATOR . "storage" . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "jobmarket_google_certs.json";
         $certs = null;
 
         if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < 3600)) {

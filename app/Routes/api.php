@@ -5,15 +5,20 @@ use JobMarket\Http\Controllers\ApplicationController;
 use JobMarket\Http\Controllers\AssistantController;
 use JobMarket\Http\Controllers\AuthenticationController;
 use JobMarket\Http\Controllers\CategoryController;
+use JobMarket\Http\Controllers\ChatController;
 use JobMarket\Http\Controllers\CompanyController;
+use JobMarket\Http\Controllers\CvProfileExtractionController;
 use JobMarket\Http\Controllers\DashboardController;
 use JobMarket\Http\Controllers\DeveloperController;
 use JobMarket\Http\Controllers\FavoriteController;
 use JobMarket\Http\Controllers\HomeController;
 use JobMarket\Http\Controllers\JobController;
+use JobMarket\Http\Controllers\JobRecommendationController;
 use JobMarket\Http\Controllers\LocationController;
+use JobMarket\Http\Controllers\MatchAnalysisController;
 use JobMarket\Http\Controllers\NotificationController;
 use JobMarket\Http\Controllers\ProfileController;
+use JobMarket\Http\Controllers\ProfileJobAlertController;
 use JobMarket\Http\Controllers\ReportController;
 use JobMarket\Http\Controllers\ReviewController;
 use JobMarket\Http\Controllers\SearchController;
@@ -103,6 +108,11 @@ return [
     ["PATCH", "/applications/{id:[0-9a-zA-Z\-_]+}/withdraw", [ApplicationController::class, "withdraw"]],
     ["DELETE", "/applications/{id:[0-9a-zA-Z\-_]+}", [ApplicationController::class, "withdraw"]],
 
+    // CV / Profile Match Analysis (CV-AI-P1-03)
+    ["POST", "/applications/{id:[0-9a-zA-Z\-_]+}/match-analysis", [MatchAnalysisController::class, "analyze"]],
+    ["GET", "/applications/{id:[0-9a-zA-Z\-_]+}/match-analysis", [MatchAnalysisController::class, "show"]],
+    ["PATCH", "/applications/{id:[0-9a-zA-Z\-_]+}/match-consent", [MatchAnalysisController::class, "updateConsent"]],
+
     // Retrieve a list of all developers
     ["GET", "/developers", [DeveloperController::class, "index"]],
 
@@ -141,6 +151,7 @@ return [
     ["GET", "/student/cv", [StudentCvController::class, "show"]],
     ["POST", "/student/cv", [StudentCvController::class, "upload"]],
     ["DELETE", "/student/cv", [StudentCvController::class, "destroy"]],
+    ["POST", "/student/cv/analyze", [CvProfileExtractionController::class, "analyze"]],
 
     // Update the user's password
     ["PUT", "/profile/password", [ProfileController::class, "passUpdate"]],
@@ -249,6 +260,9 @@ return [
 
     // Dashboard APIs
     ["GET", "/student/dashboard", [DashboardController::class, "studentDashboard"]],
+    ["GET", "/student/job-recommendations", [JobRecommendationController::class, "index"]],
+    ["GET", "/student/recommendation-alert-settings", [ProfileJobAlertController::class, "show"]],
+    ["PATCH", "/student/recommendation-alert-settings", [ProfileJobAlertController::class, "update"]],
     ["GET", "/company/dashboard", [DashboardController::class, "companyDashboard"]],
     ["GET", "/admin/dashboard", [DashboardController::class, "adminDashboard"]],
 
@@ -285,5 +299,13 @@ return [
 
     // Read-only Gemini AI Assistant (CHAT-P0-01, CHAT-P0-02, CHAT-P2-01)
     ["POST", "/assistant/chat", [AssistantController::class, "chat"]],
-    ["POST", "/assistant/feedback", [AssistantController::class, "feedback"]]
+    ["POST", "/assistant/feedback", [AssistantController::class, "feedback"]],
+
+    // Direct Real-time Support Chat (Student/Company <-> Admin)
+    ["GET", "/support/conversation", [ChatController::class, "conversation"]],
+    ["GET", "/support/messages", [ChatController::class, "messages"]],
+    ["POST", "/support/messages", [ChatController::class, "sendMessage"]],
+    ["POST", "/support/read", [ChatController::class, "markRead"]],
+    ["GET", "/support/unread-count", [ChatController::class, "unreadCount"]],
+    ["GET", "/admin/support/conversations", [ChatController::class, "adminConversations"]]
 ];

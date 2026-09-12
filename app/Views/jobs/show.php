@@ -36,6 +36,7 @@
 
     <!-- Detail Body -->
     <div class="container">
+        <div id="apply-match-banner" style="display:none;margin-bottom:1.5rem;"></div>
         <div class="detail-content">
             <!-- Left Column: Details -->
             <div>
@@ -102,10 +103,10 @@
 </div>
 
 <!-- Apply Job Modal -->
-<div id="apply-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
+<div id="apply-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;padding:1rem;" role="dialog" aria-modal="true" aria-labelledby="apply-modal-title">
     <div style="background:#fff;border-radius:var(--radius);max-width:550px;width:100%;padding:1.5rem;box-shadow:var(--shadow);position:relative;max-height:90vh;overflow-y:auto;box-sizing:border-box;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
-            <h3 style="font-size:1.2rem;font-weight:700;color:var(--dark);margin:0;">Ứng Tuyển Việc Làm</h3>
+            <h3 id="apply-modal-title" style="font-size:1.2rem;font-weight:700;color:var(--dark);margin:0;">Ứng Tuyển Việc Làm</h3>
             <button type="button" onclick="closeApplyModal()" class="modal-close-btn" aria-label="Đóng hộp thoại">&times;</button>
         </div>
 
@@ -141,7 +142,7 @@
                     Nhà tuyển dụng yêu cầu hồ sơ có đính kèm CV (định dạng PDF). Vui lòng tải lên CV trước khi gửi đơn ứng tuyển.
                 </div>
                 <div>
-                    <a href="/profile" class="btn btn-primary btn-sm" style="font-size:0.82rem;padding:0.35rem 0.75rem;display:inline-flex;align-items:center;gap:0.35rem;">
+                    <a href="/student/profile" class="btn btn-primary btn-sm" style="font-size:0.82rem;padding:0.35rem 0.75rem;display:inline-flex;align-items:center;gap:0.35rem;">
                         Tải lên CV trong hồ sơ ngay &rarr;
                     </a>
                 </div>
@@ -180,6 +181,19 @@
                 <label class="form-label">Thư giới thiệu / Lời nhắn tới nhà tuyển dụng</label>
                 <textarea id="apply-cover-letter" class="form-control" rows="4" placeholder="Giới thiệu nhanh về bạn, kinh nghiệm làm thêm (nếu có) và mong muốn khi làm việc..."></textarea>
                 <small class="form-help">Bản sao CV PDF từ hồ sơ của bạn sẽ được lưu giữ bất biến cùng đơn ứng tuyển này.</small>
+            </div>
+
+            <!-- AI Match Analysis Consent (CV-AI-P0-05) -->
+            <div class="form-group" style="margin-bottom:1.25rem;background:#f8fafc;padding:0.75rem 1rem;border-radius:var(--radius-sm);border:1px solid var(--border);">
+                <label style="display:flex;align-items:flex-start;gap:0.6rem;cursor:pointer;margin:0;font-weight:normal;">
+                    <input type="checkbox" id="apply-ai-consent" style="margin-top:0.25rem;">
+                    <span style="font-size:0.85rem;color:var(--dark);line-height:1.4;">
+                        Tôi đồng ý cho JobMarketSV sử dụng AI để phân tích dữ liệu hồ sơ nhằm đánh giá mức độ phù hợp với vị trí này. Kết quả chỉ mang tính tham khảo và không quyết định tuyển dụng.
+                    </span>
+                </label>
+                <small style="display:block;margin-top:0.35rem;font-size:0.78rem;color:var(--text-muted);">
+                    (Tùy chọn) Đơn ứng tuyển của bạn vẫn sẽ được gửi tới nhà tuyển dụng bình thường nếu không chọn phân tích AI.
+                </small>
             </div>
 
             <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:1rem;border-top:1px solid var(--border);">
@@ -282,7 +296,10 @@ function handleApplyJob() {
     openApplyModal();
 }
 
+let lastApplyFocusElement = null;
+
 async function openApplyModal() {
+    lastApplyFocusElement = document.activeElement;
     const modal = document.getElementById("apply-modal");
     if (!modal) return;
     document.getElementById("apply-modal-job-title").innerText = currentJobData ? currentJobData.title : "";
@@ -376,6 +393,9 @@ async function checkCvReadiness() {
 function closeApplyModal() {
     const modal = document.getElementById("apply-modal");
     if (modal) modal.style.display = "none";
+    if (lastApplyFocusElement && typeof lastApplyFocusElement.focus === "function") {
+        lastApplyFocusElement.focus();
+    }
 }
 
 // Close apply modal on backdrop click & ESC key
@@ -405,13 +425,15 @@ async function submitApplication(e) {
 
     const shift = document.getElementById("apply-shift").value;
     const coverLetter = document.getElementById("apply-cover-letter").value.trim();
+    const aiConsent = document.getElementById("apply-ai-consent")?.checked === true;
 
     try {
         const res = await apiRequest(`/jobs/${encodeURIComponent(currentJobId)}/applications`, {
             method: "POST",
             body: {
                 preferred_shift: shift,
-                cover_letter: coverLetter
+                cover_letter: coverLetter,
+                ai_match_consent: aiConsent
             },
             requireAuth: true
         });
@@ -433,6 +455,14 @@ async function submitApplication(e) {
                 btnBottom.disabled = true;
                 btnBottom.classList.remove("btn-primary");
                 btnBottom.classList.add("btn-secondary");
+            }
+
+            // Trigger Match Analysis in background if consent was given (CV-AI-P1-04)
+            const appId = res.data && (res.data.id || res.data.application_id);
+            if (aiConsent && appId) {
+                triggerPostApplyMatchAnalysis(appId);
+            } else if (!aiConsent && appId) {
+                showPostApplyNoConsentBanner();
             }
         } else {
             let msg = (res && res.message) ? res.message : "Ứng tuyển không thành công.";
@@ -458,6 +488,173 @@ async function submitApplication(e) {
         btn.style.cursor = "pointer";
         btn.innerText = "Gửi Đơn Ứng Tuyển";
     }
+}
+
+let postApplyPollTimer = null;
+let postApplyPollCount = 0;
+const MAX_POST_APPLY_POLLS = 6;
+
+function clearPostApplyPolling() {
+    if (postApplyPollTimer) {
+        clearTimeout(postApplyPollTimer);
+        postApplyPollTimer = null;
+    }
+    postApplyPollCount = 0;
+}
+
+function showPostApplyNoConsentBanner() {
+    clearPostApplyPolling();
+    const banner = document.getElementById("apply-match-banner");
+    if (!banner) return;
+    banner.style.display = "block";
+    banner.innerHTML = `
+        <div style="background:#f8fafc;border:1px solid var(--border);border-left:4px solid #64748b;border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+            <div style="font-size:0.88rem;color:var(--text);">
+                ℹ️ <strong>Bạn chưa bật phân tích AI cho đơn ứng tuyển này.</strong> Bạn có thể theo dõi tiến độ xét duyệt hồ sơ trong mục <a href="/student/applications" style="font-weight:600;text-decoration:underline;">Ứng tuyển của tôi</a>.
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" style="font-size:0.78rem;padding:0.25rem 0.5rem;" onclick="document.getElementById('apply-match-banner').style.display='none'">Đóng</button>
+        </div>
+    `;
+}
+
+async function triggerPostApplyMatchAnalysis(applicationId) {
+    const banner = document.getElementById("apply-match-banner");
+    if (!banner) return;
+
+    clearPostApplyPolling();
+
+    // Lightweight loading indicator without blocking UI
+    banner.style.display = "block";
+    banner.innerHTML = `
+        <div aria-live="polite" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:center;gap:0.75rem;">
+            <div class="spinner" style="width:20px;height:20px;border:3px solid #bfdbfe;border-top-color:#2563eb;border-radius:50%;animation:spin 1s linear infinite;"></div>
+            <div>
+                <strong style="color:#1e40af;font-size:0.95rem;">Đang phân tích độ phù hợp với công việc...</strong>
+                <div style="font-size:0.82rem;color:#3b82f6;margin-top:0.2rem;">Hệ thống AI đang đối chiếu an toàn hồ sơ của bạn với vị trí này.</div>
+            </div>
+        </div>
+    `;
+
+    try {
+        const analysisRes = await apiRequest(`/applications/${encodeURIComponent(applicationId)}/match-analysis`, {
+            method: "POST",
+            requireAuth: true
+        });
+
+        if (analysisRes && analysisRes.success && analysisRes.data) {
+            const data = analysisRes.data;
+            if (data.status === "processing") {
+                pollPostApplyMatchAnalysis(applicationId);
+                return;
+            }
+            renderPostApplyMatchResult(data);
+        } else {
+            renderPostApplyFallback();
+        }
+    } catch (err) {
+        // AI failure must never affect application success
+        renderPostApplyFallback();
+    }
+}
+
+async function pollPostApplyMatchAnalysis(applicationId) {
+    if (postApplyPollCount >= MAX_POST_APPLY_POLLS) {
+        clearPostApplyPolling();
+        const banner = document.getElementById("apply-match-banner");
+        if (banner) {
+            banner.innerHTML = `
+                <div style="background:#f8fafc;border:1px solid var(--border);border-left:4px solid #3b82f6;border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+                    <div style="font-size:0.88rem;color:var(--text);">
+                        ⏳ Phân tích độ phù hợp đang được xử lý trong nền. Bạn có thể theo dõi kết quả trong mục <a href="/student/applications" style="font-weight:600;text-decoration:underline;">Ứng tuyển của tôi</a>.
+                    </div>
+                    <button type="button" class="btn btn-outline btn-sm" style="font-size:0.78rem;padding:0.25rem 0.5rem;" onclick="document.getElementById('apply-match-banner').style.display='none'">Đóng</button>
+                </div>
+            `;
+        }
+        return;
+    }
+
+    postApplyPollCount++;
+    const delays = [1500, 2000, 2500, 3000, 3500, 4000];
+    const delay = delays[postApplyPollCount - 1] || 3000;
+
+    postApplyPollTimer = setTimeout(async () => {
+        try {
+            const res = await apiRequest(`/applications/${encodeURIComponent(applicationId)}/match-analysis`, {
+                method: "GET",
+                requireAuth: true
+            });
+
+            if (res && res.success && res.data) {
+                if (res.data.status === "processing") {
+                    pollPostApplyMatchAnalysis(applicationId);
+                    return;
+                }
+                clearPostApplyPolling();
+                renderPostApplyMatchResult(res.data);
+            } else {
+                clearPostApplyPolling();
+                renderPostApplyFallback();
+            }
+        } catch (err) {
+            clearPostApplyPolling();
+            renderPostApplyFallback();
+        }
+    }, delay);
+}
+
+function renderPostApplyMatchResult(data) {
+    const banner = document.getElementById("apply-match-banner");
+    if (!banner) return;
+
+    const rawScore = (data.overall_score !== null && data.overall_score !== undefined) ? Number(data.overall_score) : null;
+    const coverage = (data.coverage_percent !== null && data.coverage_percent !== undefined) ? Number(data.coverage_percent) : null;
+    const isInsufficient = rawScore === null || (coverage !== null && coverage < 60) || data.classification === "INSUFFICIENT_DATA";
+
+    const scoreDisplay = isInsufficient ? 'Chưa đủ dữ liệu' : `${Math.round(rawScore)}/100`;
+    const coverageDisplay = coverage !== null ? `${Math.round(coverage)}%` : '--';
+    const classification = isInsufficient ? 'Chưa đủ dữ liệu' : (data.classification || 'Phù hợp');
+    const summary = data.summary?.overview || 'Đã phân tích độ khớp giữa hồ sơ và yêu cầu công việc.';
+
+    banner.innerHTML = `
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:var(--radius);padding:1.25rem;box-shadow:var(--shadow-sm);">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.5rem;">
+                    <span style="font-size:1.25rem;">✨</span>
+                    <strong style="color:#166534;font-size:1rem;">Kết quả đánh giá độ phù hợp (AI)</strong>
+                    <span class="badge" style="background:#dcfce7;color:#15803d;font-weight:700;">${escapeHtml(classification)}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:1rem;">
+                    <span style="font-size:0.88rem;color:#166534;">Điểm phù hợp: <strong style="font-size:1.15rem;color:#15803d;">${escapeHtml(String(scoreDisplay))}</strong></span>
+                    <span style="font-size:0.85rem;color:var(--text-muted);">Độ phủ dữ liệu: <strong>${escapeHtml(String(coverageDisplay))}</strong></span>
+                </div>
+            </div>
+            <p style="font-size:0.88rem;color:#14532d;line-height:1.5;margin:0 0 0.75rem;">
+                ${escapeHtml(summary)}
+            </p>
+            <div style="font-size:0.8rem;color:#64748b;background:#f8fafc;padding:0.6rem 0.85rem;border-radius:var(--radius-sm);border:1px solid #e2e8f0;margin-bottom:0.75rem;line-height:1.4;">
+                ⚠️ <em>Điểm phù hợp chỉ phản ánh mức độ khớp giữa dữ liệu hồ sơ hiện có và yêu cầu công việc. Đây không phải xác suất được tuyển và không thay thế quyết định của nhà tuyển dụng.</em>
+            </div>
+            <div style="text-align:right;">
+                <a href="/student/applications" class="btn btn-outline btn-sm" style="font-size:0.85rem;">
+                    Xem chi tiết trong mục Ứng tuyển của tôi &rarr;
+                </a>
+            </div>
+        </div>
+    `;
+}
+
+function renderPostApplyFallback() {
+    const banner = document.getElementById("apply-match-banner");
+    if (!banner) return;
+    banner.innerHTML = `
+        <div style="background:#f8fafc;border:1px solid var(--border);border-left:4px solid #94a3b8;border-radius:var(--radius);padding:0.85rem 1.15rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+            <div style="font-size:0.88rem;color:var(--text);">
+                ℹ️ Phân tích độ phù hợp tạm thời không khả dụng, bạn có thể xem lại sau trong mục <a href="/student/applications" style="font-weight:600;text-decoration:underline;">Ứng tuyển của tôi</a>.
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" style="font-size:0.78rem;padding:0.25rem 0.5rem;" onclick="document.getElementById('apply-match-banner').style.display='none'">Đóng</button>
+        </div>
+    `;
 }
 
 async function handleToggleFavorite() {

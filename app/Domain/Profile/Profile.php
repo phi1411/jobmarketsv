@@ -104,6 +104,7 @@ class Profile
 
     /**
      * Server-side calculation of profile completion percentage (0 - 100%)
+     * Strictly avoids age, date of birth, or gender to prevent discrimination/bias.
      */
     public function calculateCompletionPercent(): int
     {
@@ -111,13 +112,15 @@ class Profile
 
         if (!empty(trim((string)$this->full_name))) $percent += 10;
         if (!empty(trim((string)$this->phone))) $percent += 10;
-        if (!empty(trim((string)$this->university))) $percent += 10;
+        if (!empty(trim((string)$this->university)) || !empty(trim((string)$this->education))) $percent += 10;
         if (!empty(trim((string)$this->major))) $percent += 10;
-        if (!empty($this->academic_year) && $this->academic_year > 0) $percent += 10;
-        if (!empty(trim((string)$this->bio))) $percent += 10;
+        if (!empty($this->academic_year) && $this->academic_year > 0) $percent += 5;
+        if (!empty(trim((string)$this->bio))) $percent += 5;
+        if (!empty($this->location_id) || !empty(trim((string)$this->preferred_location))) $percent += 10;
         if (!empty($this->skill_ids) || !empty(trim((string)$this->skills))) $percent += 15;
-        if (!empty($this->available_schedule)) $percent += 15;
-        if (!empty(trim((string)$this->cv_url)) || !empty($this->cv_storage_path)) $percent += 10;
+        if (!empty($this->available_schedule)) $percent += 10;
+        if (!empty(trim((string)$this->work_experience))) $percent += 10;
+        if (!empty(trim((string)$this->cv_url)) || !empty($this->cv_storage_path)) $percent += 5;
 
         return min(100, $percent);
     }

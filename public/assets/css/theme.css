@@ -1,0 +1,474 @@
+/* ==========================================================================
+   JOBMARKETSV THEME ENGINE & DARK MODE STYLES
+   Supports 3 Modes: System Default (Auto), Light, Dark
+   High contrast, fully accessible, zero visual glitches
+   ========================================================================== */
+
+/* 1. Dark Mode Variable Definitions */
+[data-theme="dark"] {
+    /* Brand & Primary (slightly brighter for dark backgrounds) */
+    --primary: #3b82f6;
+    --primary-hover: #60a5fa;
+    --primary-light: #1e293b;
+    --primary-border: #1d4ed8;
+    --primary-text: #93c5fd;
+    --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+
+    /* Secondary (Success accent) */
+    --secondary: #10b981;
+    --secondary-hover: #34d399;
+    --secondary-light: #064e3b;
+    --secondary-border: #059669;
+    --secondary-text: #6ee7b7;
+
+    /* Base Neutrals & Surfaces */
+    --dark: #f8fafc;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --text-subtle: #64748b;
+    --border: #334155;
+    --border-light: #1e293b;
+    --bg: #0b0f19;
+    --surface: #131b2e;
+    --surface-hover: #1e293b;
+
+    /* Semantic Overrides for Dark Mode */
+    --success: #10b981;
+    --success-light: #064e3b;
+    --success-border: #059669;
+    --success-text: #6ee7b7;
+
+    --warning: #f59e0b;
+    --warning-light: #451a03;
+    --warning-border: #b45309;
+    --warning-text: #fde68a;
+
+    --danger: #ef4444;
+    --danger-light: #450a0a;
+    --danger-border: #b91c1c;
+    --danger-text: #fca5a5;
+
+    --info: #38bdf8;
+    --info-light: #082f49;
+    --info-border: #0284c7;
+    --info-text: #bae6fd;
+
+    --neutral: #94a3b8;
+    --neutral-light: #131b2e;
+    --neutral-border: #334155;
+    --neutral-text: #cbd5e1;
+
+    /* Elevated Shadows for Dark Surfaces */
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-sm: 0 2px 4px -1px rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+    --shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.5), 0 2px 6px -2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 10px 25px -4px rgba(0, 0, 0, 0.6), 0 4px 10px -4px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 20px 35px -6px rgba(0, 0, 0, 0.7), 0 8px 16px -6px rgba(0, 0, 0, 0.5);
+    --shadow-primary: 0 8px 20px -4px rgba(37, 99, 235, 0.5);
+}
+
+/* 2. Global Elements in Dark Mode */
+[data-theme="dark"] body {
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+[data-theme="dark"] .site-header {
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+[data-theme="dark"] .site-footer {
+    background-color: #080c14;
+    border-top: 1px solid var(--border);
+}
+
+/* 3. Portal Headers & Tabs */
+[data-theme="dark"] .portal-header,
+[data-theme="dark"] .student-header,
+[data-theme="dark"] .company-header,
+[data-theme="dark"] .admin-header {
+    background: linear-gradient(180deg, #131b2e 0%, #0b0f19 100%) !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+[data-theme="dark"] .portal-tab,
+[data-theme="dark"] .student-tab {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .portal-tab:hover,
+[data-theme="dark"] .student-tab:hover {
+    color: var(--text);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .portal-tab.active,
+[data-theme="dark"] .student-tab.active {
+    color: var(--primary);
+    background-color: var(--surface) !important;
+    border-bottom-color: var(--primary) !important;
+    box-shadow: 0 -2px 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .admin-header .portal-tab.active {
+    color: var(--danger) !important;
+    border-bottom-color: var(--danger) !important;
+}
+
+/* 4. Overrides for Inline Backgrounds (#fff / #f8fafc) */
+[data-theme="dark"] [style*="background:#fff"],
+[data-theme="dark"] [style*="background: #fff"],
+[data-theme="dark"] [style*="background:#ffffff"],
+[data-theme="dark"] [style*="background: #ffffff"] {
+    background: var(--surface) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="dark"] [style*="background:#f8fafc"],
+[data-theme="dark"] [style*="background: #f8fafc"] {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="dark"] [style*="color:#0f172a"],
+[data-theme="dark"] [style*="color: #0f172a"],
+[data-theme="dark"] [style*="color:#1e293b"],
+[data-theme="dark"] [style*="color: #1e293b"] {
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] [style*="color:#64748b"],
+[data-theme="dark"] [style*="color: #64748b"] {
+    color: var(--text-muted) !important;
+}
+
+/* 5. Cards, Tables & Panels */
+[data-theme="dark"] .job-card,
+[data-theme="dark"] .card,
+[data-theme="dark"] .portal-card,
+[data-theme="dark"] .dashboard-stat-card,
+[data-theme="dark"] .empty-state {
+    background-color: var(--surface) !important;
+    border-color: var(--border) !important;
+    color: var(--text);
+}
+
+[data-theme="dark"] table {
+    background-color: var(--surface);
+    color: var(--text);
+}
+
+[data-theme="dark"] table th {
+    background-color: var(--surface-hover) !important;
+    color: var(--text) !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+[data-theme="dark"] table td {
+    border-bottom: 1px solid var(--border) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] table tr:hover td {
+    background-color: var(--surface-hover) !important;
+}
+
+/* 6. Form Controls & Inputs */
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="search"],
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+[data-theme="dark"] .form-control {
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+    color: var(--text-subtle) !important;
+}
+
+[data-theme="dark"] select option {
+    background-color: var(--surface);
+    color: var(--text);
+}
+
+/* 7. Buttons */
+[data-theme="dark"] .btn-outline {
+    background-color: transparent;
+    color: var(--text);
+    border-color: var(--border);
+}
+
+[data-theme="dark"] .btn-outline:hover {
+    background-color: var(--surface-hover);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+[data-theme="dark"] .btn-secondary {
+    background-color: var(--surface-hover);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+/* 8. Modals & Dialogs */
+[data-theme="dark"] .modal-overlay,
+[data-theme="dark"] [style*="position:fixed"][style*="z-index"][style*="background:rgba(0,0,0"] {
+    background: rgba(0, 0, 0, 0.75) !important;
+}
+
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .modal-box {
+    background-color: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text) !important;
+}
+
+/* 9. Admin Support Dashboard (/admin/support) */
+[data-theme="dark"] .conv-item {
+    border-bottom: 1px solid var(--border) !important;
+}
+
+[data-theme="dark"] .conv-item:hover {
+    background: var(--surface-hover) !important;
+}
+
+[data-theme="dark"] .conv-item.active {
+    background: rgba(37, 99, 235, 0.25) !important;
+    border-left: 4px solid var(--primary) !important;
+}
+
+[data-theme="dark"] .msg-bubble-user {
+    background: var(--surface-hover) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+}
+
+[data-theme="dark"] #chat-messages-stream {
+    background: var(--bg) !important;
+}
+
+/* 10. Student & Company Support Chat Widget */
+[data-theme="dark"] .support-chat-dialog {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+}
+
+[data-theme="dark"] .support-chat-stream {
+    background: var(--bg) !important;
+}
+
+[data-theme="dark"] .support-chat-footer {
+    background: var(--surface) !important;
+    border-top: 1px solid var(--border) !important;
+}
+
+[data-theme="dark"] .support-chat-input {
+    background: var(--surface) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .support-msg-wrap.theirs .support-msg-bubble {
+    background: var(--surface-hover) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+}
+
+[data-theme="dark"] .support-chat-intro {
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-color: rgba(16, 185, 129, 0.25) !important;
+    color: #6ee7b7 !important;
+}
+
+/* 11. AI Assistant Widget (chatbot) */
+[data-theme="dark"] .chatbot-card {
+    background: var(--surface) !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .chatbot-messages {
+    background: var(--bg) !important;
+}
+
+[data-theme="dark"] .chatbot-message--bot .chatbot-bubble {
+    background: var(--surface-hover) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .chatbot-footer {
+    background: var(--surface) !important;
+    border-top-color: var(--border) !important;
+}
+
+[data-theme="dark"] .chatbot-textarea {
+    background: var(--surface) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .chatbot-suggestion {
+    background: var(--surface) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+/* ==========================================================================
+   THEME SWITCHER COMPONENT (3 MODES: SYSTEM, DARK, LIGHT)
+   Clean, accessible, segmented dropdown with instant tactile feedback
+   ========================================================================== */
+
+.theme-switcher-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+}
+
+.theme-switcher-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.38rem 0.65rem;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full, 9999px);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-xs);
+}
+
+.theme-switcher-btn:hover {
+    background: var(--surface-hover);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.theme-switcher-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.theme-icon-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.theme-icon-slot svg {
+    width: 16px;
+    height: 16px;
+}
+
+.theme-btn-label {
+    font-size: 0.8rem;
+    line-height: 1;
+}
+
+.theme-chevron {
+    transition: transform 0.2s ease;
+    opacity: 0.7;
+}
+
+.theme-switcher-dropdown.open .theme-chevron {
+    transform: rotate(180deg);
+}
+
+/* Popover Menu */
+.theme-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 160px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    padding: 0.4rem;
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 1050;
+    animation: themeMenuFade 0.15s ease-out;
+}
+
+.theme-switcher-dropdown.open .theme-menu {
+    display: flex;
+}
+
+@keyframes themeMenuFade {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.theme-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-align: left;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.theme-menu-item:hover {
+    background: var(--surface-hover);
+    color: var(--primary);
+}
+
+.theme-menu-item.active {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.theme-menu-item .theme-check-icon {
+    margin-left: auto;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: none;
+}
+
+.theme-menu-item.active .theme-check-icon {
+    display: inline-block;
+}
+
+/* Responsive adjustment */
+@media (max-width: 640px) {
+    .theme-btn-label {
+        display: none;
+    }
+    .theme-switcher-btn {
+        padding: 0.4rem 0.5rem;
+    }
+}

@@ -88,6 +88,8 @@ async function loadNotifications() {
 
             container.innerHTML = notifs.map(n => {
                 const isUnread = !n.read_at;
+                const matchScore = n.data && Number.isFinite(Number(n.data.match_score)) ? parseInt(n.data.match_score) : null;
+                const targetUrl = safeNotificationUrl(n.data && n.data.url);
                 return `
                     <div class="notification-item ${isUnread ? 'notification-item--unread' : ''}">
                         <div style="display:flex;gap:var(--space-3);flex:1;min-width:0;">
@@ -106,15 +108,19 @@ async function loadNotifications() {
                                 </div>
                                 <div class="notification-item-meta">
                                     <span>${formatDate(n.created_at)}</span>
+                                    ${matchScore !== null ? `<span class="badge" style="background:#eff6ff;color:#1d4ed8;">Phù hợp ${matchScore}%</span>` : ''}
                                 </div>
                             </div>
                         </div>
 
-                        ${isUnread ? `
-                            <div class="row-actions">
+                        ${(isUnread || targetUrl) ? `
+                            <div class="row-actions" style="display:flex;gap:.5rem;flex-wrap:wrap;">
+                                ${targetUrl ? `<a href="${escapeHtml(targetUrl)}" class="btn btn-primary btn-sm row-action-btn">Xem việc làm</a>` : ''}
+                                ${isUnread ? `
                                 <button onclick="handleMarkRead('${escapeHtml(n.id)}')" class="btn btn-outline btn-sm row-action-btn" style="white-space:nowrap;" aria-label="Đánh dấu thông báo đã đọc">
                                     Đánh dấu đã đọc
                                 </button>
+                                ` : ''}
                             </div>
                         ` : ''}
                     </div>
@@ -131,6 +137,10 @@ async function loadNotifications() {
     } finally {
         if (loadingEl) loadingEl.style.display = "none";
     }
+}
+
+function safeNotificationUrl(value) {
+    return typeof value === "string" && /^\/viec-lam\/[a-zA-Z0-9_-]+$/.test(value) ? value : null;
 }
 
 function updateBadgeUI(count) {

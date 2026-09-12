@@ -16,7 +16,7 @@ class AdminRepository implements AdminRepositoryInterface
     {
         $config = Config::env();
         $this->db = new PDO(
-            "mysql:dbname={$config['dbname']};host={$config['host']}",
+            "mysql:dbname={$config['dbname']};host={$config['host']};charset=utf8mb4",
             $config["user"],
             $config["password"],
             [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
@@ -250,10 +250,12 @@ class AdminRepository implements AdminRepositoryInterface
     {
         $stmt = $this->db->prepare(
             "UPDATE `jobs` 
-             SET `status` = ?, `rejection_reason` = ?, `updated_at` = NOW() 
+             SET `status` = ?, `rejection_reason` = ?,
+                 `published_at` = IF(? = 'published' AND `status` <> 'published', NOW(), `published_at`),
+                 `updated_at` = NOW()
              WHERE `id` = ?"
         );
-        $stmt->execute([$status, $rejectionReason, $id]);
+        $stmt->execute([$status, $rejectionReason, $status, $id]);
     }
 
     private function buildJobWhereClause(array $filters): array

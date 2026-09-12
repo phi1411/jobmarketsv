@@ -74,4 +74,15 @@ class StudentController extends Controller
 
         return Response::html($html);
     }
+
+    public function recommendations(Request $request): Response
+    {
+        $html = View::renderWithLayout("student/recommendations", [
+            "title"       => "Việc Làm Dành Cho Bạn | JobMarketplace",
+            "currentPage" => "student_recommendations",
+            "activeTab"   => "recommendations"
+        ]);
+
+        return Response::html($html);
+    }
 }

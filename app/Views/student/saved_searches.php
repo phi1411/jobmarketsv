@@ -1,6 +1,17 @@
 <?php include __DIR__ . "/nav.php"; ?>
 
 <div class="container" style="margin-bottom:3rem;">
+    <div class="surface-card" style="margin-bottom:1.5rem;padding:1.25rem 1.5rem;background:linear-gradient(135deg,#eff6ff 0%,#ffffff 70%);border-color:#bfdbfe;">
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+            <div style="width:42px;height:42px;border-radius:12px;background:#2563eb;color:#fff;display:grid;place-items:center;flex:0 0 auto;">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+            </div>
+            <div>
+                <h3 style="margin:0 0 .35rem;font-size:1rem;color:var(--dark);">Thông báo việc làm phù hợp tự động</h3>
+                <p style="margin:0;color:var(--text-muted);font-size:.9rem;line-height:1.55;">Khi nhà tuyển dụng đăng tin mới đạt ngưỡng phù hợp, JobMarketSV sẽ báo ngay trong ứng dụng và gửi tới email tài khoản của bạn.</p>
+            </div>
+        </div>
+    </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
         <div>
             <h2 style="font-size:1.25rem;font-weight:700;color:var(--dark);margin:0;">
@@ -90,6 +101,30 @@
                     <input type="number" id="ss-salary-min" class="form-control" placeholder="25000" step="5000" min="0">
                 </div>
             </div>
+
+            <div class="form-grid-2" style="margin-bottom:1rem;">
+                <div class="form-group">
+                    <label class="form-label">Mức phù hợp tối thiểu</label>
+                    <select id="ss-min-score" class="form-control">
+                        <option value="50">Từ 50% — nhiều gợi ý</option>
+                        <option value="65" selected>Từ 65% — cân bằng</option>
+                        <option value="80">Từ 80% — rất sát nhu cầu</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tần suất email</label>
+                    <select id="ss-frequency" class="form-control">
+                        <option value="instant" selected>Gửi ngay khi có tin mới</option>
+                        <option value="daily">Tổng hợp hàng ngày</option>
+                        <option value="weekly">Tổng hợp hàng tuần</option>
+                    </select>
+                </div>
+            </div>
+
+            <label style="display:flex;align-items:center;gap:.65rem;margin-bottom:1.25rem;cursor:pointer;color:var(--dark);font-size:.9rem;">
+                <input type="checkbox" id="ss-email-enabled" checked style="width:18px;height:18px;accent-color:#2563eb;">
+                Gửi thêm thông báo tới email tài khoản
+            </label>
 
             <div style="display:flex;justify-content:flex-end;gap:0.75rem;padding-top:1rem;border-top:1px solid var(--border);">
                 <button type="button" onclick="closeCreateModal()" class="btn btn-outline btn-sm">Hủy</button>
@@ -193,11 +228,18 @@ async function loadSavedSearches() {
                                 ${item.keyword ? `<span class="badge" style="background:#f1f5f9;color:var(--text);">"${escapeHtml(item.keyword)}"</span>` : ''}
                                 ${item.shift_type ? `<span class="badge badge-shift">${getShiftLabel(item.shift_type)}</span>` : ''}
                                 ${item.salary_min ? `<span class="badge badge-salary">&ge; ${formatCurrency(item.salary_min)}/h</span>` : ''}
+                                <span class="badge" style="background:${item.notification_enabled ? '#ecfdf5' : '#f1f5f9'};color:${item.notification_enabled ? '#047857' : '#64748b'};">
+                                    ${item.notification_enabled ? `Đang báo từ ${parseInt(item.minimum_match_score || 65)}%` : 'Đã tắt thông báo'}
+                                </span>
+                                ${item.notification_enabled && item.email_enabled ? `<span class="badge" style="background:#eff6ff;color:#1d4ed8;">Email: ${getFrequencyLabel(item.frequency)}</span>` : ''}
                                 <span style="font-size:0.75rem;color:var(--text-muted);margin-left:0.5rem;">Tạo ngày: ${formatDate(item.created_at)}</span>
                             </div>
                         </div>
 
                         <div class="row-actions">
+                            <button onclick="handleToggleNotifications('${escapeHtml(item.id)}', ${item.notification_enabled ? 'false' : 'true'})" class="btn btn-outline btn-sm row-action-btn">
+                                ${item.notification_enabled ? 'Tắt thông báo' : 'Bật thông báo'}
+                            </button>
                             <a href="${searchUrl}" class="btn btn-primary btn-sm row-action-btn">
                                 Chạy Tìm Kiếm
                             </a>
@@ -228,6 +270,9 @@ function openCreateModal() {
     document.getElementById("ss-location").value = "";
     document.getElementById("ss-shift").value = "";
     document.getElementById("ss-salary-min").value = "";
+    document.getElementById("ss-min-score").value = "65";
+    document.getElementById("ss-frequency").value = "instant";
+    document.getElementById("ss-email-enabled").checked = true;
     document.getElementById("ss-error-box").style.display = "none";
     document.getElementById("ss-modal").style.display = "flex";
 }
@@ -251,7 +296,11 @@ async function handleCreateSavedSearch(e) {
         category_id: document.getElementById("ss-category").value || null,
         location_id: document.getElementById("ss-location").value || null,
         shift_type: document.getElementById("ss-shift").value || null,
-        salary_min: document.getElementById("ss-salary-min").value ? parseInt(document.getElementById("ss-salary-min").value) : null
+        salary_min: document.getElementById("ss-salary-min").value ? parseInt(document.getElementById("ss-salary-min").value) : null,
+        notification_enabled: true,
+        email_enabled: document.getElementById("ss-email-enabled").checked,
+        minimum_match_score: parseInt(document.getElementById("ss-min-score").value),
+        frequency: document.getElementById("ss-frequency").value
     };
 
     const res = await apiRequest("/saved-searches", {
@@ -292,6 +341,25 @@ async function handleDeleteSavedSearch(id) {
         loadSavedSearches();
     } else {
         showToast((res && res.message) ? res.message : "Xóa thất bại.", "error");
+    }
+}
+
+function getFrequencyLabel(value) {
+    return ({ instant: 'ngay', daily: 'hàng ngày', weekly: 'hàng tuần' })[value] || 'ngay';
+}
+
+async function handleToggleNotifications(id, enabled) {
+    const res = await apiRequest(`/saved-searches/${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        body: { notification_enabled: enabled },
+        requireAuth: true
+    });
+
+    if (res && res.success) {
+        showToast(enabled ? "Đã bật thông báo việc làm phù hợp." : "Đã tắt thông báo cho bộ lọc.", "success");
+        loadSavedSearches();
+    } else {
+        showToast((res && res.message) ? res.message : "Không thể cập nhật thông báo.", "error");
     }
 }
 </script>

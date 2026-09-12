@@ -17,17 +17,21 @@ class ProfileService
     private ProfileRepositoryInterface $profileRepository;
     private PDO $db;
 
-    public function __construct(?ProfileRepositoryInterface $profileRepository = null)
+    public function __construct(?ProfileRepositoryInterface $profileRepository = null, ?PDO $db = null)
     {
         $this->profileRepository = $profileRepository ?? new ProfileRepository();
 
-        $config = Config::env();
-        $this->db = new PDO(
-            "mysql:dbname={$config['dbname']};host={$config['host']}",
-            $config["user"],
-            $config["password"],
-            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-        );
+        if ($db !== null) {
+            $this->db = $db;
+        } else {
+            $config = Config::env();
+            $this->db = new PDO(
+                "mysql:dbname={$config['dbname']};host={$config['host']};port={$config['port']};charset=utf8mb4",
+                $config["user"],
+                $config["password"],
+                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+            );
+        }
     }
 
     public function getMyProfile(array $user): array
@@ -237,15 +241,57 @@ class ProfileService
             }
         }
 
-        // 11. Work Experience, Education, Certificates
-        if (isset($data["work_experience"])) {
-            $profile->setWorkExperience(trim((string)$data["work_experience"]));
+        // 11. Work Experience, Education, Certificates.
+        // Explicit null/empty values clear data; structured payloads are strict,
+        // bounded and canonicalized before persistence. Plain legacy text remains supported.
+        if (array_key_exists("work_experience", $data)) {
+            [$valid, $value, $fieldErrors] = $this->normalizeStructuredListField(
+                $data["work_experience"],
+                'work_experience',
+                20,
+                10000,
+                ['title' => 255, 'company' => 255, 'duration' => 100, 'description' => 2000]
+            );
+            if ($valid) {
+                $profile->setWorkExperience($value);
+            } else {
+                $errors['work_experience'] = $fieldErrors;
+            }
         }
-        if (isset($data["education"])) {
-            $profile->setEducation(trim((string)$data["education"]));
+
+        if (array_key_exists("education", $data)) {
+            [$valid, $value, $fieldErrors] = $this->normalizeStructuredObjectField(
+                $data["education"],
+                'education',
+                5000,
+                [
+                    'university' => 255,
+                    'major' => 255,
+                    'degree' => 100,
+                    'grad_year' => 20,
+                    'description' => 2000,
+                ]
+            );
+            if ($valid) {
+                $profile->setEducation($value);
+            } else {
+                $errors['education'] = $fieldErrors;
+            }
         }
-        if (isset($data["certificates"])) {
-            $profile->setCertificates(trim((string)$data["certificates"]));
+
+        if (array_key_exists("certificates", $data)) {
+            [$valid, $value, $fieldErrors] = $this->normalizeStructuredListField(
+                $data["certificates"],
+                'certificates',
+                20,
+                5000,
+                ['name' => 255, 'year' => 100]
+            );
+            if ($valid) {
+                $profile->setCertificates($value);
+            } else {
+                $errors['certificates'] = $fieldErrors;
+            }
         }
 
         if (!empty($errors)) {
@@ -261,6 +307,201 @@ class ProfileService
         $freshProfile->setEmail($fresh["email"] ?? ($user["email"] ?? null));
 
         return $freshProfile->toArrayPrivate();
+    }
+
+    /**
+     * @param array<string, int> $fieldLimits
+     * @return array{0: bool, 1: ?string, 2: list<string>}
+     */
+    private function normalizeStructuredListField(
+        mixed $raw,
+        string $field,
+        int $maxItems,
+        int $maxTotalLength,
+        array $fieldLimits
+    ): array {
+        if ($this->isExplicitlyEmpty($raw)) {
+            return [true, null, []];
+        }
+
+        [$structured, $value, $decodeErrors] = $this->decodeStructuredValue($raw, $field);
+        if ($decodeErrors !== []) {
+            return [false, null, $decodeErrors];
+        }
+        if (!$structured) {
+            return $this->normalizeLegacyText($value, $field, $maxTotalLength);
+        }
+        if (!is_array($value) || !array_is_list($value)) {
+            return [false, null, ["{$field} phải là danh sách JSON."]];
+        }
+        if (count($value) > $maxItems) {
+            return [false, null, ["Số lượng mục {$field} không được vượt quá {$maxItems}."]];
+        }
+
+        $normalized = [];
+        $errors = [];
+        foreach ($value as $index => $item) {
+            if (!is_array($item) || array_is_list($item)) {
+                $errors[] = "Mục {$field} số " . ($index + 1) . " phải là một object JSON.";
+                continue;
+            }
+
+            $unknown = array_diff(array_keys($item), array_keys($fieldLimits));
+            if ($unknown !== []) {
+                $errors[] = "Mục {$field} số " . ($index + 1) . " chứa trường không được hỗ trợ.";
+                continue;
+            }
+
+            $normalizedItem = [];
+            foreach ($fieldLimits as $key => $limit) {
+                if (!array_key_exists($key, $item) || $item[$key] === null) {
+                    $normalizedItem[$key] = '';
+                    continue;
+                }
+                if (!is_string($item[$key]) && !is_int($item[$key]) && !is_float($item[$key])) {
+                    $errors[] = "Trường {$key} trong mục {$field} số " . ($index + 1) . " sai kiểu dữ liệu.";
+                    continue 2;
+                }
+                $text = trim((string)$item[$key]);
+                if (mb_strlen($text, 'UTF-8') > $limit) {
+                    $errors[] = "Trường {$key} trong mục {$field} số " . ($index + 1) . " vượt quá {$limit} ký tự.";
+                    continue 2;
+                }
+                $normalizedItem[$key] = $text;
+            }
+
+            if (array_filter($normalizedItem, static fn(string $itemValue): bool => $itemValue !== '') !== []) {
+                $normalized[] = $normalizedItem;
+            }
+        }
+
+        if ($errors !== []) {
+            return [false, null, $errors];
+        }
+        if ($normalized === []) {
+            return [true, null, []];
+        }
+
+        return $this->encodeStructuredValue($normalized, $field, $maxTotalLength);
+    }
+
+    /**
+     * @param array<string, int> $fieldLimits
+     * @return array{0: bool, 1: ?string, 2: list<string>}
+     */
+    private function normalizeStructuredObjectField(
+        mixed $raw,
+        string $field,
+        int $maxTotalLength,
+        array $fieldLimits
+    ): array {
+        if ($this->isExplicitlyEmpty($raw)) {
+            return [true, null, []];
+        }
+
+        [$structured, $value, $decodeErrors] = $this->decodeStructuredValue($raw, $field);
+        if ($decodeErrors !== []) {
+            return [false, null, $decodeErrors];
+        }
+        if (!$structured) {
+            return $this->normalizeLegacyText($value, $field, $maxTotalLength);
+        }
+        if (!is_array($value) || $value === [] || array_is_list($value)) {
+            return $value === []
+                ? [true, null, []]
+                : [false, null, ["{$field} phải là một object JSON."]];
+        }
+
+        $unknown = array_diff(array_keys($value), array_keys($fieldLimits));
+        if ($unknown !== []) {
+            return [false, null, ["{$field} chứa trường không được hỗ trợ."]];
+        }
+
+        $normalized = [];
+        foreach ($fieldLimits as $key => $limit) {
+            if (!array_key_exists($key, $value) || $value[$key] === null) {
+                $normalized[$key] = '';
+                continue;
+            }
+            if (!is_string($value[$key]) && !is_int($value[$key]) && !is_float($value[$key])) {
+                return [false, null, ["Trường {$key} trong {$field} sai kiểu dữ liệu."]];
+            }
+            $text = trim((string)$value[$key]);
+            if (mb_strlen($text, 'UTF-8') > $limit) {
+                return [false, null, ["Trường {$key} trong {$field} vượt quá {$limit} ký tự."]];
+            }
+            $normalized[$key] = $text;
+        }
+
+        if (array_filter($normalized, static fn(string $itemValue): bool => $itemValue !== '') === []) {
+            return [true, null, []];
+        }
+
+        return $this->encodeStructuredValue($normalized, $field, $maxTotalLength);
+    }
+
+    private function isExplicitlyEmpty(mixed $raw): bool
+    {
+        return $raw === null
+            || (is_string($raw) && trim($raw) === '')
+            || (is_array($raw) && $raw === []);
+    }
+
+    /**
+     * @return array{0: bool, 1: mixed, 2: list<string>}
+     */
+    private function decodeStructuredValue(mixed $raw, string $field): array
+    {
+        if (is_array($raw)) {
+            return [true, $raw, []];
+        }
+        if (!is_string($raw)) {
+            return [false, null, ["{$field} phải là chuỗi hoặc dữ liệu JSON hợp lệ."]];
+        }
+
+        $trimmed = trim($raw);
+        $firstCharacter = $trimmed[0] ?? '';
+        if ($firstCharacter !== '[' && $firstCharacter !== '{') {
+            return [false, $trimmed, []];
+        }
+
+        try {
+            $decoded = json_decode($trimmed, true, 64, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return [true, null, ["{$field} không đúng định dạng JSON hợp lệ."]];
+        }
+
+        return [true, $decoded, []];
+    }
+
+    /** @return array{0: bool, 1: ?string, 2: list<string>} */
+    private function normalizeLegacyText(mixed $value, string $field, int $maxLength): array
+    {
+        if (!is_string($value)) {
+            return [false, null, ["{$field} sai kiểu dữ liệu."]];
+        }
+        $trimmed = trim($value);
+        if (mb_strlen($trimmed, 'UTF-8') > $maxLength) {
+            return [false, null, ["Dung lượng {$field} vượt quá {$maxLength} ký tự."]];
+        }
+        return [true, $trimmed === '' ? null : $trimmed, []];
+    }
+
+    /** @return array{0: bool, 1: ?string, 2: list<string>} */
+    private function encodeStructuredValue(array $value, string $field, int $maxLength): array
+    {
+        try {
+            $encoded = json_encode(
+                $value,
+                JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            );
+        } catch (\JsonException) {
+            return [false, null, ["{$field} chứa dữ liệu không thể mã hóa."]];
+        }
+        if (mb_strlen($encoded, 'UTF-8') > $maxLength) {
+            return [false, null, ["Dung lượng {$field} vượt quá {$maxLength} ký tự."]];
+        }
+        return [true, $encoded, []];
     }
 
     public function getPublicProfile(string $id): array

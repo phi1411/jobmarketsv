@@ -53,6 +53,9 @@ function updateNavbarAuthState(force = false) {
 
     const isCurrentHome = path === "/" || path === "";
     const isCurrentJobs = path.startsWith("/viec-lam");
+    const isCurrentStudent = path.startsWith("/student");
+    const isCurrentCompany = path.startsWith("/company");
+    const isCurrentAdmin = path.startsWith("/admin");
     const brandLogo = document.querySelector(".brand-logo");
     if (brandLogo) {
         if (token && user && user.role === "admin") {
@@ -70,10 +73,11 @@ function updateNavbarAuthState(force = false) {
         }
 
         if (user.role === "student" || user.role === "developer") {
-            // STUDENT: Global header only keeps job discovery (Tìm việc làm), notification utility, account/logout
+            // STUDENT: Global header keeps job discovery (Tìm việc làm) and portal entry (Cổng Sinh Viên), notification utility, account/logout
             if (navLinks) {
                 navLinks.innerHTML = `
                     <li><a href="/viec-lam" class="nav-link ${isCurrentJobs ? 'active' : ''}">Tìm Việc Làm</a></li>
+                    <li><a href="/student/dashboard" class="nav-link ${isCurrentStudent ? 'active' : ''}">Cổng Sinh Viên</a></li>
                 `;
                 navLinks.style.display = "";
             }
@@ -87,10 +91,14 @@ function updateNavbarAuthState(force = false) {
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                         <span id="nav-unread-badge" class="nav-unread-badge" style="display:none;">0</span>
                     </a>
-                    <div class="nav-user-info">
+                    <a href="/student/dashboard" class="btn btn-outline btn-sm nav-portal-btn" title="Vào Cổng Sinh Viên" aria-label="Cổng Sinh Viên">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        <span>Cổng Sinh Viên</span>
+                    </a>
+                    <a href="/student/dashboard" class="nav-user-info" title="Vào Cổng Sinh Viên">
                         <div class="nav-user-name">${escapeHtml(user.name || user.email)}</div>
                         <div class="nav-user-role"><span class="status-badge status-badge--info">Sinh viên</span></div>
-                    </div>
+                    </a>
                     <button onclick="handleLogout()" class="btn btn-outline btn-sm nav-logout-btn" title="Đăng xuất" aria-label="Đăng xuất">
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         <span>Đăng xuất</span>
@@ -99,7 +107,7 @@ function updateNavbarAuthState(force = false) {
             `;
             fetchUnreadCount();
         } else if (user.role === "company") {
-            // COMPANY: Remove global Trang Chủ & Tìm Việc Làm, remove duplicate Cổng Tuyển Dụng, keep notification & account/logout
+            // COMPANY: Remove global Trang Chủ & Tìm Việc Làm, provide Cổng Tuyển Dụng entry, notification & account/logout
             if (navLinks) {
                 navLinks.innerHTML = "";
                 navLinks.style.display = "none";
@@ -114,10 +122,14 @@ function updateNavbarAuthState(force = false) {
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                         <span id="nav-unread-badge" class="nav-unread-badge" style="display:none;">0</span>
                     </a>
-                    <div class="nav-user-info">
+                    <a href="/company/dashboard" class="btn btn-outline btn-sm nav-portal-btn" title="Vào Cổng Tuyển Dụng" aria-label="Cổng Tuyển Dụng">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                        <span>Cổng Tuyển Dụng</span>
+                    </a>
+                    <a href="/company/dashboard" class="nav-user-info" title="Vào Cổng Tuyển Dụng">
                         <div class="nav-user-name">${escapeHtml(user.name || user.email)}</div>
                         <div class="nav-user-role"><span class="status-badge status-badge--success">Nhà tuyển dụng</span></div>
-                    </div>
+                    </a>
                     <button onclick="handleLogout()" class="btn btn-outline btn-sm nav-logout-btn" title="Đăng xuất" aria-label="Đăng xuất">
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         <span>Đăng xuất</span>
@@ -126,7 +138,7 @@ function updateNavbarAuthState(force = false) {
             `;
             fetchUnreadCount();
         } else if (user.role === "admin") {
-            // ADMIN: Remove global Trang Chủ & Tìm Việc Làm, remove duplicate Cổng Quản Trị, keep account/logout only, no notification
+            // ADMIN: Remove global Trang Chủ & Tìm Việc Làm, provide Cổng Quản Trị entry, account/logout only
             if (navLinks) {
                 navLinks.innerHTML = "";
                 navLinks.style.display = "none";
@@ -137,10 +149,14 @@ function updateNavbarAuthState(force = false) {
 
             navActions.innerHTML = `
                 <div class="nav-user-cluster">
-                    <div class="nav-user-info">
+                    <a href="/admin/dashboard" class="btn btn-outline btn-sm nav-portal-btn nav-portal-btn--admin" title="Vào Cổng Quản Trị" aria-label="Cổng Quản Trị">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span>Cổng Quản Trị</span>
+                    </a>
+                    <a href="/admin/dashboard" class="nav-user-info" title="Vào Cổng Quản Trị">
                         <div class="nav-user-name">${escapeHtml(user.name || user.email)}</div>
                         <div class="nav-user-role"><span class="status-badge status-badge--danger">Quản trị viên</span></div>
-                    </div>
+                    </a>
                     <button onclick="handleLogout()" class="btn btn-outline btn-sm nav-logout-btn" title="Đăng xuất" aria-label="Đăng xuất">
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         <span>Đăng xuất</span>

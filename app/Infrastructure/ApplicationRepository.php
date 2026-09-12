@@ -17,7 +17,7 @@ class ApplicationRepository implements ApplicationRepositoryInterface
     {
         $config = Config::env();
         $this->db = new PDO(
-            "mysql:dbname={$config['dbname']};host={$config['host']}",
+            "mysql:dbname={$config['dbname']};host={$config['host']};charset=utf8mb4",
             $config["user"],
             $config["password"],
             [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
@@ -35,8 +35,9 @@ class ApplicationRepository implements ApplicationRepositoryInterface
             "INSERT INTO `applications` (
                 `id`, `job_id`, `developer_id`, `cover_letter`, `resume`, 
                 `preferred_shift`, `status`, `employer_note`, `applied_at`,
-                `cv_storage_path`, `cv_original_name`, `cv_file_size`, `cv_mime_type`
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                `cv_storage_path`, `cv_original_name`, `cv_file_size`, `cv_mime_type`,
+                `ai_match_consent`, `ai_match_consented_at`, `ai_match_consent_revoked_at`, `ai_match_notice_version`
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
 
         $stmt->execute([
@@ -52,7 +53,11 @@ class ApplicationRepository implements ApplicationRepositoryInterface
             $application->getCvStoragePath(),
             $application->getCvOriginalName(),
             $application->getCvFileSize(),
-            $application->getCvMimeType()
+            $application->getCvMimeType(),
+            $application->getAiMatchConsent() ? 1 : 0,
+            $application->getAiMatchConsentedAt(),
+            $application->getAiMatchConsentRevokedAt(),
+            $application->getAiMatchNoticeVersion(),
         ]);
     }
 
@@ -271,5 +276,15 @@ class ApplicationRepository implements ApplicationRepositoryInterface
             "UPDATE `applications` SET `status` = 'withdrawn', `updated_at` = NOW() WHERE `id` = ?"
         );
         $stmt->execute([$id]);
+    }
+
+    public function updateConsent(string $id, bool $consent, ?string $revokedAt = null): void
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE `applications`
+             SET `ai_match_consent` = ?, `ai_match_consent_revoked_at` = ?, `updated_at` = NOW()
+             WHERE `id` = ?"
+        );
+        $stmt->execute([$consent ? 1 : 0, $revokedAt, $id]);
     }
 }
