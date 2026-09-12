@@ -91,7 +91,7 @@ class MockGeminiClient implements GeminiClientInterface {
         return $this->available;
     }
 
-    public function generateContent(array $contents, ?string $systemInstruction = null): GeminiResponse {
+    public function generateContent(array $contents, ?string $systemInstruction = null, array $options = []): GeminiResponse {
         $this->lastContents = $contents;
         $this->lastSystemInstruction = $systemInstruction;
         return new GeminiResponse(

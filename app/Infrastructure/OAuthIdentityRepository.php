@@ -21,7 +21,7 @@ class OAuthIdentityRepository implements OAuthIdentityRepositoryInterface
         } else {
             $config = Config::env();
             $this->db = new PDO(
-                "mysql:dbname={$config['dbname']};host={$config['host']}",
+                "mysql:dbname={$config['dbname']};host={$config['host']};charset=utf8mb4",
                 $config["user"],
                 $config["password"],
                 [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]

@@ -17,4 +17,5 @@ interface ApplicationRepositoryInterface
     public function countByCompany(string $companyId, array $filters = []): int;
     public function updateStatus(string $id, string $status, ?string $employerNote = null): void;
     public function withdraw(string $id): void;
+    public function updateConsent(string $id, bool $consent, ?string $revokedAt = null): void;
 }

@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Pass Authorization Header to PHP on FastCGI / Shared Hosting
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Deny direct access to hidden files/folders (e.g. .env, .git)
+    RewriteRule (^|/)\. - [F,L]
+
+    # Deny direct access to sensitive file extensions
+    RewriteRule \.(sql|log|lock)$ - [F,L]
+
+    # Deny direct access to internal source directories
+    RewriteRule ^(app|storage|vendor|docs|database)/ - [F,L]
+
+    # Rewrite all public traffic to the public/ folder
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

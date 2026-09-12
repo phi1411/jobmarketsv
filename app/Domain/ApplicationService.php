@@ -18,6 +18,8 @@ use JobMarket\Support\Pagination;
 
 class ApplicationService
 {
+    public const AI_MATCH_NOTICE_VERSION = 'ai-match.v1';
+
     private ApplicationRepository $applicationRepo;
     private JobRepository $jobRepo;
     private CompanyRepository $companyRepo;
@@ -88,6 +90,21 @@ class ApplicationService
             throw new ValidationException(["cover_letter" => ["Thư ứng tuyển không được vượt quá 3000 ký tự."]]);
         }
 
+        // 4b. Validate ai_match_consent (CV-AI-P0-05)
+        // Missing -> false; strictly accepts boolean only. If key exists but is not boolean (null, string, int), throw 422.
+        $aiMatchConsent = false;
+        if (array_key_exists("ai_match_consent", $data)) {
+            $rawConsent = $data["ai_match_consent"];
+            if (!is_bool($rawConsent)) {
+                throw new ValidationException(["ai_match_consent" => ["Trường ai_match_consent phải là kiểu boolean (true hoặc false)."]]);
+            }
+            $aiMatchConsent = $rawConsent;
+        }
+
+        // Enforce server-owned invariants: client cannot set timestamp or notice version
+        $aiMatchConsentedAt = $aiMatchConsent ? date("Y-m-d H:i:s") : null;
+        $aiMatchNoticeVersion = $aiMatchConsent ? self::AI_MATCH_NOTICE_VERSION : null;
+
         // 5. Server-owned active CV selection from student profile (CV-P0-02)
         // Disregard any client-supplied CV parameters (cv_url_snapshot, resume, cv_url, cv_storage_path, file_id, path, user_id)
         $studentProfile = $this->profileRepo->findByUserId($studentUserId);
@@ -116,6 +133,7 @@ class ApplicationService
             $cvFileSize,
             $cvMimeType
         );
+        $app->setConsent($aiMatchConsent, $aiMatchConsentedAt, $aiMatchNoticeVersion);
 
         $db = $this->applicationRepo->getDb();
         $db->beginTransaction();
@@ -154,7 +172,14 @@ class ApplicationService
             // Notification failure should not abort application flow
         }
 
-        return Application::fromArray($fresh)->toArrayForStudent();
+        $persistedApp = Application::fromArray($fresh);
+        $res = $persistedApp->toArrayForStudent();
+        $res["match_analysis"] = [
+            "consent" => $persistedApp->getAiMatchConsent(),
+            "status"  => "not_started",
+        ];
+
+        return $res;
     }
 
     /**

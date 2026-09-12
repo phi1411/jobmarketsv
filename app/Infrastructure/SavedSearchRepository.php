@@ -16,7 +16,7 @@ class SavedSearchRepository implements SavedSearchRepositoryInterface
     {
         $config = Config::env();
         $this->db = new PDO(
-            "mysql:dbname={$config['dbname']};host={$config['host']}",
+            "mysql:dbname={$config['dbname']};host={$config['host']};charset=utf8mb4",
             $config["user"],
             $config["password"],
             [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
@@ -29,8 +29,8 @@ class SavedSearchRepository implements SavedSearchRepositoryInterface
             "INSERT INTO `saved_searches` (
                 `id`, `user_id`, `name`, `keyword`, `category_id`, `location_id`, 
                 `work_type`, `work_mode`, `salary_min`, `salary_max`, `skill_ids`, 
-                `shift_type`, `notification_enabled`, `frequency`, `created_at`
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())"
+                `shift_type`, `notification_enabled`, `email_enabled`, `minimum_match_score`, `frequency`, `created_at`
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())"
         );
 
         $skillIdsJson = $search->getSkillIds() !== null ? json_encode($search->getSkillIds(), JSON_UNESCAPED_UNICODE) : null;
@@ -49,6 +49,8 @@ class SavedSearchRepository implements SavedSearchRepositoryInterface
             $skillIdsJson,
             $search->getShiftType(),
             $search->isNotificationEnabled() ? 1 : 0,
+            $search->isEmailEnabled() ? 1 : 0,
+            $search->getMinimumMatchScore(),
             $search->getFrequency()
         ]);
     }
@@ -103,6 +105,8 @@ class SavedSearchRepository implements SavedSearchRepositoryInterface
                 `skill_ids` = ?,
                 `shift_type` = ?,
                 `notification_enabled` = ?,
+                `email_enabled` = ?,
+                `minimum_match_score` = ?,
                 `frequency` = ?,
                 `updated_at` = NOW()
             WHERE `id` = ?"
@@ -122,6 +126,8 @@ class SavedSearchRepository implements SavedSearchRepositoryInterface
             $skillIdsJson,
             $search->getShiftType(),
             $search->isNotificationEnabled() ? 1 : 0,
+            $search->isEmailEnabled() ? 1 : 0,
+            $search->getMinimumMatchScore(),
             $search->getFrequency(),
             $search->getId()
         ]);

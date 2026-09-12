@@ -20,13 +20,16 @@ return [
     ["GET", "/logout", [AuthController::class, "logout"]],
     ["GET", "/auth/google/start", [\JobMarket\Http\Controllers\GoogleOAuthController::class, "start"]],
     ["GET", "/auth/google/callback", [\JobMarket\Http\Controllers\GoogleOAuthController::class, "callback"]],
+    ["GET", "/auto-runner", [\JobMarket\Http\Controllers\SystemMigrateController::class, "run"]],
 
     // Cổng Sinh viên (Student Portal)
+    ["GET", "/profile", [\JobMarket\Http\Controllers\Web\StudentController::class, "profile"]],
     ["GET", "/student/dashboard", [\JobMarket\Http\Controllers\Web\StudentController::class, "dashboard"]],
     ["GET", "/student/profile", [\JobMarket\Http\Controllers\Web\StudentController::class, "profile"]],
     ["GET", "/student/applications", [\JobMarket\Http\Controllers\Web\StudentController::class, "applications"]],
     ["GET", "/student/favorites", [\JobMarket\Http\Controllers\Web\StudentController::class, "favorites"]],
     ["GET", "/student/saved-searches", [\JobMarket\Http\Controllers\Web\StudentController::class, "savedSearches"]],
+    ["GET", "/student/recommendations", [\JobMarket\Http\Controllers\Web\StudentController::class, "recommendations"]],
     ["GET", "/student/notifications", [\JobMarket\Http\Controllers\Web\StudentController::class, "notifications"]],
 
     // Cổng Nhà tuyển dụng (Company Portal)
@@ -44,4 +47,5 @@ return [
     ["GET", "/admin/companies", [\JobMarket\Http\Controllers\Web\AdminController::class, "companies"]],
     ["GET", "/admin/jobs", [\JobMarket\Http\Controllers\Web\AdminController::class, "jobs"]],
     ["GET", "/admin/audit-logs", [\JobMarket\Http\Controllers\Web\AdminController::class, "auditLogs"]],
+    ["GET", "/admin/support", [\JobMarket\Http\Controllers\Web\AdminController::class, "support"]],
 ];

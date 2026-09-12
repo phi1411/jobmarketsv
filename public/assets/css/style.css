@@ -263,6 +263,13 @@ img {
     text-align: right;
     line-height: 1.2;
     min-width: 0;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.nav-user-info:hover .nav-user-name {
+    color: var(--primary);
 }
 
 .nav-user-name {
@@ -273,6 +280,7 @@ img {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 180px;
+    transition: color 0.15s ease;
 }
 
 .nav-user-role {
@@ -283,6 +291,24 @@ img {
     font-size: 0.72rem;
     padding: 0.1rem 0.45rem;
     font-weight: 600;
+}
+
+.nav-portal-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.nav-portal-btn--admin {
+    border-color: #fca5a5;
+    color: #991b1b;
+}
+.nav-portal-btn--admin:hover {
+    background-color: #fef2f2;
+    border-color: #ef4444;
+    color: #991b1b;
 }
 
 .nav-logout-btn {
@@ -2436,6 +2462,11 @@ textarea[disabled],
         padding: 0.35rem 0.65rem;
         font-size: 0.8125rem;
     }
+    .nav-portal-btn {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8125rem;
+        gap: 0.3rem;
+    }
 }
 
 /* Breakpoint: <= 360px / Ultra-compact (320px) */
@@ -2483,5 +2514,13 @@ textarea[disabled],
     .nav-logout-btn {
         padding: 0.3rem 0.55rem;
         font-size: 0.78rem;
+    }
+    .nav-portal-btn {
+        padding: 0.3rem 0.45rem;
+        min-width: 32px;
+        font-size: 0.78rem;
+    }
+    .nav-portal-btn span {
+        display: none;
     }
 }

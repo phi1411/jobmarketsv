@@ -6,6 +6,7 @@ use JobMarket\Exceptions\AuthorizationException;
 use JobMarket\Exceptions\NotFoundException;
 use JobMarket\Exceptions\ValidationException;
 use JobMarket\Infrastructure\AdminRepository;
+use JobMarket\Support\Logger;
 use JobMarket\Support\Pagination;
 
 class AdminService
@@ -210,6 +211,18 @@ class AdminService
         }
 
         $this->adminRepo->updateJobModeration($id, $status, $rejectionReason);
+
+        if (($job["status"] ?? "") !== "published" && $status === "published") {
+            try {
+                $publishedJob = $this->adminRepo->getJobById($id) ?? $job;
+                (new JobAlertService())->processPublishedJob($publishedJob);
+            } catch (\Throwable $e) {
+                Logger::error("Lỗi xử lý thông báo việc làm phù hợp sau khi quản trị viên duyệt tin.", [
+                    "job_id" => $id,
+                    "error" => $e->getMessage(),
+                ]);
+            }
+        }
 
         // In-App Notification to company owner
         try {

@@ -22,7 +22,7 @@ class SaveSearchService
 
         $config = Config::env();
         $this->db = new PDO(
-            "mysql:dbname={$config['dbname']};host={$config['host']}",
+            "mysql:dbname={$config['dbname']};host={$config['host']};charset=utf8mb4",
             $config["user"],
             $config["password"],
             [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
@@ -206,8 +206,15 @@ class SaveSearchService
         }
 
         if (isset($data["frequency"]) && !empty($data["frequency"])) {
-            if (!in_array($data["frequency"], ["daily", "weekly"], true)) {
-                $errors["frequency"][] = "Tần suất thông báo (frequency) phải là daily hoặc weekly.";
+            if (!in_array($data["frequency"], ["instant", "daily", "weekly"], true)) {
+                $errors["frequency"][] = "Tần suất email phải là instant, daily hoặc weekly.";
+            }
+        }
+
+        if (isset($data["minimum_match_score"])) {
+            $score = filter_var($data["minimum_match_score"], FILTER_VALIDATE_INT);
+            if ($score === false || $score < 30 || $score > 100) {
+                $errors["minimum_match_score"][] = "Mức độ phù hợp tối thiểu phải từ 30% đến 100%.";
             }
         }
 
@@ -254,6 +261,12 @@ class SaveSearchService
         }
         if (isset($data["notification_enabled"])) {
             $search->setNotificationEnabled((bool)$data["notification_enabled"]);
+        }
+        if (isset($data["email_enabled"])) {
+            $search->setEmailEnabled((bool)$data["email_enabled"]);
+        }
+        if (isset($data["minimum_match_score"])) {
+            $search->setMinimumMatchScore((int)$data["minimum_match_score"]);
         }
         if (isset($data["frequency"])) {
             $search->setFrequency(trim((string)$data["frequency"]));

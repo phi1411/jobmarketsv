@@ -7,8 +7,12 @@
 .DS_Store
 Thumbs.db
 /storage/app/cv/
+/storage/app/cvs/
 /storage/app/uploads/
 /storage/app/resumes/
+/storage/app/mail-preview/
+/storage/app/oauth_states/
+user_prompt_*.txt
 /backups/
 *.sql
 *.sqlite
@@ -17,3 +21,4 @@ Thumbs.db
 *.key
 *.p12
 *.pfx
+*.zip

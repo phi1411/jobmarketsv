@@ -22,6 +22,12 @@ class Application
     private ?int $cv_file_size = null;
     private ?string $cv_mime_type = null;
 
+    // AI Match Consent metadata (CV-AI-P0-04 & CV-AI-P0-05)
+    private bool $ai_match_consent = false;
+    private ?string $ai_match_consented_at = null;
+    private ?string $ai_match_consent_revoked_at = null;
+    private ?string $ai_match_notice_version = null;
+
     // Joined metadata (read-only for presentation)
     private ?string $job_title = null;
     private ?string $company_id = null;
@@ -101,6 +107,12 @@ class Application
         $app->cv_file_size = isset($data["cv_file_size"]) && $data["cv_file_size"] !== null ? (int)$data["cv_file_size"] : null;
         $app->cv_mime_type = $data["cv_mime_type"] ?? null;
 
+        // Consent metadata
+        $app->ai_match_consent = (bool)($data["ai_match_consent"] ?? false);
+        $app->ai_match_consented_at = $data["ai_match_consented_at"] ?? null;
+        $app->ai_match_consent_revoked_at = $data["ai_match_consent_revoked_at"] ?? null;
+        $app->ai_match_notice_version = $data["ai_match_notice_version"] ?? null;
+
         return $app;
     }
 
@@ -144,6 +156,13 @@ class Application
             "cv_mime_type"    => $this->cv_mime_type,
             "preferred_shift" => $this->preferred_shift,
             "status"          => $this->status,
+            "ai_match_consent" => $this->ai_match_consent,
+            "ai_match_consented_at" => $this->ai_match_consented_at,
+            "ai_match_notice_version" => $this->ai_match_notice_version,
+            "match_analysis"  => [
+                "consent" => $this->ai_match_consent,
+                "status"  => "not_started",
+            ],
             "applied_at"      => $this->applied_at,
             "created_at"      => $this->created_at,
             "updated_at"      => $this->updated_at,
@@ -206,4 +225,21 @@ class Application
     public function setPreferredShift(?string $shift): self { $this->preferred_shift = $shift; return $this; }
     public function setEmployerNote(?string $note): self { $this->employer_note = $note; return $this; }
     public function setStatus(string $status): self { $this->status = $status; return $this; }
+
+    // AI Match Consent getters & setters
+    public function getAiMatchConsent(): bool { return $this->ai_match_consent; }
+    public function getAiMatchConsentedAt(): ?string { return $this->ai_match_consented_at; }
+    public function getAiMatchConsentRevokedAt(): ?string { return $this->ai_match_consent_revoked_at; }
+    public function getAiMatchNoticeVersion(): ?string { return $this->ai_match_notice_version; }
+
+    public function setConsent(bool $consent, ?string $consentedAt = null, ?string $noticeVersion = null): self
+    {
+        $this->ai_match_consent = $consent;
+        $this->ai_match_consented_at = $consent ? ($consentedAt ?? date("Y-m-d H:i:s")) : null;
+        $this->ai_match_notice_version = $consent ? ($noticeVersion ?? 'ai-match.v1') : null;
+        if (!$consent) {
+            $this->ai_match_consent_revoked_at = null;
+        }
+        return $this;
+    }
 }

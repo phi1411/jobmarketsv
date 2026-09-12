@@ -17,7 +17,9 @@ class SavedSearch
     private ?array $skill_ids = null;
     private ?string $shift_type = null;
     private bool $notification_enabled = true;
-    private string $frequency = "daily";
+    private bool $email_enabled = true;
+    private int $minimum_match_score = 65;
+    private string $frequency = "instant";
     private ?string $created_at = null;
     private ?string $updated_at = null;
 
@@ -62,7 +64,9 @@ class SavedSearch
 
         $search->shift_type = $data["shift_type"] ?? null;
         $search->notification_enabled = isset($data["notification_enabled"]) ? (bool)$data["notification_enabled"] : true;
-        $search->frequency = $data["frequency"] ?? "daily";
+        $search->email_enabled = isset($data["email_enabled"]) ? (bool)$data["email_enabled"] : true;
+        $search->minimum_match_score = isset($data["minimum_match_score"]) ? (int)$data["minimum_match_score"] : 65;
+        $search->frequency = $data["frequency"] ?? "instant";
         $search->created_at = $data["created_at"] ?? null;
         $search->updated_at = $data["updated_at"] ?? null;
 
@@ -85,6 +89,8 @@ class SavedSearch
             "skill_ids"            => $this->skill_ids,
             "shift_type"           => $this->shift_type,
             "notification_enabled" => $this->notification_enabled,
+            "email_enabled"        => $this->email_enabled,
+            "minimum_match_score"  => $this->minimum_match_score,
             "frequency"            => $this->frequency,
             "created_at"           => $this->created_at,
             "updated_at"           => $this->updated_at,
@@ -105,6 +111,8 @@ class SavedSearch
     public function getSkillIds(): ?array { return $this->skill_ids; }
     public function getShiftType(): ?string { return $this->shift_type; }
     public function isNotificationEnabled(): bool { return $this->notification_enabled; }
+    public function isEmailEnabled(): bool { return $this->email_enabled; }
+    public function getMinimumMatchScore(): int { return $this->minimum_match_score; }
     public function getFrequency(): string { return $this->frequency; }
 
     public function setName(string $name): self { $this->name = $name; return $this; }
@@ -118,5 +126,7 @@ class SavedSearch
     public function setSkillIds(?array $skills): self { $this->skill_ids = $skills; return $this; }
     public function setShiftType(?string $shift): self { $this->shift_type = $shift; return $this; }
     public function setNotificationEnabled(bool $enabled): self { $this->notification_enabled = $enabled; return $this; }
+    public function setEmailEnabled(bool $enabled): self { $this->email_enabled = $enabled; return $this; }
+    public function setMinimumMatchScore(int $score): self { $this->minimum_match_score = $score; return $this; }
     public function setFrequency(string $frequency): self { $this->frequency = $frequency; return $this; }
 }

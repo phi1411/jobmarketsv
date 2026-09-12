@@ -8,7 +8,8 @@ class GeminiResponse
         public readonly string $text,
         public readonly bool $isBlocked = false,
         public readonly ?string $finishReason = null,
-        public readonly ?string $safetyNotice = null
+        public readonly ?string $safetyNotice = null,
+        public readonly ?array $usageMetadata = null
     ) {
     }
 }
