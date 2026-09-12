@@ -132,6 +132,26 @@ class SystemMigrateController extends Controller
 
             @unlink($sqlFile);
 
+            // Execute all pending migrations to ensure tables and columns exist
+            $allMigrations = [
+                \JobMarket\Migrations\ConversationMigration::class,
+                \JobMarket\Migrations\MessageMigration::class,
+                \JobMarket\Migrations\OAuthIdentityMigration::class,
+                \JobMarket\Migrations\StudentCvUploadMigration::class,
+                \JobMarket\Migrations\ApplicationCvSnapshotMigration::class,
+                \JobMarket\Migrations\JobMatchAnalysisMigration::class,
+                \JobMarket\Migrations\SavedSearchJobAlertMigration::class,
+                \JobMarket\Migrations\ProfileJobAlertMigration::class,
+            ];
+            foreach ($allMigrations as $m) {
+                if (class_exists($m)) {
+                    try {
+                        $inst = new $m();
+                        $inst->create();
+                    } catch (Throwable $ignore) {}
+                }
+            }
+
             $jobs = (int)$pdo->query("SELECT COUNT(*) FROM `jobs`")->fetchColumn();
             $comps = (int)$pdo->query("SELECT COUNT(*) FROM `companies`")->fetchColumn();
             $users = (int)$pdo->query("SELECT COUNT(*) FROM `users`")->fetchColumn();
