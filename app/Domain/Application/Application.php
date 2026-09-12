@@ -12,6 +12,7 @@ class Application
     private ?string $preferred_shift = null;
     private string $status = "pending";
     private ?string $employer_note = null;
+    private ?string $student_message = null;
     private ?string $applied_at = null;
     private ?string $created_at = null;
     private ?string $updated_at = null;
@@ -87,6 +88,7 @@ class Application
         $app = new static($jobId, $devId, $cover, $resume, $status, $id);
         $app->preferred_shift = $data["preferred_shift"] ?? null;
         $app->employer_note = $data["employer_note"] ?? null;
+        $app->student_message = $data["student_message"] ?? null;
         $app->applied_at = $data["applied_at"] ?? null;
         $app->created_at = $data["created_at"] ?? null;
         $app->updated_at = $data["updated_at"] ?? null;
@@ -118,7 +120,7 @@ class Application
 
     public function canBeWithdrawn(): bool
     {
-        return in_array($this->status, ["pending", "viewed", "reviewed"], true);
+        return $this->status === "pending";
     }
 
     public function withdraw(): void
@@ -126,17 +128,17 @@ class Application
         $this->status = "withdrawn";
     }
 
-    public function updateStatus(string $status, ?string $note = null): void
+    public function updateStatus(string $status, ?string $studentMessage = null): void
     {
         $this->status = $status;
-        if ($note !== null) {
-            $this->employer_note = $note;
+        if ($studentMessage !== null) {
+            $this->student_message = $studentMessage;
         }
     }
 
     /**
      * Presentation array for Student:
-     * NEVER returns employer_note or internal company private notes.
+     * Returns only the explicit message intended for the student; internal employer_note stays private.
      * Never exposes raw cv_storage_path.
      */
     public function toArrayForStudent(): array
@@ -156,6 +158,7 @@ class Application
             "cv_mime_type"    => $this->cv_mime_type,
             "preferred_shift" => $this->preferred_shift,
             "status"          => $this->status,
+            "student_message" => $this->student_message,
             "ai_match_consent" => $this->ai_match_consent,
             "ai_match_consented_at" => $this->ai_match_consented_at,
             "ai_match_notice_version" => $this->ai_match_notice_version,
@@ -196,6 +199,7 @@ class Application
             "preferred_shift"    => $this->preferred_shift,
             "status"             => $this->status,
             "employer_note"      => $this->employer_note,
+            "student_message"    => $this->student_message,
             "applied_at"         => $this->applied_at,
             "created_at"         => $this->created_at,
             "updated_at"         => $this->updated_at,
@@ -211,6 +215,7 @@ class Application
     public function getPreferredShift(): ?string { return $this->preferred_shift; }
     public function getStatus(): string { return $this->status; }
     public function getEmployerNote(): ?string { return $this->employer_note; }
+    public function getStudentMessage(): ?string { return $this->student_message; }
     public function getAppliedAt(): ?string { return $this->applied_at; }
     public function getJobTitle(): ?string { return $this->job_title; }
     public function getCompanyId(): ?string { return $this->company_id; }
@@ -224,6 +229,7 @@ class Application
 
     public function setPreferredShift(?string $shift): self { $this->preferred_shift = $shift; return $this; }
     public function setEmployerNote(?string $note): self { $this->employer_note = $note; return $this; }
+    public function setStudentMessage(?string $message): self { $this->student_message = $message; return $this; }
     public function setStatus(string $status): self { $this->status = $status; return $this; }
 
     // AI Match Consent getters & setters

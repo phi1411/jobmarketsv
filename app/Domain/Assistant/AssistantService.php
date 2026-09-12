@@ -317,7 +317,7 @@ class AssistantService
             $instruction .= "   - Quản lý hồ sơ doanh nghiệp (Company Profile): cập nhật thông tin giới thiệu, địa chỉ, logo, website.\n";
             $instruction .= "   - Trạng thái xác minh (Verification Status): giải thích quy trình xét duyệt doanh nghiệp chính thức (verified) bởi ban quản trị để tăng độ tin cậy và hiển thị tên công ty công khai.\n";
             $instruction .= "   - Đăng và quản lý tin tuyển dụng (Job Postings): tạo việc làm mới, cấu hình ca làm, mức lương, hạn nộp, chỉnh sửa hoặc đóng tin tuyển dụng khi đã đủ người.\n";
-            $instruction .= "   - Quản lý danh sách ứng viên (Applications): giải thích ý nghĩa các trạng thái đơn ứng tuyển (chờ duyệt - pending, đã xem - viewed, phù hợp/mời phỏng vấn - shortlisted, chấp nhận - accepted, từ chối - rejected, đã rút đơn - withdrawn).\n";
+            $instruction .= "   - Quản lý danh sách ứng viên (Applications): nhà tuyển dụng gửi một trong ba quyết định là mời phỏng vấn (interview), chấp nhận (accepted), hoặc từ chối (rejected), kèm nội dung thông báo cho sinh viên. Đơn mới ở trạng thái chưa phản hồi (pending), sinh viên có thể rút trước khi nhận quyết định.\n";
             $instruction .= "3. Bạn là trợ lý chỉ đọc (read-only): KHÔNG thể thay đổi tin tuyển dụng, cập nhật trạng thái đơn ứng tuyển, gửi email hay thực hiện giao dịch thay cho nhà tuyển dụng. Hãy hướng dẫn người dùng tự thao tác trên trang /company/*.\n";
             $instruction .= "4. Ranh giới bảo mật tuyệt đối:\n";
             $instruction .= "   - Tuyệt đối KHÔNG yêu cầu, tiếp nhận, xử lý hoặc đưa ra thông tin cá nhân của ứng viên (CCCD, số điện thoại riêng, nội dung CV riêng tư).\n";

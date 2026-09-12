@@ -23,25 +23,66 @@
 
     <!-- Main Content -->
     <div id="student-dash-content" style="display:none;">
-        <!-- Welcome Banner -->
-        <div class="dashboard-hero dashboard-hero--student">
-            <div class="dashboard-hero-content">
-                <h2 class="dashboard-hero-title">
-                    Xin chào, <span id="dash-user-name">Sinh viên</span>!
-                </h2>
-                <p class="dashboard-hero-desc">
-                    Theo dõi tiến độ đơn ứng tuyển và các cơ hội việc làm part-time phù hợp nhất hôm nay.
-                </p>
-            </div>
-            <div class="dashboard-hero-actions">
-                <a href="/student/profile" class="btn btn-outline btn-sm">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <span>Cập Nhật Hồ Sơ</span>
-                </a>
-                <a href="/student/applications" class="btn btn-primary btn-sm">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    <span>Xem Đơn Ứng Tuyển</span>
-                </a>
+        <!-- 3D Interactive Hero Intro Banner -->
+        <div class="dashboard-hero-3d">
+            <div class="hero-3d-card" id="studentHero3d">
+                <div class="hero-3d-mesh"></div>
+                <div class="hero-3d-glow hero-3d-glow-1"></div>
+                <div class="hero-3d-glow hero-3d-glow-2"></div>
+
+                <div class="hero-3d-content">
+                    <div class="hero-3d-text">
+                        <div class="hero-badge-pill">
+                            <span class="hero-pulse-dot"></span>
+                            <span>Hệ Thống Gợi Ý AI Match 2.0</span>
+                        </div>
+                        <h2 class="hero-3d-title">
+                            Chào mừng trở lại, <span class="hero-gradient-text" id="dash-user-name">Sinh viên</span>! 👋
+                        </h2>
+                        <p class="hero-3d-subtitle">
+                            Khám phá hàng trăm cơ hội việc làm part-time linh hoạt theo ca học sinh viên, đối sánh kỹ năng tự động bằng AI và theo dõi trạng thái ứng tuyển trực quan theo thời gian thực.
+                        </p>
+                        <div class="hero-3d-actions">
+                            <a href="/viec-lam" class="btn-hero btn-hero--primary">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                <span>Khám Phá Việc Làm Ngay</span>
+                            </a>
+                            <a href="/student/recommendations" class="btn-hero btn-hero--glass">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                <span>Xem Gợi Ý AI</span>
+                            </a>
+                            <a href="/student/profile" class="btn-hero btn-hero--glass">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <span>Hồ Sơ CV Cá Nhân</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="hero-3d-visual">
+                        <!-- Floating 3D Animated Badges -->
+                        <div class="floating-badge floating-badge--1">
+                            <span class="badge-icon">⚡</span>
+                            <div class="badge-content">
+                                <strong>AI Match 95%</strong>
+                                <small>Độ tương thích hồ sơ</small>
+                            </div>
+                        </div>
+                        <div class="floating-badge floating-badge--2">
+                            <span class="badge-icon">💼</span>
+                            <div class="badge-content">
+                                <strong>140+ Việc Part-time</strong>
+                                <small>Đang tuyển mới hôm nay</small>
+                            </div>
+                        </div>
+                        <div class="floating-badge floating-badge--3">
+                            <span class="badge-icon">⏰</span>
+                            <div class="badge-content">
+                                <strong>Ca Học Linh Hoạt</strong>
+                                <small>Tự do đăng ký ca làm</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -92,73 +133,6 @@
             </div>
         </div>
 
-        <!-- Application Status Pipeline -->
-        <div class="surface-card" style="margin-bottom:2rem;">
-            <div class="section-header">
-                <div class="section-header-main">
-                    <h3 class="section-title">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                        <span>Tiến Trình Đơn Ứng Tuyển</span>
-                    </h3>
-                    <p class="section-desc">Theo dõi các giai đoạn xét duyệt hồ sơ từ nhà tuyển dụng</p>
-                </div>
-                <a href="/student/applications" class="section-action-link">
-                    <span>Chi tiết</span>
-                    <span>&rarr;</span>
-                </a>
-            </div>
-
-            <div class="pipeline-flow">
-                <!-- Group 1: Đang xét duyệt (In-progress) -->
-                <div class="pipeline-group">
-                    <div class="pipeline-group-label">
-                        <span class="status-dot" style="background:var(--primary);"></span>
-                        <span>Đang xử lý (Active Steps)</span>
-                    </div>
-                    <div class="pipeline-steps">
-                        <div class="pipeline-step">
-                            <span class="pipeline-step-badge">1</span>
-                            <span class="pipeline-step-name">Chờ duyệt</span>
-                            <span id="pipe-pending" class="pipeline-step-count pipeline-step-count--warning">0</span>
-                        </div>
-                        <span class="pipeline-step-arrow">&rarr;</span>
-                        <div class="pipeline-step">
-                            <span class="pipeline-step-badge">2</span>
-                            <span class="pipeline-step-name">Đã xem</span>
-                            <span id="pipe-viewed" class="pipeline-step-count pipeline-step-count--info">0</span>
-                        </div>
-                        <span class="pipeline-step-arrow">&rarr;</span>
-                        <div class="pipeline-step">
-                            <span class="pipeline-step-badge">3</span>
-                            <span class="pipeline-step-name">Phù hợp</span>
-                            <span id="pipe-shortlisted" class="pipeline-step-count pipeline-step-count--secondary">0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Group 2: Kết quả cuối cùng (Outcomes / Terminal) -->
-                <div class="pipeline-group">
-                    <div class="pipeline-group-label">
-                        <span class="status-dot" style="background:var(--neutral);"></span>
-                        <span>Đã kết thúc (Final Outcomes)</span>
-                    </div>
-                    <div class="pipeline-outcomes">
-                        <div class="pipeline-outcome pipeline-outcome--success">
-                            <span class="pipeline-step-name">Trúng tuyển</span>
-                            <span id="pipe-accepted" class="pipeline-step-count">0</span>
-                        </div>
-                        <div class="pipeline-outcome pipeline-outcome--danger">
-                            <span class="pipeline-step-name">Từ chối</span>
-                            <span id="pipe-rejected" class="pipeline-step-count">0</span>
-                        </div>
-                        <div class="pipeline-outcome pipeline-outcome--neutral">
-                            <span class="pipeline-step-name">Đã rút</span>
-                            <span id="pipe-withdrawn" class="pipeline-step-count">0</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- 2 Columns: Expiring Favorites & Recent Notifications -->
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1.5rem;">
@@ -202,6 +176,29 @@
                 </div>
             </div>
         </div>
+
+        <!-- Recommended Jobs Grid (TopCV-style 3 columns) -->
+        <div class="surface-card" style="margin-top:2rem;">
+            <div class="section-header" style="margin-bottom:1.25rem;">
+                <div class="section-header-main">
+                    <h3 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 4.6L5 9.5l4 3.3L8.5 18l3.5-2.3 3.5 2.3-.5-5.2 4-3.3-5.1-1.9z"/><path d="M19 3v4M21 5h-4"/></svg>
+                        <span>Việc Làm Phù Hợp Gợi Ý Hôm Nay</span>
+                    </h3>
+                    <p class="section-desc">Cơ hội việc làm part-time mới nhất được hệ thống đề xuất cho bạn</p>
+                </div>
+                <a href="/viec-lam" class="section-action-link">
+                    <span>Xem tất cả việc làm</span>
+                    <span>&rarr;</span>
+                </a>
+            </div>
+
+            <div id="dash-recommended-jobs-grid" class="topcv-job-grid">
+                <div class="job-card skeleton" style="height:140px;"></div>
+                <div class="job-card skeleton" style="height:140px;"></div>
+                <div class="job-card skeleton" style="height:140px;"></div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -226,6 +223,8 @@ function initStudentDashboardPage() {
     const nameEl = document.getElementById("dash-user-name");
     if (nameEl) nameEl.innerText = user.name || "Sinh viên";
     loadDashboard();
+    initHero3dTilt();
+    loadRecommendedJobs();
 }
 
 if (document.readyState === "loading") {
@@ -257,13 +256,6 @@ async function loadDashboard() {
         document.getElementById("stat-pending-apps").innerText = counts.pending || 0;
         document.getElementById("stat-shortlisted-apps").innerText = (counts.shortlisted || 0) + (counts.accepted || 0);
         document.getElementById("stat-unread-notifs").innerText = unreadCount;
-
-        document.getElementById("pipe-pending").innerText = counts.pending || 0;
-        document.getElementById("pipe-viewed").innerText = counts.viewed || 0;
-        document.getElementById("pipe-shortlisted").innerText = counts.shortlisted || 0;
-        document.getElementById("pipe-accepted").innerText = counts.accepted || 0;
-        document.getElementById("pipe-rejected").innerText = counts.rejected || 0;
-        document.getElementById("pipe-withdrawn").innerText = counts.withdrawn || 0;
 
         // Navbar badge sync
         const badge = document.getElementById("nav-student-notif-badge");
@@ -352,6 +344,122 @@ async function loadDashboard() {
         if (msgEl) msgEl.innerText = "Lỗi kết nối máy chủ.";
     } finally {
         if (loadingEl) loadingEl.style.display = "none";
+    }
+}
+
+function initHero3dTilt() {
+    const card = document.getElementById("studentHero3d");
+    if (!card) return;
+
+    card.addEventListener("mousemove", (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -5;
+        const rotateY = ((x - centerX) / centerX) * 5;
+
+        card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-2px)`;
+    });
+
+    card.addEventListener("mouseleave", () => {
+        card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)";
+    });
+}
+
+async function loadRecommendedJobs() {
+    const grid = document.getElementById("dash-recommended-jobs-grid");
+    if (!grid) return;
+
+    try {
+        const res = await apiRequest("/jobs?per_page=6&sort_by=newest");
+        if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+            const jobs = res.data;
+            grid.innerHTML = jobs.map(job => `
+                <div class="topcv-job-card" onclick="window.location.href='/viec-lam/${encodeURIComponent(job.id)}'">
+                    <div>
+                        <div class="topcv-card-top">
+                            <div class="topcv-logo-wrapper">
+                                ${job.company_logo ? `<img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company_name)}" class="topcv-logo-img" onerror="this.outerHTML='<div class=\\'topcv-logo-fallback\\'>${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : 'J')}</div>'">` : `<div class="topcv-logo-fallback">${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : "J")}</div>`}
+                            </div>
+                            <div class="topcv-card-info">
+                                <div class="topcv-job-title" title="${escapeHtml(job.title)}">
+                                    ${job.is_featured ? '<span class="topcv-badge-hot">HOT</span>' : ''}
+                                    ${escapeHtml(job.title)}
+                                </div>
+                                <div class="topcv-company-name" title="${escapeHtml(job.company_name || 'Nhà tuyển dụng')}">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v14M21 7v14M6 11h2M6 15h2M16 11h2M16 15h2M10 21V3h4v18"/></svg>
+                                    <span>${escapeHtml(job.company_name || "Nhà tuyển dụng")}</span>
+                                </div>
+                            </div>
+                            <button type="button" class="topcv-bookmark-btn" onclick="event.stopPropagation(); toggleFavoriteJob('${encodeURIComponent(job.id)}', this)" title="Lưu việc làm">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="topcv-pills-row">
+                        <span class="topcv-pill topcv-pill-salary">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 9.5a3.5 3.5 0 1 0-7 0 3.5 3.5 0 1 0 7 0z"/></svg>
+                            ${formatCurrency(job.salary_min)} - ${formatCurrency(job.salary_max)}
+                        </span>
+                        <span class="topcv-pill topcv-pill-shift">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            ${getShiftLabel(job.shift_type)}
+                        </span>
+                        <span class="topcv-pill topcv-pill-location">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            ${escapeHtml(job.location_name || job.city || "Toàn quốc")}
+                        </span>
+                    </div>
+                </div>
+            `).join("");
+        } else {
+            grid.innerHTML = `
+                <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted);">
+                    Chưa có việc làm nào phù hợp. Hãy cập nhật hồ sơ để nhận gợi ý chính xác hơn.
+                </div>
+            `;
+        }
+    } catch (err) {
+        console.error("Error loading recommended jobs:", err);
+        grid.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted);">
+                Không thể tải danh sách việc làm gợi ý.
+            </div>
+        `;
+    }
+}
+
+async function toggleFavoriteJob(jobId, btnEl) {
+    if (!TokenStorage.isLoggedIn()) {
+        showToast("Vui lòng đăng nhập để lưu việc làm.", "error");
+        return;
+    }
+    const isFavorited = btnEl.classList.contains("active");
+    try {
+        if (isFavorited) {
+            const res = await apiRequest(`/favorites/jobs/${encodeURIComponent(jobId)}`, {
+                method: "DELETE",
+                requireAuth: true
+            });
+            if (res && res.success) {
+                btnEl.classList.remove("active");
+                showToast("Đã bỏ lưu việc làm.", "info");
+            }
+        } else {
+            const res = await apiRequest(`/favorites/jobs/${encodeURIComponent(jobId)}`, {
+                method: "POST",
+                requireAuth: true
+            });
+            if (res && res.success) {
+                btnEl.classList.add("active");
+                showToast("Đã lưu việc làm vào danh sách yêu thích!", "success");
+            }
+        }
+    } catch (err) {
+        console.error("Error toggling favorite:", err);
+        showToast("Thao tác thất bại.", "error");
     }
 }
 </script>

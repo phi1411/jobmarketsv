@@ -115,7 +115,7 @@ async function loadNotifications() {
 
                         ${(isUnread || targetUrl) ? `
                             <div class="row-actions" style="display:flex;gap:.5rem;flex-wrap:wrap;">
-                                ${targetUrl ? `<a href="${escapeHtml(targetUrl)}" class="btn btn-primary btn-sm row-action-btn">Xem việc làm</a>` : ''}
+                                ${targetUrl ? `<a href="${escapeHtml(targetUrl)}" class="btn btn-primary btn-sm row-action-btn">${targetUrl === '/student/applications' ? 'Xem đơn ứng tuyển' : 'Xem việc làm'}</a>` : ''}
                                 ${isUnread ? `
                                 <button onclick="handleMarkRead('${escapeHtml(n.id)}')" class="btn btn-outline btn-sm row-action-btn" style="white-space:nowrap;" aria-label="Đánh dấu thông báo đã đọc">
                                     Đánh dấu đã đọc
@@ -140,7 +140,7 @@ async function loadNotifications() {
 }
 
 function safeNotificationUrl(value) {
-    return typeof value === "string" && /^\/viec-lam\/[a-zA-Z0-9_-]+$/.test(value) ? value : null;
+    return typeof value === "string" && (value === "/student/applications" || /^\/viec-lam\/[a-zA-Z0-9_-]+$/.test(value)) ? value : null;
 }
 
 function updateBadgeUI(count) {

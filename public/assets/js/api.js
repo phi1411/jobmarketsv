@@ -184,9 +184,10 @@ function getWorkTypeLabel(type) {
 // 6. Semantic Status Badge Helpers (UI-P0-03)
 function getAppStatusBadge(status) {
     const map = {
-        "pending":     { label: "Chờ xem xét", modifier: "status-badge--warning" },
+        "pending":     { label: "Chưa phản hồi", modifier: "status-badge--warning" },
         "viewed":      { label: "Đã xem", modifier: "status-badge--info" },
         "shortlisted": { label: "Phù hợp", modifier: "status-badge--info" },
+        "interview":   { label: "Mời phỏng vấn", modifier: "status-badge--info" },
         "accepted":    { label: "Trúng tuyển", modifier: "status-badge--success" },
         "rejected":    { label: "Chưa phù hợp", modifier: "status-badge--danger" },
         "withdrawn":   { label: "Đã rút đơn", modifier: "status-badge--neutral" }

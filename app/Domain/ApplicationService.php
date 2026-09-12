@@ -11,6 +11,7 @@ use JobMarket\Exceptions\NotFoundException;
 use JobMarket\Exceptions\ValidationException;
 use JobMarket\Http\Response;
 use JobMarket\Infrastructure\ApplicationRepository;
+use JobMarket\Infrastructure\ApplicationDecisionDeliveryRepository;
 use JobMarket\Infrastructure\CompanyRepository;
 use JobMarket\Infrastructure\JobRepository;
 use JobMarket\Infrastructure\ProfileRepository;
@@ -26,6 +27,8 @@ class ApplicationService
     private ProfileRepository $profileRepo;
     private NotificationService $notificationService;
     private CvStorageService $cvStorageService;
+    private MailService $mailService;
+    private ApplicationDecisionDeliveryRepository $decisionDeliveryRepo;
 
     public function __construct(
         ?ApplicationRepository $applicationRepo = null,
@@ -33,7 +36,9 @@ class ApplicationService
         ?CompanyRepository $companyRepo = null,
         ?ProfileRepository $profileRepo = null,
         ?NotificationService $notificationService = null,
-        ?CvStorageService $cvStorageService = null
+        ?CvStorageService $cvStorageService = null,
+        ?MailService $mailService = null,
+        ?ApplicationDecisionDeliveryRepository $decisionDeliveryRepo = null
     ) {
         $this->applicationRepo = $applicationRepo ?? new ApplicationRepository();
         $this->jobRepo = $jobRepo ?? new JobRepository();
@@ -41,6 +46,8 @@ class ApplicationService
         $this->profileRepo = $profileRepo ?? new ProfileRepository();
         $this->notificationService = $notificationService ?? new NotificationService();
         $this->cvStorageService = $cvStorageService ?? new CvStorageService();
+        $this->mailService = $mailService ?? new MailService();
+        $this->decisionDeliveryRepo = $decisionDeliveryRepo ?? new ApplicationDecisionDeliveryRepository();
     }
 
     /**
@@ -220,6 +227,53 @@ class ApplicationService
         ];
     }
 
+    private function mapCompanyApplication(array $row): array
+    {
+        $application = Application::fromArray($row)->toArrayForCompany();
+        $skillsText = trim((string)($row["student_skill_names"] ?? ""));
+        $skillSeparator = "||";
+        if ($skillsText === "") {
+            $skillsText = trim((string)($row["student_skills"] ?? ""));
+            $skillSeparator = ",;\n";
+        }
+        $application["student_skills"] = ($skillsText === "" || strtolower($skillsText) === "array")
+            ? []
+            : array_values(array_filter(array_map(
+                "trim",
+                preg_split($skillSeparator === "||" ? '/\|\|/u' : '/[,;\n]+/u', $skillsText) ?: []
+            )));
+
+        $analysisStatus = (string)($row["match_analysis_status"] ?? "");
+        $hasConsent = !empty($row["ai_match_consent"]) && empty($row["ai_match_consent_revoked_at"]);
+        $coverage = isset($row["match_coverage"]) ? (float)$row["match_coverage"] : null;
+        $score = isset($row["match_score"]) ? (float)$row["match_score"] : null;
+
+        if (!$hasConsent) {
+            $displayStatus = "not_consented";
+        } elseif ($analysisStatus === "") {
+            $displayStatus = "not_evaluated";
+        } elseif (in_array($analysisStatus, ["processing", "pending"], true)) {
+            $displayStatus = "processing";
+        } elseif ($analysisStatus === "revoked") {
+            $displayStatus = "revoked";
+        } elseif (in_array($analysisStatus, ["completed", "partial"], true) && ($coverage === null || $coverage < 60)) {
+            $displayStatus = "insufficient_data";
+        } elseif ($score !== null && $coverage !== null && $coverage >= 60) {
+            $displayStatus = "available";
+        } else {
+            $displayStatus = "unavailable";
+        }
+
+        $application["match_analysis"] = [
+            "status" => $displayStatus,
+            "score" => $displayStatus === "available" ? (int)round($score) : null,
+            "coverage_percent" => $displayStatus === "available" ? (int)round($coverage) : null,
+            "classification" => $displayStatus === "available" ? ($row["match_classification"] ?? null) : null,
+        ];
+
+        return $application;
+    }
+
     /**
      * Student views their own submitted applications
      */
@@ -233,9 +287,11 @@ class ApplicationService
         $items = $this->applicationRepo->getByStudent($user["id"], $filters, $pagination);
         $total = $this->applicationRepo->countByStudent($user["id"], $filters);
 
-        // Guarantees employer_note is never revealed to student
+        // Internal employer_note stays private; only student_message is exposed.
         $mapped = array_map(function($row) {
-            return Application::fromArray($row)->toArrayForStudent();
+            $application = Application::fromArray($row)->toArrayForStudent();
+            $application["status_history"] = $this->applicationRepo->getStatusHistory($row["id"]);
+            return $application;
         }, $items);
 
         return [
@@ -262,9 +318,7 @@ class ApplicationService
         $items = $this->applicationRepo->getByCompany($company["id"], $filters, $pagination);
         $total = $this->applicationRepo->countByCompany($company["id"], $filters);
 
-        $mapped = array_map(function($row) {
-            return Application::fromArray($row)->toArrayForCompany();
-        }, $items);
+        $mapped = array_map(fn(array $row): array => $this->mapCompanyApplication($row), $items);
 
         return [
             "items" => $mapped,
@@ -288,17 +342,13 @@ class ApplicationService
             if ($row["developer_id"] !== $user["id"]) {
                 throw new AuthorizationException("Bạn không có quyền xem đơn ứng tuyển của sinh viên khác.");
             }
-            return Application::fromArray($row)->toArrayForStudent();
+            $result = Application::fromArray($row)->toArrayForStudent();
+            $result["status_history"] = $this->applicationRepo->getStatusHistory($id);
+            return $result;
         } elseif ($role === "company") {
             $company = $this->companyRepo->findByUserId($user["id"]);
             if (!$company || $row["company_id"] !== $company["id"]) {
                 throw new AuthorizationException("Bạn không có quyền xem đơn ứng tuyển của công ty khác.");
-            }
-
-            // Auto transition from 'pending' to 'viewed' upon company first opening
-            if ($row["status"] === "pending") {
-                $this->applicationRepo->updateStatus($id, "viewed");
-                $row["status"] = "viewed";
             }
 
             return Application::fromArray($row)->toArrayForCompany();
@@ -333,41 +383,74 @@ class ApplicationService
         }
 
         $newStatus = $data["status"] ?? "";
-        $allowedStatuses = ["pending", "viewed", "shortlisted", "rejected", "accepted"];
+        $allowedStatuses = ["interview", "accepted", "rejected"];
         if (!in_array($newStatus, $allowedStatuses, true)) {
             throw new ValidationException(["status" => ["Trạng thái không hợp lệ. Cho phép: " . implode(", ", $allowedStatuses)]]);
         }
 
-        $employerNote = isset($data["employer_note"]) ? trim((string)$data["employer_note"]) : null;
+        $rawMessage = $data["student_message"] ?? ($data["employer_note"] ?? null);
+        $studentMessage = is_scalar($rawMessage) ? trim((string)$rawMessage) : "";
+        if ($studentMessage === "") {
+            throw new ValidationException(["student_message" => ["Vui lòng nhập nội dung gửi tới sinh viên."]]);
+        }
+        if (mb_strlen($studentMessage) > 1000) {
+            throw new ValidationException(["student_message" => ["Nội dung gửi sinh viên không được vượt quá 1000 ký tự."]]);
+        }
 
-        $this->applicationRepo->updateStatus($id, $newStatus, $employerNote);
+        $statusLabels = [
+            "interview" => "Mời phỏng vấn", "rejected" => "Chưa phù hợp", "accepted" => "Trúng tuyển",
+        ];
+        $this->applicationRepo->updateStatus($id, $newStatus, $studentMessage, $user["id"], "company", $statusLabels[$newStatus] ?? null);
 
         $fresh = $this->applicationRepo->findById($id);
 
-        // Notify Student of Status Change
+        $notificationId = null;
         try {
             $studentUserId = $row["developer_id"] ?? "";
             if ($studentUserId) {
                 $jobTitle = $row["job_title"] ?? "công việc";
-                $this->notificationService->notify(
+                $title = match ($newStatus) {
+                    "interview" => "Bạn có lịch phỏng vấn mới",
+                    "accepted" => "Chúc mừng, bạn đã được chấp nhận",
+                    "rejected" => "Kết quả đơn ứng tuyển",
+                };
+                $notification = $this->notificationService->notify(
                     $studentUserId,
-                    "Cập nhật trạng thái ứng tuyển",
-                    "Đơn ứng tuyển của bạn cho vị trí '{$jobTitle}' đã được cập nhật sang trạng thái: '{$newStatus}'.",
-                    "application_status_changed",
+                    $title,
+                    "{$statusLabels[$newStatus]} – {$jobTitle}. Nội dung từ nhà tuyển dụng: {$studentMessage}",
+                    "application_decision",
                     [
                         "application_id" => $id,
                         "job_id"         => $row["job_id"] ?? null,
                         "job_title"      => $jobTitle,
                         "new_status"     => $newStatus,
+                        "student_message" => $studentMessage,
+                        "url"            => "/student/applications",
                         "updated_at"     => date("Y-m-d H:i:s")
                     ]
                 );
+                $notificationId = $notification->getId();
             }
         } catch (\Throwable) {
-            // Notification failure should not abort status update
         }
 
-        return Application::fromArray($fresh)->toArrayForCompany();
+        $emailResult = $this->mailService->sendApplicationDecision(
+            ["email" => $row["student_email"] ?? "", "name" => $row["student_name"] ?? "Sinh viên"],
+            [
+                "id" => $id, "job_title" => $row["job_title"] ?? "Vị trí ứng tuyển",
+                "company_name" => $row["company_name"] ?? "Nhà tuyển dụng",
+            ],
+            $newStatus,
+            $studentMessage
+        );
+        try {
+            $this->decisionDeliveryRepo->create($id, $newStatus, $studentMessage, $notificationId, $emailResult);
+        } catch (\Throwable) {
+        }
+
+        $result = Application::fromArray($fresh)->toArrayForCompany();
+        $result["delivery"] = ["in_app" => $notificationId !== null, "email_status" => $emailResult["status"] ?? "failed"];
+        return $result;
     }
 
     /**
@@ -391,11 +474,11 @@ class ApplicationService
         }
 
         $currentStatus = $row["status"];
-        if (!in_array($currentStatus, ["pending", "viewed", "reviewed"], true)) {
-            throw new ValidationException(["status" => ["Chỉ có thể rút đơn ứng tuyển khi đơn ở trạng thái chờ duyệt (pending) hoặc đã xem (viewed). Trạng thái hiện tại: {$currentStatus}."]]);
+        if ($currentStatus !== "pending") {
+            throw new ValidationException(["status" => ["Chỉ có thể rút đơn trước khi nhà tuyển dụng gửi quyết định. Trạng thái hiện tại: {$currentStatus}."]]);
         }
 
-        $this->applicationRepo->withdraw($id);
+        $this->applicationRepo->withdraw($id, $user["id"], "student");
 
         $fresh = $this->applicationRepo->findById($id);
         return Application::fromArray($fresh)->toArrayForStudent();

@@ -59,12 +59,51 @@
     .coverage-row { display: flex; justify-content: space-between; align-items: center; gap: .75rem; color: var(--text-muted); font-size: .73rem; }
     .coverage-track { height: 5px; flex: 1; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
     .coverage-fill { height: 100%; border-radius: inherit; background: #60a5fa; }
+    .match-explanation-toggle {
+        width: 100%; display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+        padding: .7rem .8rem; border: 1px solid #bfdbfe; border-radius: 10px; background: #eff6ff;
+        color: #1d4ed8; font: inherit; font-size: .82rem; font-weight: 800; cursor: pointer;
+    }
+    .match-explanation-toggle:hover { background: #dbeafe; }
+    .match-explanation-toggle .toggle-icon { transition: transform .18s ease; }
+    .match-explanation-toggle[aria-expanded="true"] .toggle-icon { transform: rotate(180deg); }
+    .match-explanation[hidden] { display: none; }
+    .match-explanation {
+        padding: .9rem; border: 1px solid #dbeafe; border-radius: 12px; background: #fff;
+        display: flex; flex-direction: column; gap: .9rem;
+    }
+    .match-explanation-title { margin: 0; color: var(--dark); font-size: .9rem; }
+    .criterion-list { display: flex; flex-direction: column; gap: .72rem; }
+    .criterion-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+    .criterion-name { color: var(--dark); font-size: .79rem; font-weight: 800; }
+    .criterion-weight { color: var(--text-muted); font-size: .68rem; font-weight: 600; }
+    .criterion-result { font-size: .73rem; font-weight: 800; white-space: nowrap; }
+    .criterion-result.matched { color: #15803d; }
+    .criterion-result.partial { color: #b45309; }
+    .criterion-result.needs_improvement { color: #dc2626; }
+    .criterion-result.missing_data, .criterion-result.not_applicable { color: #64748b; }
+    .criterion-track { height: 7px; margin-top: .35rem; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+    .criterion-fill { height: 100%; border-radius: inherit; background: #ef4444; }
+    .criterion-fill.matched { background: #22c55e; }
+    .criterion-fill.partial { background: #f59e0b; }
+    .criterion-fill.missing_data, .criterion-fill.not_applicable { background: #94a3b8; }
+    .criterion-evidence { margin-top: .3rem; color: var(--text-muted); font-size: .72rem; line-height: 1.4; }
+    .skill-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; margin-top: .45rem; }
+    .skill-breakdown-box { padding: .55rem .65rem; border-radius: 8px; font-size: .7rem; line-height: 1.45; }
+    .skill-breakdown-box.matched { background: #f0fdf4; color: #166534; }
+    .skill-breakdown-box.missing { background: #fff7ed; color: #9a3412; }
+    .improvement-box { padding: .8rem; border-radius: 10px; background: #fffbeb; border: 1px solid #fde68a; }
+    .improvement-box h5 { margin: 0 0 .55rem; color: #92400e; font-size: .8rem; }
+    .improvement-list { margin: 0; padding-left: 1.1rem; color: #78350f; font-size: .73rem; line-height: 1.5; }
+    .improvement-list li + li { margin-top: .4rem; }
+    .score-note { margin: 0; padding-top: .7rem; border-top: 1px solid #e2e8f0; color: var(--text-muted); font-size: .68rem; line-height: 1.45; }
     .recommendation-actions { margin-top: auto; padding-top: .1rem; display: flex; align-items: center; gap: .65rem; }
     .recommendation-actions .btn { flex: 1; }
     .recommendation-note { color: var(--text-muted); font-size: .76rem; }
     @media (max-width: 640px) {
         .recommendation-hero { flex-direction: column; }
         .recommendation-grid { grid-template-columns: 1fr; }
+        .skill-breakdown { grid-template-columns: 1fr; }
     }
 </style>
 
@@ -242,7 +281,7 @@ async function loadRecommendations() {
             return;
         }
 
-        grid.innerHTML = jobs.map(renderRecommendationCard).join("");
+        grid.innerHTML = jobs.map((job, index) => renderRecommendationCard(job, index)).join("");
     } catch (error) {
         console.error("Error loading job recommendations:", error);
         count.textContent = "Không thể tải gợi ý lúc này";
@@ -270,13 +309,14 @@ function renderProfileReadiness(profile) {
     `).join("");
 }
 
-function renderRecommendationCard(job) {
+function renderRecommendationCard(job, index) {
     const classification = getRecommendationClassification(job.classification);
     const score = Math.max(0, Math.min(100, parseInt(job.match_score || 0, 10)));
     const coverage = Math.max(0, Math.min(100, parseInt(job.coverage_percent || 0, 10)));
     const reasons = Array.isArray(job.reasons) ? job.reasons.slice(0, 2) : [];
     const location = [job.district, job.city].filter(Boolean).join(", ") || job.location || "Chưa cập nhật khu vực";
     const salary = formatRecommendationSalary(job);
+    const explanationId = `match-explanation-${index}`;
 
     return `
         <article class="surface-card recommendation-card">
@@ -306,12 +346,88 @@ function renderRecommendationCard(job) {
                 <div class="coverage-track"><div class="coverage-fill" style="width:${coverage}%"></div></div>
             </div>
 
+            <button type="button" class="match-explanation-toggle" aria-expanded="false" aria-controls="${explanationId}" onclick="toggleMatchExplanation('${explanationId}', this)">
+                <span>🔎 Vì sao phù hợp ${score}%?</span>
+                <span class="toggle-icon" aria-hidden="true">⌄</span>
+            </button>
+            <div id="${explanationId}" class="match-explanation" hidden>
+                ${renderMatchExplanation(job)}
+            </div>
+
             <div class="recommendation-actions">
                 <a href="/viec-lam/${encodeURIComponent(job.id)}" class="btn btn-primary btn-sm">Xem Việc Làm &rarr;</a>
                 ${job.is_favorite ? `<span class="badge" style="background:#fef3c7;color:#92400e;white-space:nowrap;">★ Đã lưu</span>` : ""}
             </div>
         </article>
     `;
+}
+
+function renderMatchExplanation(job) {
+    const criteria = Array.isArray(job.criteria) ? job.criteria : [];
+    const suggestions = Array.isArray(job.improvement_suggestions) ? job.improvement_suggestions : [];
+
+    const criterionHtml = criteria.map(criterion => {
+        const status = criterion.status || "missing_data";
+        const score = criterion.score === null || criterion.score === undefined
+            ? null
+            : Math.max(0, Math.min(100, parseInt(criterion.score, 10) || 0));
+        const statusText = getCriterionStatusText(status, score);
+        const matchedItems = Array.isArray(criterion.matched_items) ? criterion.matched_items : [];
+        const missingItems = Array.isArray(criterion.missing_items) ? criterion.missing_items : [];
+        const skillBreakdown = criterion.key === "skills" && (matchedItems.length || missingItems.length) ? `
+            <div class="skill-breakdown">
+                ${matchedItems.length ? `<div class="skill-breakdown-box matched"><strong>Đã đáp ứng:</strong><br>${matchedItems.map(escapeHtml).join(", ")}</div>` : ""}
+                ${missingItems.length ? `<div class="skill-breakdown-box missing"><strong>Còn thiếu:</strong><br>${missingItems.map(escapeHtml).join(", ")}</div>` : ""}
+            </div>
+        ` : "";
+
+        return `
+            <div class="criterion-item">
+                <div class="criterion-head">
+                    <div>
+                        <span class="criterion-name">${escapeHtml(criterion.label || criterion.key || "Tiêu chí")}</span>
+                        <span class="criterion-weight"> · Trọng số ${parseInt(criterion.weight || 0, 10)}%</span>
+                    </div>
+                    <span class="criterion-result ${status}">${escapeHtml(statusText)}</span>
+                </div>
+                <div class="criterion-track"><div class="criterion-fill ${status}" style="width:${score === null ? 0 : score}%"></div></div>
+                ${criterion.evidence ? `<div class="criterion-evidence">${escapeHtml(criterion.evidence)}</div>` : ""}
+                ${skillBreakdown}
+            </div>
+        `;
+    }).join("");
+
+    const suggestionsHtml = suggestions.length ? `
+        <div class="improvement-box">
+            <h5>💡 Nên cải thiện trước</h5>
+            <ol class="improvement-list">
+                ${suggestions.map(item => `<li><strong>${escapeHtml(item.label || "Hồ sơ")}:</strong> ${escapeHtml(item.text || "")}</li>`).join("")}
+            </ol>
+        </div>
+    ` : `<div class="skill-breakdown-box matched"><strong>Hồ sơ đang đáp ứng tốt các tiêu chí có thể đối chiếu của công việc này.</strong></div>`;
+
+    return `
+        <h4 class="match-explanation-title">Chi tiết từng tiêu chí</h4>
+        <div class="criterion-list">${criterionHtml}</div>
+        ${suggestionsHtml}
+        <p class="score-note"><strong>Cách tính:</strong> điểm tổng hợp là trung bình có trọng số của các tiêu chí đủ dữ liệu. Kỹ năng và lịch rảnh mỗi mục chiếm 30%; kinh nghiệm, học vấn, khu vực và vai trò mỗi mục 10%. Đây không phải xác suất được tuyển.</p>
+    `;
+}
+
+function getCriterionStatusText(status, score) {
+    if (status === "not_applicable") return "Không yêu cầu";
+    if (status === "missing_data") return "Thiếu dữ liệu";
+    if (status === "matched") return `Đạt tốt · ${score}%`;
+    if (status === "partial") return `Khớp một phần · ${score}%`;
+    return `Cần cải thiện · ${score}%`;
+}
+
+function toggleMatchExplanation(id, button) {
+    const panel = document.getElementById(id);
+    if (!panel) return;
+    const willOpen = panel.hidden;
+    panel.hidden = !willOpen;
+    button.setAttribute("aria-expanded", willOpen ? "true" : "false");
 }
 
 function getRecommendationClassification(value) {

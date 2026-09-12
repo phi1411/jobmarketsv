@@ -64,6 +64,17 @@ class AdminController extends Controller
         return Response::html($html);
     }
 
+    public function jobReports(Request $request): Response
+    {
+        $html = View::renderWithLayout("admin/job_reports", [
+            "title"       => "Báo Cáo Tin Tuyển Dụng | JobMarketplace Quản Trị",
+            "currentPage" => "admin_job_reports",
+            "activeTab"   => "job_reports"
+        ]);
+
+        return Response::html($html);
+    }
+
     public function support(Request $request): Response
     {
         $html = View::renderWithLayout("admin/support", [

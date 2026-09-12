@@ -14,6 +14,7 @@ use JobMarket\Http\Controllers\FavoriteController;
 use JobMarket\Http\Controllers\HomeController;
 use JobMarket\Http\Controllers\JobController;
 use JobMarket\Http\Controllers\JobRecommendationController;
+use JobMarket\Http\Controllers\JobReportController;
 use JobMarket\Http\Controllers\LocationController;
 use JobMarket\Http\Controllers\MatchAnalysisController;
 use JobMarket\Http\Controllers\NotificationController;
@@ -81,6 +82,7 @@ return [
 
     // Student applies for a job
     ["POST", "/jobs/{id:[0-9a-zA-Z\-_]+}/applications", [ApplicationController::class, "store"]],
+    ["POST", "/jobs/{id:[0-9a-zA-Z\-_]+}/reports", [JobReportController::class, "store"]],
 
     // Company views applications for a specific job
     ["GET", "/jobs/{id:[0-9a-zA-Z\-_]+}/applications", [ApplicationController::class, "index"]],
@@ -293,6 +295,10 @@ return [
     ["GET", "/admin/jobs", [AdminController::class, "jobs"]],
     ["PATCH", "/admin/jobs/{id:[0-9a-zA-Z\-_]+}/moderation", [AdminController::class, "moderateJob"]],
     ["PUT", "/admin/jobs/{id:[0-9a-zA-Z\-_]+}/moderation", [AdminController::class, "moderateJob"]],
+
+    // Admin Job Report Moderation Queue
+    ["GET", "/admin/job-reports", [JobReportController::class, "index"]],
+    ["PATCH", "/admin/job-reports/{id:[0-9a-zA-Z\-_]+}", [JobReportController::class, "update"]],
 
     // Admin Audit Logs
     ["GET", "/admin/audit-logs", [AdminController::class, "auditLogs"]],

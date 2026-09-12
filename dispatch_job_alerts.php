@@ -14,6 +14,9 @@ if (!in_array($frequency, ["daily", "weekly"], true)) {
 
 try {
     $result = (new JobMarket\Domain\JobAlertService())->dispatchPendingEmails($frequency);
+    if ($frequency === "daily") {
+        $result["favorite_deadline_reminders"] = (new JobMarket\Domain\FavoriteDeadlineReminderService())->dispatch(false);
+    }
     echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . PHP_EOL;
 } catch (Throwable $e) {
     fwrite(STDERR, $e->getMessage() . PHP_EOL);

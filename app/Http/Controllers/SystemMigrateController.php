@@ -116,21 +116,22 @@ class SystemMigrateController extends Controller
                 }
             }
 
-            if (!$sqlFile) {
-                return Response::html("
-                    <div style='font-family:sans-serif;max-width:500px;margin:50px auto;padding:20px;border:2px solid #ef4444;border-radius:10px;background:#fef2f2;color:#991b1b;'>
-                        <h2>Không tìm thấy tệp jobmarket.sql trên server</h2>
-                    </div>
-                ");
+            $hasUsers = false;
+            try {
+                $hasUsers = ((int)$pdo->query("SELECT COUNT(*) FROM `users`")->fetchColumn()) > 0;
+            } catch (Throwable $e) {}
+
+            if ($sqlFile) {
+                // Only run initial SQL seed if DB is empty or force_reseed is requested
+                if (!$hasUsers || isset($_GET['force_reseed'])) {
+                    $sql = file_get_contents($sqlFile);
+                    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
+                    $pdo->exec("SET NAMES utf8mb4;");
+                    $pdo->exec($sql);
+                    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
+                }
+                @unlink($sqlFile);
             }
-
-            $sql = file_get_contents($sqlFile);
-            $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
-            $pdo->exec("SET NAMES utf8mb4;");
-            $pdo->exec($sql);
-            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
-
-            @unlink($sqlFile);
 
             // Execute all pending migrations to ensure tables and columns exist
             $allMigrations = [
@@ -142,6 +143,8 @@ class SystemMigrateController extends Controller
                 \JobMarket\Migrations\JobMatchAnalysisMigration::class,
                 \JobMarket\Migrations\SavedSearchJobAlertMigration::class,
                 \JobMarket\Migrations\ProfileJobAlertMigration::class,
+                \JobMarket\Migrations\MarketplaceSafetyTimelineMigration::class,
+                \JobMarket\Migrations\ApplicationDecisionNotificationMigration::class,
             ];
             foreach ($allMigrations as $m) {
                 if (class_exists($m)) {

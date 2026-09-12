@@ -15,7 +15,8 @@ interface ApplicationRepositoryInterface
     public function countByJob(string $jobId, array $filters = []): int;
     public function getByCompany(string $companyId, array $filters = [], ?Pagination $pagination = null): array;
     public function countByCompany(string $companyId, array $filters = []): int;
-    public function updateStatus(string $id, string $status, ?string $employerNote = null): void;
-    public function withdraw(string $id): void;
+    public function updateStatus(string $id, string $status, ?string $studentMessage = null, ?string $actorId = null, string $actorRole = "system", ?string $historyNote = null): void;
+    public function withdraw(string $id, ?string $actorId = null, string $actorRole = "student"): void;
+    public function getStatusHistory(string $applicationId): array;
     public function updateConsent(string $id, bool $consent, ?string $revokedAt = null): void;
 }

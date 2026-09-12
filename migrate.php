@@ -116,7 +116,9 @@ $migrations = [
     \JobMarket\Migrations\ApplicationCvSnapshotMigration::class,
     \JobMarket\Migrations\JobMatchAnalysisMigration::class,
     \JobMarket\Migrations\SavedSearchJobAlertMigration::class,
-    \JobMarket\Migrations\ProfileJobAlertMigration::class
+    \JobMarket\Migrations\ProfileJobAlertMigration::class,
+    \JobMarket\Migrations\MarketplaceSafetyTimelineMigration::class,
+    \JobMarket\Migrations\ApplicationDecisionNotificationMigration::class
 ];
 
 $ranCount = 0;

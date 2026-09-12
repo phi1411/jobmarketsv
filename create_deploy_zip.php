@@ -12,7 +12,7 @@ if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
 }
 
 $dirs = ['app', 'public', 'vendor'];
-$files = ['.htaccess', 'jobmarket.sql', 'migrate.php', 'dispatch_job_alerts.php', '.env.append'];
+$files = ['.htaccess', 'jobmarket.sql', 'migrate.php', 'dispatch_job_alerts.php', 'dispatch_deadline_reminders.php', '.env.append'];
 
 $baseLen = strlen(__DIR__) + 1;
 $fileCount = 0;

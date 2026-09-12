@@ -17,30 +17,10 @@ $tab = $activeTab ?? "dashboard";
                 </p>
             </div>
             <div class="portal-actions">
-                <div class="theme-switcher-dropdown" id="student-portal-theme-dropdown">
-                    <button type="button" class="theme-switcher-btn" aria-label="Đổi giao diện: Sáng, Tối hoặc Hệ thống" title="Đổi giao diện">
-                        <span class="theme-icon-slot"></span>
-                        <span class="theme-btn-label">Hệ thống</span>
-                        <svg class="theme-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-                    </button>
-                    <div class="theme-menu">
-                        <button type="button" class="theme-menu-item" data-theme-val="light">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                            <span>Sáng</span>
-                            <span class="theme-check-icon">✓</span>
-                        </button>
-                        <button type="button" class="theme-menu-item" data-theme-val="dark">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                            <span>Tối</span>
-                            <span class="theme-check-icon">✓</span>
-                        </button>
-                        <button type="button" class="theme-menu-item" data-theme-val="system">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                            <span>Hệ thống</span>
-                            <span class="theme-check-icon">✓</span>
-                        </button>
-                    </div>
-                </div>
+                <a href="/jobs" class="btn btn-outline btn-sm" style="display:inline-flex;align-items:center;gap:0.4rem;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <span>Khám phá việc làm</span>
+                </a>
             </div>
         </div>
 

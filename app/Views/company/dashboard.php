@@ -256,7 +256,7 @@ async function loadCompanyDashboard() {
         document.getElementById("stat-active-jobs").innerText = jobs.published || 0;
         document.getElementById("stat-total-apps").innerText = apps.total || 0;
         document.getElementById("stat-pending-apps").innerText = apps.pending || 0;
-        document.getElementById("stat-shortlisted-apps").innerText = (apps.shortlisted || 0) + (apps.accepted || 0);
+        document.getElementById("stat-shortlisted-apps").innerText = (apps.shortlisted || 0) + (apps.interview || 0) + (apps.accepted || 0);
 
         // Job Distribution
         document.getElementById("dist-published").innerText = jobs.published || 0;

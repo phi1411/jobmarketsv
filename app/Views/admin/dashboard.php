@@ -236,7 +236,7 @@ async function loadAdminDashboard() {
             const a = d.applications || {};
             document.getElementById("stat-total-apps").innerText = a.total || 0;
             document.getElementById("stat-pending-apps").innerText = a.pending || 0;
-            document.getElementById("stat-short-apps").innerText = a.shortlisted || 0;
+            document.getElementById("stat-short-apps").innerText = (a.shortlisted || 0) + (a.interview || 0);
             document.getElementById("stat-acc-apps").innerText = a.accepted || 0;
 
             // Render Application breakdown
@@ -263,7 +263,8 @@ function renderAppsDistribution(a) {
     const items = [
         { label: "Chờ doanh nghiệp xem (Pending)", count: a.pending || 0, color: "#f59e0b" },
         { label: "Đã xem hồ sơ (Viewed)", count: a.viewed || 0, color: "#3b82f6" },
-        { label: "Đã chọn / Phỏng vấn (Shortlisted)", count: a.shortlisted || 0, color: "#10b981" },
+        { label: "Phù hợp (Shortlisted)", count: a.shortlisted || 0, color: "#10b981" },
+        { label: "Mời phỏng vấn (Interview)", count: a.interview || 0, color: "#8b5cf6" },
         { label: "Trúng tuyển / Nhận việc (Accepted)", count: a.accepted || 0, color: "#059669" },
         { label: "Từ chối (Rejected)", count: a.rejected || 0, color: "#ef4444" },
         { label: "Sinh viên rút đơn (Withdrawn)", count: a.withdrawn || 0, color: "#94a3b8" }

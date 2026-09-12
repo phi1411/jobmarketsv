@@ -1,93 +1,119 @@
-<div class="container">
-    <div class="page-layout">
-        <!-- Sidebar Filters -->
-        <aside class="filter-sidebar">
-            <div class="filter-title">
-                <span>Bộ Lọc Tìm Kiếm</span>
-                <button type="button" id="btn-reset-filters" class="btn btn-outline btn-sm" style="font-size:0.75rem;padding:0.2rem 0.5rem;">Đặt lại</button>
+<div class="container" style="margin-bottom:3rem;">
+    <!-- Top Filter Toolbar (Search + Quick Pills + Advanced Toggle) -->
+    <div class="top-filter-toolbar">
+        <form id="filter-form">
+            <div class="filter-search-row">
+                <div class="filter-search-box">
+                    <svg class="filter-search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="filter-keyword" name="keyword" class="filter-search-input" placeholder="Tìm kiếm việc làm theo chức danh, kỹ năng hoặc công ty...">
+                </div>
+
+                <button type="button" id="btn-toggle-advanced" class="btn-filter-toggle" aria-expanded="false" title="Mở bộ lọc nâng cao">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+                    <span>Bộ lọc nâng cao</span>
+                    <span id="active-filter-badge" class="filter-count-badge" style="display:none;">0</span>
+                    <svg class="theme-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+
+                <button type="submit" class="btn btn-primary" style="padding:0.7rem 1.4rem;font-weight:700;">
+                    <span>Tìm Kiếm</span>
+                </button>
+
+                <button type="button" id="btn-reset-filters" class="btn btn-outline" style="padding:0.7rem 1rem;">
+                    <span>Đặt lại</span>
+                </button>
             </div>
 
-            <form id="filter-form">
-                <div class="form-group" style="margin-bottom:1.25rem;">
-                    <label class="form-label" for="filter-keyword">Từ khóa</label>
-                    <input type="text" id="filter-keyword" name="keyword" class="form-control" placeholder="Tên việc, công ty...">
+            <!-- Quick filter pills -->
+            <div class="quick-filter-pills-row">
+                <span class="quick-pill-label">Gợi ý nhanh:</span>
+                <button type="button" class="quick-pill-btn active" data-pill-type="all">Tất cả</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="morning">🌅 Ca Sáng</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="afternoon">☀️ Ca Chiều</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="evening">🌙 Ca Tối</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="flexible">⚡ Ca Linh Hoạt</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="location" data-pill-val="loc-001">📍 Hà Nội</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="location" data-pill-val="loc-004">📍 TP. HCM</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="salary" data-pill-val="25000">💰 Lương > 25k/h</button>
+            </div>
+
+            <!-- Collapsible Advanced Filter Panel -->
+            <div id="advanced-filter-panel" class="advanced-filter-panel">
+                <div class="filter-grid-options">
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" for="filter-category" style="font-size:0.84rem;font-weight:600;">Ngành nghề</label>
+                        <select id="filter-category" name="category_id" class="form-control" style="font-size:0.875rem;">
+                            <option value="">Tất cả ngành nghề</option>
+                            <option value="cat-001">F&B - Phục Vụ & Pha Chế</option>
+                            <option value="cat-002">Bán Lẻ & Thu Ngân</option>
+                            <option value="cat-003">Gia Sư & Trợ Giảng</option>
+                            <option value="cat-004">Hành Chính & Văn Phòng</option>
+                            <option value="cat-005">Sự Kiện & Tiếp Thị</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" for="filter-location" style="font-size:0.84rem;font-weight:600;">Khu vực / Địa điểm</label>
+                        <select id="filter-location" name="location_id" class="form-control" style="font-size:0.875rem;">
+                            <option value="">Tất cả địa điểm</option>
+                            <option value="loc-001">Hà Nội - Cầu Giấy</option>
+                            <option value="loc-002">Hà Nội - Đống Đa</option>
+                            <option value="loc-003">Hà Nội - Hai Bà Trưng</option>
+                            <option value="loc-004">TP. HCM - Quận 1</option>
+                            <option value="loc-005">TP. HCM - Bình Thạnh</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" for="filter-shift" style="font-size:0.84rem;font-weight:600;">Ca làm việc</label>
+                        <select id="filter-shift" name="shift_type" class="form-control" style="font-size:0.875rem;">
+                            <option value="">Tất cả các ca</option>
+                            <option value="morning">Ca Sáng (08:00 - 12:00)</option>
+                            <option value="afternoon">Ca Chiều (13:00 - 17:00)</option>
+                            <option value="evening">Ca Tối (18:00 - 22:00)</option>
+                            <option value="flexible">Linh hoạt theo lịch học</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" for="filter-salary-min" style="font-size:0.84rem;font-weight:600;">Lương tối thiểu (đ/h)</label>
+                        <input type="number" id="filter-salary-min" name="salary_min" class="form-control" placeholder="VD: 25000" step="5000" style="font-size:0.875rem;">
+                    </div>
                 </div>
+            </div>
+        </form>
+    </div>
 
-                <div class="form-group" style="margin-bottom:1.25rem;">
-                    <label class="form-label" for="filter-category">Ngành nghề</label>
-                    <select id="filter-category" name="category_id" class="form-control">
-                        <option value="">Tất cả ngành nghề</option>
-                        <option value="cat-001">F&B - Phục Vụ & Pha Chế</option>
-                        <option value="cat-002">Bán Lẻ & Thu Ngân</option>
-                        <option value="cat-003">Gia Sư & Trợ Giảng</option>
-                        <option value="cat-004">Hành Chính & Văn Phòng</option>
-                        <option value="cat-005">Sự Kiện & Tiếp Thị</option>
-                    </select>
-                </div>
-
-                <div class="form-group" style="margin-bottom:1.25rem;">
-                    <label class="form-label" for="filter-location">Địa điểm</label>
-                    <select id="filter-location" name="location_id" class="form-control">
-                        <option value="">Tất cả địa điểm</option>
-                        <option value="loc-001">Hà Nội - Cầu Giấy</option>
-                        <option value="loc-002">Hà Nội - Đống Đa</option>
-                        <option value="loc-003">Hà Nội - Hai Bà Trưng</option>
-                        <option value="loc-004">TP. HCM - Quận 1</option>
-                        <option value="loc-005">TP. HCM - Bình Thạnh</option>
-                    </select>
-                </div>
-
-                <div class="form-group" style="margin-bottom:1.25rem;">
-                    <label class="form-label" for="filter-shift">Ca làm việc</label>
-                    <select id="filter-shift" name="shift_type" class="form-control">
-                        <option value="">Tất cả các ca</option>
-                        <option value="morning">Ca Sáng (08:00 - 12:00)</option>
-                        <option value="afternoon">Ca Chiều (13:00 - 17:00)</option>
-                        <option value="evening">Ca Tối (18:00 - 22:00)</option>
-                        <option value="flexible">Linh hoạt theo lịch học</option>
-                    </select>
-                </div>
-
-                <div class="form-group" style="margin-bottom:1.25rem;">
-                    <label class="form-label" for="filter-salary-min">Lương tối thiểu (đ/giờ)</label>
-                    <input type="number" id="filter-salary-min" name="salary_min" class="form-control" placeholder="VD: 25000" step="5000">
-                </div>
-
-                <button type="submit" class="btn btn-primary" style="width:100%;">Áp Dụng Bộ Lọc</button>
-            </form>
-        </aside>
-
-        <!-- Main Content (Job List) -->
+    <!-- Results Header Toolbar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:1rem;">
         <div>
-            <!-- Top Controls (Count & Sort) -->
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;background:#fff;padding:1rem 1.25rem;border-radius:var(--radius);border:1px solid var(--border);flex-wrap:wrap;gap:1rem;">
-                <div>
-                    <h1 style="font-size:1.35rem;font-weight:700;color:var(--dark);">Việc Làm Part-Time Sinh Viên</h1>
-                    <div id="job-count-text" style="font-size:0.88rem;color:var(--text-muted);">Đang tải danh sách việc làm...</div>
-                </div>
+            <h1 style="font-size:1.35rem;font-weight:800;color:var(--dark);margin-bottom:0.25rem;">Việc Làm Part-Time Dành Cho Sinh Viên</h1>
+            <div id="job-count-text" style="font-size:0.88rem;color:var(--text-muted);">Đang tải danh sách việc làm...</div>
+        </div>
 
-                <div style="display:flex;align-items:center;gap:0.5rem;">
-                    <label for="sort-select" style="font-size:0.88rem;color:var(--text-muted);white-space:nowrap;">Sắp xếp:</label>
-                    <select id="sort-select" class="form-control" style="width:auto;padding:0.4rem 0.8rem;font-size:0.88rem;">
-                        <option value="newest">Mới nhất</option>
-                        <option value="salary_desc">Lương cao nhất</option>
-                        <option value="salary_asc">Lương thấp nhất</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Jobs Cards Container -->
-            <div id="jobs-container" class="job-grid" style="grid-template-columns:1fr;">
-                <!-- Skeletons -->
-                <div class="job-card skeleton" style="height:180px;"></div>
-                <div class="job-card skeleton" style="height:180px;"></div>
-                <div class="job-card skeleton" style="height:180px;"></div>
-            </div>
-
-            <!-- Pagination Container -->
-            <div id="pagination-container" class="pagination"></div>
+        <div style="display:flex;align-items:center;gap:0.6rem;">
+            <label for="sort-select" style="font-size:0.88rem;color:var(--text-muted);white-space:nowrap;font-weight:600;">Ưu tiên:</label>
+            <select id="sort-select" class="form-control" style="width:auto;padding:0.45rem 0.85rem;font-size:0.875rem;font-weight:600;">
+                <option value="newest">Mới nhất</option>
+                <option value="salary_desc">Lương cao nhất</option>
+                <option value="salary_asc">Lương thấp nhất</option>
+            </select>
         </div>
     </div>
+
+    <!-- TopCV-style 3 Columns Job Grid -->
+    <div id="jobs-container" class="topcv-job-grid">
+        <!-- Skeletons -->
+        <div class="job-card skeleton" style="height:150px;"></div>
+        <div class="job-card skeleton" style="height:150px;"></div>
+        <div class="job-card skeleton" style="height:150px;"></div>
+        <div class="job-card skeleton" style="height:150px;"></div>
+        <div class="job-card skeleton" style="height:150px;"></div>
+        <div class="job-card skeleton" style="height:150px;"></div>
+    </div>
+
+    <!-- Pagination Container -->
+    <div id="pagination-container" class="pagination" style="margin-top:2rem;"></div>
 </div>
 
 <script>
@@ -110,41 +136,109 @@ document.addEventListener("DOMContentLoaded", () => {
         currentPage = parseInt(urlParams.get("page")) || 1;
     }
 
-    // 2. Load Jobs
-    loadJobs();
+    // 2. Setup Advanced Filter Toggle
+    const btnToggle = document.getElementById("btn-toggle-advanced");
+    const panel = document.getElementById("advanced-filter-panel");
+    if (btnToggle && panel) {
+        btnToggle.addEventListener("click", () => {
+            const isOpen = panel.classList.toggle("open");
+            btnToggle.classList.toggle("active", isOpen);
+            btnToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+    }
 
-    // 3. Form Filter Submit Event
+    // 3. Setup Quick Filter Pills
+    document.querySelectorAll(".quick-pill-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".quick-pill-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            const pillType = btn.getAttribute("data-pill-type");
+            const pillVal = btn.getAttribute("data-pill-val");
+
+            if (pillType === "all") {
+                document.getElementById("filter-shift").value = "";
+                document.getElementById("filter-location").value = "";
+                document.getElementById("filter-salary-min").value = "";
+            } else if (pillType === "shift") {
+                document.getElementById("filter-shift").value = pillVal || "";
+            } else if (pillType === "location") {
+                document.getElementById("filter-location").value = pillVal || "";
+            } else if (pillType === "salary") {
+                document.getElementById("filter-salary-min").value = pillVal || "";
+            }
+
+            updateFilterBadge();
+            currentPage = 1;
+            loadJobs();
+        });
+    });
+
+    // 4. Form Filter Submit Event
     document.getElementById("filter-form").addEventListener("submit", (e) => {
         e.preventDefault();
+        updateFilterBadge();
         currentPage = 1;
         loadJobs();
     });
 
-    // 4. Reset Filters Event
+    // 5. Reset Filters Event
     document.getElementById("btn-reset-filters").addEventListener("click", () => {
         document.getElementById("filter-form").reset();
+        document.querySelectorAll(".quick-pill-btn").forEach(b => b.classList.remove("active"));
+        const allBtn = document.querySelector('.quick-pill-btn[data-pill-type="all"]');
+        if (allBtn) allBtn.classList.add("active");
+        updateFilterBadge();
         currentPage = 1;
         loadJobs();
     });
 
-    // 5. Sort Change Event
+    // 6. Sort Change Event
     document.getElementById("sort-select").addEventListener("change", (e) => {
         currentSort = e.target.value;
         currentPage = 1;
         loadJobs();
     });
+
+    updateFilterBadge();
+    loadJobs();
 });
+
+function updateFilterBadge() {
+    const category = document.getElementById("filter-category").value;
+    const location = document.getElementById("filter-location").value;
+    const shift = document.getElementById("filter-shift").value;
+    const salary = document.getElementById("filter-salary-min").value;
+    let count = 0;
+    if (category) count++;
+    if (location) count++;
+    if (shift) count++;
+    if (salary) count++;
+
+    const badge = document.getElementById("active-filter-badge");
+    if (badge) {
+        if (count > 0) {
+            badge.innerText = count;
+            badge.style.display = "inline-block";
+        } else {
+            badge.style.display = "none";
+        }
+    }
+}
 
 async function loadJobs() {
     const container = document.getElementById("jobs-container");
     const countText = document.getElementById("job-count-text");
     const paginationContainer = document.getElementById("pagination-container");
 
-    // Show loading skeleton
+    // Show loading skeleton grid (6 items)
     container.innerHTML = `
-        <div class="job-card skeleton" style="height:180px;"></div>
-        <div class="job-card skeleton" style="height:180px;"></div>
-        <div class="job-card skeleton" style="height:180px;"></div>
+        <div class="job-card skeleton" style="height:150px;"></div>
+        <div class="job-card skeleton" style="height:150px;"></div>
+        <div class="job-card skeleton" style="height:150px;"></div>
+        <div class="job-card skeleton" style="height:150px;"></div>
+        <div class="job-card skeleton" style="height:150px;"></div>
+        <div class="job-card skeleton" style="height:150px;"></div>
     `;
 
     // Construct API query
@@ -163,7 +257,7 @@ async function loadJobs() {
 
     params.append("sort_by", currentSort);
     params.append("page", currentPage);
-    params.append("per_page", 10);
+    params.append("per_page", 15);
 
     // Update browser URL without reloading
     const newUrl = `${window.location.pathname}?${params.toString()}`;
@@ -181,43 +275,53 @@ async function loadJobs() {
 
         if (jobs.length === 0) {
             container.innerHTML = `
-                <div class="empty-state" style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);">
-                    <div class="empty-icon">📂</div>
-                    <h3 style="font-size:1.2rem;font-weight:700;color:var(--dark);">Không tìm thấy việc làm nào</h3>
-                    <p>Hãy thử thay đổi tiêu chí lọc hoặc tìm kiếm với từ khóa khác.</p>
+                <div class="empty-state" style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);grid-column:1/-1;padding:3rem 1.5rem;">
+                    <div class="empty-icon" style="font-size:2.5rem;margin-bottom:0.75rem;">📂</div>
+                    <h3 style="font-size:1.2rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không tìm thấy việc làm nào</h3>
+                    <p style="color:var(--text-muted);max-width:460px;margin:0 auto;">Hãy thử thay đổi từ khóa tìm kiếm hoặc bấm nút "Đặt lại" để xem toàn bộ danh sách.</p>
                 </div>
             `;
             paginationContainer.innerHTML = "";
             return;
         }
 
-        // Determine role-appropriate CTA label
-        const currentUser = (typeof TokenStorage !== "undefined") ? TokenStorage.getUser() : null;
-        const isJobSeeker = !currentUser || currentUser.role === "student" || currentUser.role === "developer";
-        const ctaLabel = isJobSeeker ? "Ứng tuyển ngay &rarr;" : "Xem chi tiết &rarr;";
-
-        // Render Cards safely
+        // Render TopCV Cards safely in 3-column grid
         container.innerHTML = jobs.map(job => `
-            <div class="job-card" style="flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;">
-                <div style="display:flex;gap:1.25rem;align-items:center;">
-                    ${job.company_logo ? `<img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company_name)}" class="company-logo" onerror="this.outerHTML='<div class=\\'company-logo\\'>${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : 'J')}</div>'">` : `<div class="company-logo">${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : "J")}</div>`}
-                    <div>
-                        <h2 class="job-title" style="font-size:1.15rem;margin-bottom:0.35rem;">
-                            <a href="/viec-lam/${encodeURIComponent(job.id)}">${escapeHtml(job.title)}</a>
-                        </h2>
-                        <div class="company-name" style="margin-bottom:0.5rem;">${escapeHtml(job.company_name || "Nhà tuyển dụng")}</div>
-                        <div class="job-badges" style="margin:0;">
-                            <span class="badge badge-salary">💰 ${formatCurrency(job.salary_min)} - ${formatCurrency(job.salary_max)}</span>
-                            <span class="badge badge-shift">⏰ ${getShiftLabel(job.shift_type)}</span>
-                            <span class="badge badge-location">📍 ${escapeHtml(job.location_name || job.city || "Hà Nội")}</span>
-                            <span class="badge" style="background:#f1f5f9;color:var(--text-muted);">${getWorkTypeLabel(job.work_type)}</span>
+            <div class="topcv-job-card" onclick="window.location.href='/viec-lam/${encodeURIComponent(job.id)}'">
+                <div>
+                    <div class="topcv-card-top">
+                        <div class="topcv-logo-wrapper">
+                            ${job.company_logo ? `<img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company_name)}" class="topcv-logo-img" onerror="this.outerHTML='<div class=\\'topcv-logo-fallback\\'>${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : 'J')}</div>'">` : `<div class="topcv-logo-fallback">${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : "J")}</div>`}
                         </div>
+                        <div class="topcv-card-info">
+                            <div class="topcv-job-title" title="${escapeHtml(job.title)}">
+                                ${job.is_featured ? '<span class="topcv-badge-hot">HOT</span>' : ''}
+                                ${job.is_new ? '<span class="topcv-badge-new">MỚI</span>' : ''}
+                                ${escapeHtml(job.title)}
+                            </div>
+                            <div class="topcv-company-name" title="${escapeHtml(job.company_name || 'Nhà tuyển dụng')}">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v14M21 7v14M6 11h2M6 15h2M16 11h2M16 15h2M10 21V3h4v18"/></svg>
+                                <span>${escapeHtml(job.company_name || "Nhà tuyển dụng")}</span>
+                            </div>
+                        </div>
+                        <button type="button" class="topcv-bookmark-btn" onclick="event.stopPropagation(); toggleFavoriteJob('${encodeURIComponent(job.id)}', this)" title="Lưu việc làm">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        </button>
                     </div>
                 </div>
-
-                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">
-                    <span style="font-size:0.82rem;color:var(--text-muted);">Hạn nộp: ${formatDate(job.application_deadline) || "Còn tuyển"}</span>
-                    <a href="/viec-lam/${encodeURIComponent(job.id)}" class="btn btn-primary btn-sm">${ctaLabel}</a>
+                <div class="topcv-pills-row">
+                    <span class="topcv-pill topcv-pill-salary">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 9.5a3.5 3.5 0 1 0-7 0 3.5 3.5 0 1 0 7 0z"/></svg>
+                        ${formatCurrency(job.salary_min)} - ${formatCurrency(job.salary_max)}
+                    </span>
+                    <span class="topcv-pill topcv-pill-shift">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        ${getShiftLabel(job.shift_type)}
+                    </span>
+                    <span class="topcv-pill topcv-pill-location">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        ${escapeHtml(job.location_name || job.city || "Toàn quốc")}
+                    </span>
                 </div>
             </div>
         `).join("");
@@ -226,13 +330,45 @@ async function loadJobs() {
         renderPagination(meta.page || 1, meta.total_pages || 1);
     } else {
         container.innerHTML = `
-            <div class="empty-state" style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);">
+            <div class="empty-state" style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);grid-column:1/-1;">
                 <div class="empty-icon" style="color:var(--danger);">⚠️</div>
                 <h3 style="font-size:1.2rem;font-weight:700;color:var(--dark);">Đã xảy ra lỗi khi tải dữ liệu</h3>
                 <p>${escapeHtml(res && res.message ? res.message : "Vui lòng thử lại sau.")}</p>
                 <button onclick="loadJobs()" class="btn btn-outline btn-sm" style="margin-top:1rem;">Tải lại trang</button>
             </div>
         `;
+    }
+}
+
+async function toggleFavoriteJob(jobId, btnEl) {
+    if (!TokenStorage.isLoggedIn()) {
+        showToast("Vui lòng đăng nhập để lưu việc làm.", "error");
+        return;
+    }
+    const isFavorited = btnEl.classList.contains("active");
+    try {
+        if (isFavorited) {
+            const res = await apiRequest(`/favorites/jobs/${encodeURIComponent(jobId)}`, {
+                method: "DELETE",
+                requireAuth: true
+            });
+            if (res && res.success) {
+                btnEl.classList.remove("active");
+                showToast("Đã bỏ lưu việc làm.", "info");
+            }
+        } else {
+            const res = await apiRequest(`/favorites/jobs/${encodeURIComponent(jobId)}`, {
+                method: "POST",
+                requireAuth: true
+            });
+            if (res && res.success) {
+                btnEl.classList.add("active");
+                showToast("Đã lưu việc làm vào danh sách yêu thích!", "success");
+            }
+        }
+    } catch (err) {
+        console.error("Error toggling favorite:", err);
+        showToast("Thao tác thất bại.", "error");
     }
 }
 

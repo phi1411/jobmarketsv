@@ -7,9 +7,8 @@
             <label for="filter-app-status" style="font-size:0.9rem;font-weight:600;color:var(--dark);">Lọc theo trạng thái:</label>
             <select id="filter-app-status" class="form-control" style="width:auto;padding:0.4rem 0.8rem;font-size:0.88rem;" onchange="loadApplications()">
                 <option value="">Tất cả trạng thái</option>
-                <option value="pending">⏳ Chờ duyệt</option>
-                <option value="viewed">👀 Đã xem</option>
-                <option value="shortlisted">🌟 Phù hợp / Mời phỏng vấn</option>
+                <option value="pending">⏳ Chưa phản hồi</option>
+                <option value="interview">📅 Mời phỏng vấn</option>
                 <option value="accepted">🎉 Trúng tuyển</option>
                 <option value="rejected">❌ Từ chối</option>
                 <option value="withdrawn">↩️ Đã rút đơn</option>
@@ -109,6 +108,16 @@ function getStatusBadge(status) {
     return (typeof getAppStatusBadge === "function") ? getAppStatusBadge(status) : `<span class="badge">${escapeHtml(status)}</span>`;
 }
 
+function renderApplicationTimeline(history) {
+    const labels = {pending:"Đã nộp",interview:"Mời phỏng vấn",accepted:"Trúng tuyển",rejected:"Chưa phù hợp",withdrawn:"Đã rút đơn"};
+    const events = (Array.isArray(history) ? history : []).filter(event => Object.prototype.hasOwnProperty.call(labels, event.status));
+    if (!events.length) return '';
+    return `<div style="margin-top:1rem;padding:1rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);">
+        <div style="font-size:.82rem;font-weight:800;color:var(--dark);margin-bottom:.75rem;">TIẾN TRÌNH ỨNG TUYỂN</div>
+        <div style="display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.25rem;">${events.map((event,index)=>`<div style="display:flex;align-items:center;min-width:max-content;"><div style="display:flex;align-items:center;gap:.4rem;padding:.45rem .65rem;background:#fff;border:1px solid ${index===events.length-1?'#93c5fd':'var(--border)'};border-radius:999px;font-size:.79rem;"><span style="width:8px;height:8px;border-radius:50%;background:${event.status==='rejected'?'#ef4444':event.status==='accepted'?'#10b981':'#3b82f6'}"></span><strong>${escapeHtml(labels[event.status]||event.status)}</strong><span style="color:var(--text-muted)">${formatDate(event.created_at)}</span></div>${index<events.length-1?'<span style="color:#94a3b8;margin:0 .25rem">→</span>':''}</div>`).join('')}</div>
+    </div>`;
+}
+
 async function loadApplications(page = 1) {
     currentAppPage = page;
     const loadingEl = document.getElementById("apps-loading");
@@ -150,7 +159,7 @@ async function loadApplications(page = 1) {
             });
 
             container.innerHTML = apps.map(app => {
-                const canWithdraw = ["pending", "viewed", "reviewed"].includes(app.status);
+                const canWithdraw = app.status === "pending";
                 return `
                     <div class="data-card" style="margin:0;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.25rem;">
                         <div style="flex:1;min-width:280px;">
@@ -188,6 +197,12 @@ async function loadApplications(page = 1) {
                                     Không có tệp CV đính kèm
                                 </div>
                             `)}
+                            ${app.student_message ? `
+                                <div style="margin-top:1rem;padding:1rem;background:${app.status==='rejected'?'#fef2f2':app.status==='accepted'?'#f0fdf4':'#eff6ff'};border-left:4px solid ${app.status==='rejected'?'#ef4444':app.status==='accepted'?'#10b981':'#3b82f6'};border-radius:var(--radius-sm);line-height:1.55;">
+                                    <strong>Thông báo từ nhà tuyển dụng:</strong><br>${escapeHtml(app.student_message)}
+                                </div>
+                            ` : ''}
+                            ${renderApplicationTimeline(app.status_history)}
                             <!-- Match analysis status row (CV-AI-P1-04) -->
                             <div style="margin-top:0.6rem;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
                                 <span style="font-size:0.8rem;color:var(--text-muted);font-weight:600;">Độ phù hợp (AI):</span>

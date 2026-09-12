@@ -46,6 +46,7 @@ return [
     ["GET", "/admin/users", [\JobMarket\Http\Controllers\Web\AdminController::class, "users"]],
     ["GET", "/admin/companies", [\JobMarket\Http\Controllers\Web\AdminController::class, "companies"]],
     ["GET", "/admin/jobs", [\JobMarket\Http\Controllers\Web\AdminController::class, "jobs"]],
+    ["GET", "/admin/job-reports", [\JobMarket\Http\Controllers\Web\AdminController::class, "jobReports"]],
     ["GET", "/admin/audit-logs", [\JobMarket\Http\Controllers\Web\AdminController::class, "auditLogs"]],
     ["GET", "/admin/support", [\JobMarket\Http\Controllers\Web\AdminController::class, "support"]],
 ];

@@ -89,22 +89,33 @@ class JobRecommendationService
 
             $criteria = [];
             foreach ($result->criteria as $criterion) {
-                if ($criterion->score === null) {
+                if ($criterion->weight <= 0) {
                     continue;
                 }
+
+                $score = $criterion->score === null ? null : (int)round($criterion->score);
+                $details = is_array($criterion->details) ? $criterion->details : [];
                 $criteria[] = [
                     "key" => $criterion->criterionName->value,
                     "label" => $this->criterionLabel($criterion->criterionName->value),
-                    "score" => $criterion->score,
+                    "score" => $score,
+                    "weight" => (int)round($criterion->weight),
+                    "state" => $criterion->state->value,
+                    "status" => $this->criterionStatus($score, $criterion->state->value),
                     "evidence" => $criterion->evidence,
+                    "matched_items" => $this->detailStrings($details["matched"] ?? []),
+                    "missing_items" => $this->detailStrings($details["unmatched"] ?? []),
                 ];
             }
 
-            usort($criteria, fn(array $a, array $b): int => $b["score"] <=> $a["score"]);
+            $criteriaByScore = $criteria;
+            usort($criteriaByScore, function (array $a, array $b): int {
+                return ($b["score"] ?? -1) <=> ($a["score"] ?? -1);
+            });
             $reasons = array_slice($result->strengths, 0, 2);
             if ($reasons === []) {
-                foreach ($criteria as $criterion) {
-                    if ($criterion["score"] >= 65) {
+                foreach ($criteriaByScore as $criterion) {
+                    if ($criterion["score"] !== null && $criterion["score"] >= 65) {
                         $reasons[] = $criterion["evidence"] ?: $criterion["label"] . " phù hợp";
                     }
                     if (count($reasons) >= 2) {
@@ -135,7 +146,10 @@ class JobRecommendationService
                 "classification" => $result->classification->value,
                 "reasons" => $reasons,
                 "consideration" => $result->considerations[0] ?? null,
+                "considerations" => array_slice($result->considerations, 0, 3),
                 "criteria" => $criteria,
+                "improvement_suggestions" => $this->improvementSuggestions($criteria),
+                "score_disclaimer" => $result->disclaimer,
                 "is_favorite" => isset($favorite[(string)$job["id"]]),
             ];
         }
@@ -189,5 +203,104 @@ class JobRecommendationService
             "role_relevance" => "Vị trí mong muốn",
             "salary" => "Mức lương",
         ][$key] ?? $key;
+    }
+
+    private function criterionStatus(?int $score, string $state): string
+    {
+        if ($state === "NOT_APPLICABLE") {
+            return "not_applicable";
+        }
+        if ($state !== "AVAILABLE" || $score === null) {
+            return "missing_data";
+        }
+        if ($score >= 70) {
+            return "matched";
+        }
+        if ($score >= 40) {
+            return "partial";
+        }
+        return "needs_improvement";
+    }
+
+    /** @return list<string> */
+    private function detailStrings(mixed $value): array
+    {
+        if (!is_array($value)) {
+            return [];
+        }
+
+        $items = [];
+        foreach (array_slice($value, 0, 8) as $item) {
+            if (!is_scalar($item)) {
+                continue;
+            }
+            $text = trim((string)$item);
+            if ($text !== "") {
+                $items[] = mb_substr($text, 0, 120);
+            }
+        }
+        return array_values(array_unique($items));
+    }
+
+    /**
+     * @param list<array<string, mixed>> $criteria
+     * @return list<array{key:string,label:string,text:string}>
+     */
+    private function improvementSuggestions(array $criteria): array
+    {
+        $candidates = [];
+        foreach ($criteria as $criterion) {
+            if (in_array($criterion["status"] ?? "", ["matched", "not_applicable"], true)) {
+                continue;
+            }
+
+            $text = $this->suggestionForCriterion($criterion);
+            if ($text === null) {
+                continue;
+            }
+
+            $score = is_numeric($criterion["score"] ?? null) ? (int)$criterion["score"] : 0;
+            $weight = (int)($criterion["weight"] ?? 0);
+            $candidates[] = [
+                "key" => (string)$criterion["key"],
+                "label" => (string)$criterion["label"],
+                "text" => $text,
+                "impact" => $weight * (100 - $score),
+            ];
+        }
+
+        usort($candidates, fn(array $a, array $b): int => $b["impact"] <=> $a["impact"]);
+        return array_map(
+            fn(array $item): array => ["key" => $item["key"], "label" => $item["label"], "text" => $item["text"]],
+            array_slice($candidates, 0, 3)
+        );
+    }
+
+    /** @param array<string, mixed> $criterion */
+    private function suggestionForCriterion(array $criterion): ?string
+    {
+        $key = (string)($criterion["key"] ?? "");
+        $missing = $criterion["missing_items"] ?? [];
+        $hasData = ($criterion["state"] ?? "") === "AVAILABLE";
+
+        return match ($key) {
+            "skills" => $missing !== []
+                ? "Nếu bạn đã có " . implode(", ", array_slice($missing, 0, 3)) . ", hãy bổ sung vào hồ sơ; nếu chưa, đây là các kỹ năng nên ưu tiên học."
+                : "Cập nhật đầy đủ các kỹ năng thực tế liên quan đến công việc trong hồ sơ.",
+            "availability" => $hasData
+                ? "Kiểm tra lại ca làm của tin và cập nhật lịch rảnh chính xác; bạn cũng có thể trao đổi với nhà tuyển dụng về việc đổi ca."
+                : "Thêm lịch rảnh theo từng ngày và buổi để hệ thống đối chiếu chính xác với ca làm.",
+            "experience" => $hasData
+                ? "Mô tả rõ thời gian và nhiệm vụ ở các công việc hoặc dự án có liên quan đến vị trí này."
+                : "Bổ sung kinh nghiệm làm thêm, hoạt động câu lạc bộ hoặc dự án có liên quan nếu bạn thực sự đã tham gia.",
+            "education" => $hasData
+                ? "Kiểm tra yêu cầu học vấn của tin và làm rõ ngành học, năm học hoặc chứng chỉ liên quan trong hồ sơ."
+                : "Bổ sung trường, ngành, năm học và các chứng chỉ liên quan để hoàn thiện phần học vấn.",
+            "location" => $hasData
+                ? "Cân nhắc khoảng cách di chuyển hoặc cập nhật thêm khu vực bạn có thể làm việc."
+                : "Thêm khu vực làm việc mong muốn để hệ thống ưu tiên các việc gần bạn.",
+            "role_relevance" => "Làm rõ kỹ năng, kinh nghiệm hoặc dự án liên quan trực tiếp đến vai trò này trong hồ sơ.",
+            default => null,
+        };
     }
 }

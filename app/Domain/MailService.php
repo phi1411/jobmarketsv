@@ -89,6 +89,75 @@ class MailService
         }
     }
 
+    /**
+     * Sends an employer decision or interview invitation to a student.
+     * @return array{status:string,error:?string,preview_path:?string}
+     */
+    public function sendApplicationDecision(array $recipient, array $application, string $status, string $message): array
+    {
+        $label = match ($status) {
+            "interview" => "Có lịch phỏng vấn",
+            "accepted" => "Bạn đã được chấp nhận",
+            "rejected" => "Kết quả ứng tuyển",
+            default => "Cập nhật đơn ứng tuyển",
+        };
+        $subject = $label . ": " . ($application["job_title"] ?? "Vị trí ứng tuyển");
+        $applicationUrl = Config::appUrl() . "/student/applications";
+        $html = $this->renderApplicationDecisionHtml($recipient, $application, $status, $message, $applicationUrl);
+
+        if (!Config::isMailConfigured()) {
+            return $this->writePreview($recipient, ["id" => "application-" . ($application["id"] ?? "decision")], $subject, $html);
+        }
+
+        try {
+            $config = Config::mail();
+            $mailer = new PHPMailer(true);
+            $mailer->isSMTP();
+            $mailer->Host = $config["host"];
+            $mailer->Port = $config["port"];
+            $mailer->SMTPAuth = true;
+            $mailer->Username = $config["username"];
+            $mailer->Password = $config["password"];
+            if ($config["encryption"] !== "" && $config["encryption"] !== "none") {
+                $mailer->SMTPSecure = $config["encryption"];
+            }
+            $mailer->CharSet = "UTF-8";
+            $fromAddress = str_ends_with($config["from"], ".local") ? $config["username"] : $config["from"];
+            $mailer->setFrom($fromAddress, $config["from_name"]);
+            $mailer->addAddress((string)$recipient["email"], (string)($recipient["name"] ?? ""));
+            $mailer->isHTML(true);
+            $mailer->Subject = $subject;
+            $mailer->Body = $html;
+            $mailer->AltBody = $label . " cho vị trí '" . ($application["job_title"] ?? "") . "'. Nội dung từ nhà tuyển dụng: " . $message . ". Xem tại: " . $applicationUrl;
+            $mailer->send();
+            return ["status" => "sent", "error" => null, "preview_path" => null];
+        } catch (\Throwable $e) {
+            return ["status" => "failed", "error" => mb_substr($e->getMessage(), 0, 500), "preview_path" => null];
+        }
+    }
+
+    private function renderApplicationDecisionHtml(array $recipient, array $application, string $status, string $message, string $applicationUrl): string
+    {
+        $e = fn(mixed $value): string => htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
+        $heading = match ($status) {
+            "interview" => "Bạn có lịch phỏng vấn mới",
+            "accepted" => "Chúc mừng, bạn đã được chấp nhận",
+            "rejected" => "Nhà tuyển dụng đã phản hồi đơn ứng tuyển",
+            default => "Đơn ứng tuyển có cập nhật mới",
+        };
+        $accent = match ($status) { "accepted" => "#059669", "rejected" => "#dc2626", default => "#2563eb" };
+
+        return "<!doctype html><html><body style=\"margin:0;background:#f4f7fb;font-family:Arial,sans-serif;color:#14213d\">"
+            . "<div style=\"max-width:620px;margin:24px auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e6eaf0\">"
+            . "<div style=\"padding:24px;background:" . $accent . ";color:#fff\"><strong style=\"font-size:22px\">JobMarketSV</strong><div style=\"margin-top:8px\">" . $e($heading) . "</div></div>"
+            . "<div style=\"padding:28px\"><p>Chào " . $e($recipient["name"] ?? "bạn") . ",</p>"
+            . "<p>Nhà tuyển dụng <strong>" . $e($application["company_name"] ?? "Doanh nghiệp") . "</strong> đã cập nhật đơn ứng tuyển vị trí <strong>" . $e($application["job_title"] ?? "") . "</strong>.</p>"
+            . "<div style=\"margin:20px 0;padding:18px;border-left:4px solid " . $accent . ";background:#f8fafc;border-radius:10px;white-space:pre-line\"><strong>Nội dung từ nhà tuyển dụng:</strong><br><br>" . nl2br($e($message)) . "</div>"
+            . "<p><a href=\"" . $e($applicationUrl) . "\" style=\"display:inline-block;background:" . $accent . ";color:#fff;text-decoration:none;padding:12px 20px;border-radius:9px;font-weight:700\">Xem đơn ứng tuyển</a></p>"
+            . "<p style=\"margin-top:28px;font-size:12px;color:#64748b\">Đây là thông báo giao dịch liên quan trực tiếp đến đơn ứng tuyển của bạn trên JobMarketSV.</p>"
+            . "</div></div></body></html>";
+    }
+
     private function renderJobAlertHtml(array $recipient, array $job, array $search, int $score, array $details, string $jobUrl): string
     {
         $e = fn(mixed $value): string => htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");

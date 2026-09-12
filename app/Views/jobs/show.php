@@ -22,6 +22,7 @@
                 </div>
 
                 <div style="display:flex;gap:0.75rem;align-items:center;flex-shrink:0;">
+                    <button id="btn-report-job" class="btn btn-outline" onclick="openReportJobModal()" style="display:none;color:#b91c1c;border-color:#fecaca;">⚑ Báo cáo tin</button>
                     <button id="btn-favorite" class="btn btn-outline" onclick="handleToggleFavorite()">
                         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                         Lưu tin
@@ -99,6 +100,18 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="report-job-modal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:10000;align-items:center;justify-content:center;padding:1rem;" role="dialog" aria-modal="true">
+    <div class="detail-card" style="width:min(520px,100%);margin:0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;"><h3 style="margin:0;">Báo cáo tin tuyển dụng</h3><button class="modal-close-btn" onclick="closeReportJobModal()">&times;</button></div>
+        <p style="color:var(--text-muted);font-size:.9rem;">Báo cáo được gửi riêng tới quản trị viên. Vui lòng chọn lý do chính xác.</p>
+        <form onsubmit="submitJobReport(event)">
+            <div class="form-group"><label class="form-label">Lý do</label><select id="job-report-reason" class="form-control" required><option value="">Chọn lý do</option><option value="scam">Nghi ngờ lừa đảo</option><option value="salary_mismatch">Thông tin lương không chính xác</option><option value="fee_required">Yêu cầu ứng viên đóng phí</option><option value="inappropriate">Nội dung không phù hợp</option><option value="other">Lý do khác</option></select></div>
+            <div class="form-group"><label class="form-label">Mô tả thêm</label><textarea id="job-report-description" class="form-control" maxlength="500" rows="4" placeholder="Thông tin giúp quản trị viên xác minh nhanh hơn..."></textarea></div>
+            <div style="display:flex;justify-content:flex-end;gap:.75rem;"><button type="button" class="btn btn-outline" onclick="closeReportJobModal()">Hủy</button><button id="submit-report-btn" class="btn btn-primary">Gửi báo cáo</button></div>
+        </form>
     </div>
 </div>
 
@@ -216,6 +229,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
+    const signedInUser = TokenStorage.getUser();
+    if (signedInUser && ["student", "developer"].includes(signedInUser.role)) {
+        document.getElementById("btn-report-job").style.display = "inline-flex";
+    }
+
     // Call REST API GET /jobs/{id}
     const res = await apiRequest(`/jobs/${encodeURIComponent(currentJobId)}`);
 
@@ -272,6 +290,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("job-detail-loading").style.display = "block";
     }
 });
+
+function openReportJobModal() {
+    if (!TokenStorage.isLoggedIn()) { window.location.href = `/login?login_required=1&redirect=${encodeURIComponent(window.location.pathname)}`; return; }
+    document.getElementById("report-job-modal").style.display = "flex";
+}
+function closeReportJobModal() { document.getElementById("report-job-modal").style.display = "none"; }
+async function submitJobReport(event) {
+    event.preventDefault(); const button = document.getElementById("submit-report-btn"); button.disabled = true;
+    const res = await apiRequest(`/jobs/${encodeURIComponent(currentJobId)}/reports`, {method:"POST", requireAuth:true, body:{reason:document.getElementById("job-report-reason").value,description:document.getElementById("job-report-description").value.trim()}});
+    button.disabled = false;
+    if(res?.success){showToast("Báo cáo đã được gửi tới quản trị viên.","success");closeReportJobModal();} else showToast(res?.message || "Không thể gửi báo cáo.","error");
+}
 
 function handleApplyClick() {
     handleApplyJob();
