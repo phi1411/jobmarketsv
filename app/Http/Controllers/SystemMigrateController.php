@@ -101,36 +101,17 @@ class SystemMigrateController extends Controller
                 ]
             );
 
+            // Clean up any residual sql file if present, never execute raw dump
             $candidates = [
                 $root . '/jobmarket.sql',
                 $root . '/public/jobmarket.sql',
                 $root . '/storage/jobmarket.sql',
                 dirname(__DIR__, 2) . '/jobmarket.sql'
             ];
-
-            $sqlFile = null;
             foreach ($candidates as $c) {
                 if (file_exists($c)) {
-                    $sqlFile = $c;
-                    break;
+                    @unlink($c);
                 }
-            }
-
-            $hasUsers = false;
-            try {
-                $hasUsers = ((int)$pdo->query("SELECT COUNT(*) FROM `users`")->fetchColumn()) > 0;
-            } catch (Throwable $e) {}
-
-            if ($sqlFile) {
-                // Only run initial SQL seed if DB is empty or force_reseed is requested
-                if (!$hasUsers || isset($_GET['force_reseed'])) {
-                    $sql = file_get_contents($sqlFile);
-                    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
-                    $pdo->exec("SET NAMES utf8mb4;");
-                    $pdo->exec($sql);
-                    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
-                }
-                @unlink($sqlFile);
             }
 
             // Execute all pending migrations to ensure tables and columns exist
