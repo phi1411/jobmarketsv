@@ -75,9 +75,17 @@ class SystemMigrateController extends Controller
                 $parts = explode('=', $line, 2);
                 if (count($parts) === 2) {
                     $key = trim($parts[0]);
+                    $val = trim($parts[1]);
                     if (!preg_match('/^' . preg_quote($key, '/') . '=/m', $envContent)) {
                         $envContent .= "\n" . $line;
                         $appended = true;
+                    } else if ($val !== '') {
+                        if (preg_match('/^' . preg_quote($key, '/') . '=\s*$/m', $envContent) ||
+                            preg_match('/^' . preg_quote($key, '/') . '=""\s*$/m', $envContent) ||
+                            preg_match('/^' . preg_quote($key, '/') . "=''\s*$/m", $envContent)) {
+                            $envContent = preg_replace('/^' . preg_quote($key, '/') . '=.*$/m', $line, $envContent);
+                            $appended = true;
+                        }
                     }
                 }
             }
