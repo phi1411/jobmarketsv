@@ -58,7 +58,8 @@ class CvHtmlRenderer
         .cv-header { border-bottom: 2px solid {$accent}; padding-bottom: 8mm; margin-bottom: 7mm; }
         h1 { margin: 0; color: {$accent}; font-size: 27pt; line-height: 1.1; letter-spacing: -.4px; }
         .job-title { margin-top: 2mm; font-size: 12pt; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; }
-        .contacts { display: flex; flex-wrap: wrap; gap: 2mm 5mm; margin-top: 4mm; color: #4b5563; font-size: 9pt; }
+        .contacts { margin-top: 4mm; color: #4b5563; font-size: 9pt; }
+        .contacts span, .contacts a { display: inline-block; margin: 0 5mm 2mm 0; }
         .contacts a { color: inherit; text-decoration: none; }
         section { margin: 0 0 6mm; page-break-inside: avoid; }
         h2 { margin: 0 0 3mm; padding-bottom: 1.5mm; color: {$accent}; border-bottom: 1px solid #d1d5db; font-size: 12pt; text-transform: uppercase; letter-spacing: .5px; }
@@ -70,8 +71,8 @@ class CvHtmlRenderer
         .entry-subtitle { margin-top: .5mm; color: {$accent}; font-weight: 600; }
         .entry-description, .plain-text { margin-top: 1.5mm; white-space: normal; }
         .entry-description ul { margin: 1mm 0 0 5mm; padding: 0; }
-        .chips { display: flex; flex-wrap: wrap; gap: 2mm; }
-        .chip { display: inline-block; padding: 1mm 2.5mm; border: 1px solid #cbd5e1; border-radius: 2mm; }
+        .chips { margin: -1mm 0 0; }
+        .chip { display: inline-block; padding: 1mm 2.5mm; margin: 1mm 2mm 0 0; border: 1px solid #cbd5e1; border-radius: 2mm; }
         .student-modern .cv-header { margin: -16mm -17mm 8mm; padding: 14mm 17mm 10mm; background: {$accent}; color: #fff; border: 0; }
         .student-modern h1, .student-modern .job-title, .student-modern .contacts { color: #fff; }
         .ats-classic h1, .ats-classic h2, .ats-classic .entry-subtitle { color: #111827; }

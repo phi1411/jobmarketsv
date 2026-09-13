@@ -136,6 +136,16 @@ class JobRepository implements JobRepositoryInterface
             $params[] = "%" . QueryHelper::escapeLike($filters["district"]) . "%";
         }
 
+        // Canonical work-location filters. District remains a legacy display/search field only.
+        if (!empty($filters["province"])) {
+            $sql .= " AND EXISTS (SELECT 1 FROM `job_locations` jl_province WHERE jl_province.job_id = j.id AND jl_province.province = ?)";
+            $params[] = $filters["province"];
+        }
+        if (!empty($filters["commune"])) {
+            $sql .= " AND EXISTS (SELECT 1 FROM `job_locations` jl_commune WHERE jl_commune.job_id = j.id AND jl_commune.commune = ?)";
+            $params[] = $filters["commune"];
+        }
+
         // Filter: Work Type (e.g. part_time, internship, freelance)
         if (!empty($filters["work_type"])) {
             $normalizedWorkType = str_replace("-", "_", $filters["work_type"]);

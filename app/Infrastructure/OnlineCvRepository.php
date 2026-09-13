@@ -155,7 +155,7 @@ class OnlineCvRepository implements OnlineCvRepositoryInterface
 
     public function clearPrimary(string $userId, ?string $exceptId = null): void
     {
-        $sql = "UPDATE `online_cvs` SET `is_primary` = 0
+        $sql = "UPDATE `online_cvs` SET `is_primary` = 0, `version` = `version` + 1, `updated_at` = NOW()
                 WHERE `user_id` = ? AND `deleted_at` IS NULL AND `is_primary` = 1";
         $params = [$userId];
         if ($exceptId !== null) {

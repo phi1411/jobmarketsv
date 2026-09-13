@@ -8,6 +8,7 @@ use JobMarket\Http\Request;
 use JobMarket\Http\Response;
 use JobMarket\Infrastructure\CompanyRepository;
 use JobMarket\Infrastructure\JobRepository;
+use JobMarket\Infrastructure\JobLocationRepository;
 use JobMarket\Support\Pagination;
 
 class JobController extends Controller
@@ -53,6 +54,7 @@ class JobController extends Controller
         }
 
         $job = $this->jobService->getById($id, $isPrivileged);
+        $job["work_locations"] = (new JobLocationRepository())->listForJob($id);
 
         return Response::success($job, "Chi tiết việc làm.");
     }

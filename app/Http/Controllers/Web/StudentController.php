@@ -31,6 +31,29 @@ class StudentController extends Controller
         return Response::html($html);
     }
 
+    public function cvs(Request $request): Response
+    {
+        $html = View::renderWithLayout("student/cv_list", [
+            "title"       => "Quản Lý CV Online | JobMarketplace",
+            "currentPage" => "student_cvs",
+            "activeTab"   => "cvs"
+        ]);
+
+        return Response::html($html);
+    }
+
+    public function editCv(Request $request, string $id): Response
+    {
+        $html = View::renderWithLayout("student/cv_edit", [
+            "title"       => "Chỉnh Sửa CV Online | JobMarketplace",
+            "currentPage" => "student_cv_edit",
+            "activeTab"   => "cvs",
+            "cvId"        => $id
+        ]);
+
+        return Response::html($html);
+    }
+
     public function applications(Request $request): Response
     {
         $html = View::renderWithLayout("student/applications", [

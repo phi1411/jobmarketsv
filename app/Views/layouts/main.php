@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="/assets/css/assistant.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/assistant.css') ? filemtime(BASE_PATH . '/public/assets/css/assistant.css') : time() ?>">
     <?php endif; ?>
     <link rel="stylesheet" href="/assets/css/support_comm.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/support_comm.css') ? filemtime(BASE_PATH . '/public/assets/css/support_comm.css') : time() ?>">
+    <link rel="stylesheet" href="/assets/css/cv_builder.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/cv_builder.css') ? filemtime(BASE_PATH . '/public/assets/css/cv_builder.css') : time() ?>">
     <script src="/assets/js/api.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/api.js') ? filemtime(BASE_PATH . '/public/assets/js/api.js') : time() ?>"></script>
     <script src="/assets/js/theme.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/theme.js') ? filemtime(BASE_PATH . '/public/assets/js/theme.js') : time() ?>"></script>
 </head>
@@ -51,6 +52,7 @@
                 <ul class="nav-links">
                     <li><a href="/" class="nav-link <?= ($currentPage ?? "") === "home" ? "active" : "" ?>">Trang Chủ</a></li>
                     <li><a href="/viec-lam" class="nav-link <?= ($currentPage ?? "") === "jobs" ? "active" : "" ?>">Tìm Việc Làm</a></li>
+                    <li><a href="/mau-cv-sinh-vien" class="nav-link <?= ($currentPage ?? "") === "cv_templates" ? "active" : "" ?>">Mẫu CV</a></li>
                 </ul>
 
                 <div class="nav-actions">

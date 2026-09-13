@@ -119,7 +119,9 @@ $migrations = [
     \JobMarket\Migrations\ProfileJobAlertMigration::class,
     \JobMarket\Migrations\MarketplaceSafetyTimelineMigration::class,
     \JobMarket\Migrations\ApplicationDecisionNotificationMigration::class,
-    \JobMarket\Migrations\JobMatchingCriteriaMigration::class
+    \JobMarket\Migrations\JobMatchingCriteriaMigration::class,
+    \JobMarket\Migrations\OnlineCvBuilderMigration::class,
+    \JobMarket\Migrations\JobLocationMigration::class
 ];
 
 $ranCount = 0;

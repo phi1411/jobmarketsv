@@ -188,9 +188,10 @@ assertCondition(
     str_contains($appsView, 'Lịch Làm Việc') &&
     str_contains($appsView, 'Kinh Nghiệm') &&
     str_contains($appsView, 'Học Vấn') &&
-    str_contains($appsView, 'Địa Điểm') &&
-    str_contains($appsView, 'Độ Phù Hợp Vị Trí'),
-    "Modal renders 6 MVP criteria breakdown (skills, availability, experience, education, location, role_relevance)"
+    str_contains($appsView, 'Độ Tuổi') &&
+    !str_contains($appsView, '{ key: "location", label: "Địa Điểm"') &&
+    !str_contains($appsView, '{ key: "role_relevance"'),
+    "Modal renders exactly five criteria (age, experience, skills, education, availability)"
 );
 
 assertCondition(

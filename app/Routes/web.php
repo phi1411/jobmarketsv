@@ -14,6 +14,10 @@ return [
     ["GET", "/jobs", [JobController::class, "index"]],
     ["GET", "/jobs/{id:[0-9a-zA-Z\-_]+}", [JobController::class, "show"]],
 
+    // Mẫu CV Sinh viên (Kho mẫu công khai)
+    ["GET", "/mau-cv-sinh-vien", [\JobMarket\Http\Controllers\Web\CvTemplateWebController::class, "index"]],
+    ["GET", "/cv/{slug:[0-9a-zA-Z\-_]+}", [\JobMarket\Http\Controllers\Web\PublicCvController::class, "show"]],
+
     // Xác thực người dùng
     ["GET", "/login", [AuthController::class, "showLogin"]],
     ["GET", "/register", [AuthController::class, "showRegister"]],
@@ -26,6 +30,8 @@ return [
     ["GET", "/profile", [\JobMarket\Http\Controllers\Web\StudentController::class, "profile"]],
     ["GET", "/student/dashboard", [\JobMarket\Http\Controllers\Web\StudentController::class, "dashboard"]],
     ["GET", "/student/profile", [\JobMarket\Http\Controllers\Web\StudentController::class, "profile"]],
+    ["GET", "/student/cvs", [\JobMarket\Http\Controllers\Web\StudentController::class, "cvs"]],
+    ["GET", "/student/cvs/{id:[0-9a-zA-Z\-_]+}/edit", [\JobMarket\Http\Controllers\Web\StudentController::class, "editCv"]],
     ["GET", "/student/applications", [\JobMarket\Http\Controllers\Web\StudentController::class, "applications"]],
     ["GET", "/student/favorites", [\JobMarket\Http\Controllers\Web\StudentController::class, "favorites"]],
     ["GET", "/student/saved-searches", [\JobMarket\Http\Controllers\Web\StudentController::class, "savedSearches"]],

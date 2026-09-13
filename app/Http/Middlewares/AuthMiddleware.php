@@ -16,7 +16,7 @@ class AuthMiddleware implements MiddlewareInterface
      * Routes accessible publicly without authentication
      */
     private array $publicRoutes = [
-        "GET"  => ["/", "/jobs", "/categories", "/skills", "/locations", "/developers", "/viec-lam", "/login", "/register", "/logout", "/auth/google/start", "/auth/google/callback", "/auto-runner"],
+        "GET"  => ["/", "/jobs", "/categories", "/skills", "/locations", "/developers", "/viec-lam", "/mau-cv-sinh-vien", "/cv/templates", "/login", "/register", "/logout", "/auth/google/start", "/auth/google/callback", "/auto-runner"],
         "POST" => ["/login", "/register", "/assistant/chat", "/assistant/feedback"]
     ];
 
@@ -62,6 +62,7 @@ class AuthMiddleware implements MiddlewareInterface
             preg_match('#^/viec-lam/[0-9a-zA-Z\-_]+$#', $path) ||
             preg_match('#^/companies/[0-9a-zA-Z\-_]+/jobs$#', $path) ||
             preg_match('#^/developers/[0-9a-zA-Z\-_]+$#', $path) ||
+            preg_match('#^/cv/[0-9a-zA-Z\-_]+(?:/export\.pdf)?$#', $path) ||
             ($request->wantsHtml() && (str_starts_with($path, "/student/") || str_starts_with($path, "/company/") || str_starts_with($path, "/admin/")))
         )) {
             $isPublic = true;

@@ -53,11 +53,11 @@ class OnlineCvService
         $template = CvTemplateCatalog::find($templateKey);
         $language = $this->normalizeLanguage($input['language'] ?? 'vi');
         $content = CvSchema::normalizeContent(
-            is_array($input['content'] ?? null) ? $input['content'] : [],
+            $input['content'] ?? [],
             CvSchema::emptyContent($user)
         );
         $style = CvSchema::normalizeStyle(
-            is_array($input['style'] ?? null) ? $input['style'] : [],
+            $input['style'] ?? [],
             ['accent_color' => $template['default_accent_color']]
         );
         $sectionOrder = array_key_exists('section_order', $input)
@@ -73,10 +73,6 @@ class OnlineCvService
         if ($isPublic) {
             $this->assertPublishable($content);
         }
-        if ($isPrimary) {
-            $this->repository->clearPrimary($userId);
-        }
-
         $cv = [
             'id' => 'cv-' . bin2hex(random_bytes(12)),
             'user_id' => $userId,
@@ -94,6 +90,9 @@ class OnlineCvService
             'version' => 1,
         ];
         $this->repository->create($cv);
+        if ($isPrimary) {
+            $this->repository->clearPrimary($userId, $cv['id']);
+        }
 
         return $this->get($user, $cv['id']);
     }
@@ -147,14 +146,15 @@ class OnlineCvService
         if (array_key_exists('hidden_sections', $input)) {
             $changes['hidden_sections_json'] = CvSchema::normalizeHiddenSections($input['hidden_sections']);
         }
+        $makePrimary = false;
         if (array_key_exists('is_primary', $input)) {
             $primary = $this->normalizeBool($input['is_primary'], 'is_primary');
             if (!$primary && !empty($current['is_primary'])) {
                 throw new ValidationException(['is_primary' => ['Không thể bỏ CV chính trực tiếp. Hãy đặt một CV khác làm CV chính.']]);
             }
             if ($primary) {
-                $this->repository->clearPrimary($userId, $id);
                 $changes['is_primary'] = true;
+                $makePrimary = true;
             }
         }
         if (array_key_exists('is_public', $input)) {
@@ -172,6 +172,9 @@ class OnlineCvService
                 ['current_version' => (int)($this->findOwned($userId, $id)['version'] ?? 0)]
             );
         }
+        if ($makePrimary) {
+            $this->repository->clearPrimary($userId, $id);
+        }
         return $this->get($user, $id);
     }
 
@@ -184,7 +187,9 @@ class OnlineCvService
         $source = $this->findOwned($userId, $id);
         $copy = $source;
         $copy['id'] = 'cv-' . bin2hex(random_bytes(12));
-        $copy['title'] = $this->normalizeTitle($source['title'] . ' - Bản sao');
+        $sourceTitle = (string)$source['title'];
+        $sourceTitle = function_exists('mb_substr') ? mb_substr($sourceTitle, 0, 108, 'UTF-8') : substr($sourceTitle, 0, 108);
+        $copy['title'] = $this->normalizeTitle(rtrim($sourceTitle) . ' - Bản sao');
         $copy['is_primary'] = false;
         $copy['is_public'] = false;
         $copy['public_slug'] = $this->generateSlug();
@@ -213,14 +218,7 @@ class OnlineCvService
 
     public function publicBySlug(string $slug): array
     {
-        if (!preg_match('/^[a-zA-Z0-9_-]{12,64}$/', $slug)) {
-            throw new NotFoundException('Liên kết CV không tồn tại.');
-        }
-        $cv = $this->repository->findPublicBySlug($slug);
-        if ($cv === null) {
-            throw new NotFoundException('CV không tồn tại hoặc chủ CV đã tắt chia sẻ.');
-        }
-        return $this->toClient($cv, true);
+        return $this->toClient($this->findPublic($slug), true);
     }
 
     public function ownedRaw(array $user, string $id): array
@@ -230,8 +228,7 @@ class OnlineCvService
 
     public function publicRaw(string $slug): array
     {
-        $this->publicBySlug($slug);
-        return $this->repository->findPublicBySlug($slug);
+        return $this->findPublic($slug);
     }
 
     public function markExported(string $id): void
@@ -244,6 +241,18 @@ class OnlineCvService
         $cv = $this->repository->findOwned($id, $userId);
         if ($cv === null) {
             throw new NotFoundException('CV không tồn tại hoặc bạn không có quyền truy cập.');
+        }
+        return $cv;
+    }
+
+    private function findPublic(string $slug): array
+    {
+        if (!preg_match('/^[a-zA-Z0-9_-]{12,64}$/', $slug)) {
+            throw new NotFoundException('Liên kết CV không tồn tại.');
+        }
+        $cv = $this->repository->findPublicBySlug($slug);
+        if ($cv === null) {
+            throw new NotFoundException('CV không tồn tại hoặc chủ CV đã tắt chia sẻ.');
         }
         return $cv;
     }

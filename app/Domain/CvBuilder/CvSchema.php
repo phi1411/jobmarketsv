@@ -220,6 +220,9 @@ class CvSchema
         if (array_diff($values, self::SECTIONS) !== []) {
             throw new ValidationException(['hidden_sections' => ['Danh sách mục ẩn chứa giá trị không hợp lệ.']]);
         }
+        if (in_array('personal', $values, true)) {
+            throw new ValidationException(['hidden_sections' => ['Không thể ẩn toàn bộ phần thông tin cá nhân.']]);
+        }
         return $values;
     }
 
@@ -267,13 +270,17 @@ class CvSchema
                 if ($field === 'url' && $value !== '' && !self::isHttpUrl($value)) {
                     $errors["content.{$section}.{$index}.url"][] = 'Đường dẫn phải bắt đầu bằng http:// hoặc https://.';
                 }
-                if (str_ends_with($field, '_date') && $value !== '' && !preg_match('/^\d{4}(-\d{2}(-\d{2})?)?$/', $value)) {
+                if (str_ends_with($field, '_date') && $value !== '' && !self::isValidCvDate($value)) {
                     $errors["content.{$section}.{$index}.{$field}"][] = 'Ngày phải có dạng YYYY, YYYY-MM hoặc YYYY-MM-DD.';
                 }
                 $normalized[$field] = $value;
             }
             if (array_key_exists('current', $item)) {
-                $normalized['current'] = filter_var($item['current'], FILTER_VALIDATE_BOOL);
+                if (!is_bool($item['current']) && !in_array($item['current'], [0, 1, '0', '1'], true)) {
+                    $errors["content.{$section}.{$index}.current"][] = 'Giá trị current phải là true hoặc false.';
+                } else {
+                    $normalized['current'] = filter_var($item['current'], FILTER_VALIDATE_BOOL);
+                }
             }
             $result[] = $normalized;
         }
@@ -336,5 +343,27 @@ class CvSchema
         }
         $scheme = strtolower((string)parse_url($value, PHP_URL_SCHEME));
         return in_array($scheme, ['http', 'https'], true);
+    }
+
+    private static function isValidCvDate(string $value): bool
+    {
+        if (!preg_match('/^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?$/', $value, $matches)) {
+            return false;
+        }
+        $year = (int)$matches[1];
+        if ($year < 1900 || $year > 2100) {
+            return false;
+        }
+        if (!isset($matches[2]) || $matches[2] === '') {
+            return true;
+        }
+        $month = (int)$matches[2];
+        if ($month < 1 || $month > 12) {
+            return false;
+        }
+        if (!isset($matches[3]) || $matches[3] === '') {
+            return true;
+        }
+        return checkdate($month, (int)$matches[3], $year);
     }
 }

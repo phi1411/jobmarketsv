@@ -279,7 +279,7 @@ class InMemoryApplicationRepository implements ApplicationRepositoryInterface
         }
     }
 
-    public function updateStatus(string $id, string $status, ?string $employerNote = null): void
+    public function updateStatus(string $id, string $status, ?string $studentMessage = null, ?string $actorId = null, string $actorRole = 'system', ?string $historyNote = null): void
     {
         if (isset($this->applications[$id])) {
             $this->applications[$id]['status'] = $status;
@@ -293,7 +293,8 @@ class InMemoryApplicationRepository implements ApplicationRepositoryInterface
     public function countByJob(string $jobId, array $filters = []): int { return 0; }
     public function getByCompany(string $companyId, array $filters = [], ?Pagination $pagination = null): array { return []; }
     public function countByCompany(string $companyId, array $filters = []): int { return 0; }
-    public function withdraw(string $id): void {}
+    public function withdraw(string $id, ?string $actorId = null, string $actorRole = 'student'): void {}
+    public function getStatusHistory(string $applicationId): array { return []; }
 }
 
 class InMemoryProfileRepository implements ProfileRepositoryInterface
@@ -647,7 +648,7 @@ class MatchingP102TestSuite
         $this->assert(isset($res['overall_score']) && $res['overall_score'] > 70.0, 'overall_score is calculated (> 70)');
         $this->assert(isset($res['coverage_percent']) && $res['coverage_percent'] >= 60.0, 'coverage_percent is calculated (>= 60)');
         $this->assert($res['classification'] === 'HIGH_MATCH' || $res['classification'] === 'GOOD_MATCH', 'classification is HIGH_MATCH or GOOD_MATCH');
-        $this->assert(is_array($res['criteria']) && count($res['criteria']) >= 6, 'Safe DTO contains criteria array');
+        $this->assert(is_array($res['criteria']) && count($res['criteria']) === 5, 'Safe DTO contains exactly five published criteria');
         $this->assert(is_array($res['summary']['strengths']), 'Safe DTO contains summary.strengths');
 
         // Verify Safe DTO omits internals

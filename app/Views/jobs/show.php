@@ -255,9 +255,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         // Badges
+        const ageRequirement = job.minimum_age && job.maximum_age
+            ? `${job.minimum_age}–${job.maximum_age} tuổi`
+            : (job.minimum_age ? `Từ ${job.minimum_age} tuổi` : (job.maximum_age ? `Đến ${job.maximum_age} tuổi` : null));
         document.getElementById("job-badges-header").innerHTML = `
             <span class="badge badge-salary" style="font-size:0.85rem;padding:0.35rem 0.75rem;">💰 ${formatCurrency(job.salary_min)} - ${formatCurrency(job.salary_max)}</span>
-            <span class="badge badge-shift" style="font-size:0.85rem;padding:0.35rem 0.75rem;">⏰ ${getShiftLabel(job.shift_type)}</span>
+            <span class="badge badge-shift" style="font-size:0.85rem;padding:0.35rem 0.75rem;">⏰ ${job.shift_type ? getShiftLabel(job.shift_type) : "Không yêu cầu ca cố định"}</span>
+            ${ageRequirement ? `<span class="badge" style="font-size:0.85rem;padding:0.35rem 0.75rem;background:#fdf2f8;color:#9d174d;">🎂 ${escapeHtml(ageRequirement)}</span>` : ""}
             <span class="badge badge-location" style="font-size:0.85rem;padding:0.35rem 0.75rem;">📍 ${escapeHtml(job.location_name || job.city || "Hà Nội")}</span>
         `;
 
@@ -268,7 +272,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Sidebar Meta
         document.getElementById("meta-salary").innerText = `${formatCurrency(job.salary_min)} - ${formatCurrency(job.salary_max)}`;
-        document.getElementById("meta-shift").innerText = getShiftLabel(job.shift_type);
+        document.getElementById("meta-shift").innerText = job.shift_type ? getShiftLabel(job.shift_type) : "Không yêu cầu cố định";
         document.getElementById("meta-work-type").innerText = getWorkTypeLabel(job.work_type);
         document.getElementById("meta-location").innerText = `${job.district ? job.district + ', ' : ''}${job.city || 'Hà Nội'}`;
         document.getElementById("meta-deadline").innerText = formatDate(job.application_deadline) || "Còn tuyển";

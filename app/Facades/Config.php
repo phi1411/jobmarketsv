@@ -143,4 +143,27 @@ class Config extends Facade
         $mail = self::mail();
         return $mail["host"] !== "" && $mail["username"] !== "" && $mail["password"] !== "";
     }
+
+    public static function goongRestApiKey(): ?string
+    {
+        $key = self::getEnv("GOONG_REST_API_KEY");
+        return is_string($key) && trim($key) !== "" ? trim($key) : null;
+    }
+
+    public static function goongApiBaseUrl(): string
+    {
+        return rtrim((string)self::getEnv("GOONG_API_BASE_URL", "https://rsapi.goong.io"), "/");
+    }
+
+    public static function goongTimeoutSeconds(): int
+    {
+        $value = filter_var(self::getEnv("GOONG_TIMEOUT_SECONDS"), FILTER_VALIDATE_INT);
+        return ($value !== false && $value >= 2 && $value <= 30) ? $value : 8;
+    }
+
+    public static function locationApiRateLimit(): int
+    {
+        $value = filter_var(self::getEnv("LOCATION_API_RATE_LIMIT"), FILTER_VALIDATE_INT);
+        return ($value !== false && $value >= 5 && $value <= 300) ? $value : 60;
+    }
 }

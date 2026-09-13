@@ -13,11 +13,14 @@ use JobMarket\Http\Controllers\DeveloperController;
 use JobMarket\Http\Controllers\FavoriteController;
 use JobMarket\Http\Controllers\HomeController;
 use JobMarket\Http\Controllers\JobController;
+use JobMarket\Http\Controllers\JobLocationController;
 use JobMarket\Http\Controllers\JobRecommendationController;
 use JobMarket\Http\Controllers\JobReportController;
 use JobMarket\Http\Controllers\LocationController;
+use JobMarket\Http\Controllers\MapController;
 use JobMarket\Http\Controllers\MatchAnalysisController;
 use JobMarket\Http\Controllers\NotificationController;
+use JobMarket\Http\Controllers\OnlineCvController;
 use JobMarket\Http\Controllers\ProfileController;
 use JobMarket\Http\Controllers\ProfileJobAlertController;
 use JobMarket\Http\Controllers\ReportController;
@@ -31,6 +34,23 @@ use JobMarket\Http\Controllers\SubscriptionController;
 return [
     // testing
     ["GET", "/", [HomeController::class, "index"]], //
+
+    // Online CV Builder / Student CV Templates
+    ["GET", "/cv/templates", [OnlineCvController::class, "templates"]],
+    ["GET", "/student/cvs", [OnlineCvController::class, "index"]],
+    ["POST", "/student/cvs", [OnlineCvController::class, "store"]],
+    ["GET", "/student/cvs/{id:[0-9a-zA-Z\-_]+}", [OnlineCvController::class, "show"]],
+    ["PATCH", "/student/cvs/{id:[0-9a-zA-Z\-_]+}", [OnlineCvController::class, "update"]],
+    ["PUT", "/student/cvs/{id:[0-9a-zA-Z\-_]+}", [OnlineCvController::class, "update"]],
+    ["DELETE", "/student/cvs/{id:[0-9a-zA-Z\-_]+}", [OnlineCvController::class, "destroy"]],
+    ["POST", "/student/cvs/{id:[0-9a-zA-Z\-_]+}/duplicate", [OnlineCvController::class, "duplicate"]],
+    ["POST", "/student/cvs/{id:[0-9a-zA-Z\-_]+}/primary", [OnlineCvController::class, "setPrimary"]],
+    ["POST", "/student/cvs/{id:[0-9a-zA-Z\-_]+}/activate", [OnlineCvController::class, "activate"]],
+    ["PATCH", "/student/cvs/{id:[0-9a-zA-Z\-_]+}/visibility", [OnlineCvController::class, "visibility"]],
+    ["GET", "/student/cvs/{id:[0-9a-zA-Z\-_]+}/preview", [OnlineCvController::class, "preview"]],
+    ["GET", "/student/cvs/{id:[0-9a-zA-Z\-_]+}/export.pdf", [OnlineCvController::class, "export"]],
+    ["GET", "/cv/{slug:[0-9a-zA-Z\-_]+}", [OnlineCvController::class, "publicShow"]],
+    ["GET", "/cv/{slug:[0-9a-zA-Z\-_]+}/export.pdf", [OnlineCvController::class, "publicExport"]],
 
     // Retrieve a list of all companies
     ["GET", "/companies", [CompanyController::class, "index"]],
@@ -55,11 +75,30 @@ return [
     // Retrieve a list of all jobs
     ["GET", "/jobs", [JobController::class, "index"]],
 
+    // Geospatial job discovery (browser coordinates are processed per request and never persisted)
+    ["POST", "/jobs/nearby-search", [JobLocationController::class, "nearby"]],
+
     // Create a new job
     ["POST", "/jobs", [JobController::class, "store"]],
 
     // Retrieve a specific job by ID
     ["GET", "/jobs/{id:[0-9a-zA-Z\-_]+}", [JobController::class, "show"]],
+
+    ["GET", "/jobs/{id:[0-9a-zA-Z\-_]+}/locations", [JobLocationController::class, "index"]],
+    ["POST", "/jobs/{id:[0-9a-zA-Z\-_]+}/commute-check", [JobLocationController::class, "commuteCheck"]],
+    ["POST", "/company/jobs/{id:[0-9a-zA-Z\-_]+}/locations", [JobLocationController::class, "store"]],
+    ["PATCH", "/company/jobs/{jobId:[0-9a-zA-Z\-_]+}/locations/{locationId:[0-9a-zA-Z\-_]+}", [JobLocationController::class, "update"]],
+    ["PUT", "/company/jobs/{jobId:[0-9a-zA-Z\-_]+}/locations/{locationId:[0-9a-zA-Z\-_]+}", [JobLocationController::class, "update"]],
+    ["DELETE", "/company/jobs/{jobId:[0-9a-zA-Z\-_]+}/locations/{locationId:[0-9a-zA-Z\-_]+}", [JobLocationController::class, "destroy"]],
+
+    // Goong REST proxy: the API key stays server-side
+    ["GET", "/map/places/autocomplete", [MapController::class, "autocomplete"]],
+    ["POST", "/map/places/detail", [MapController::class, "detail"]],
+    ["POST", "/map/geocode", [MapController::class, "geocode"]],
+    ["POST", "/map/reverse-geocode", [MapController::class, "reverseGeocode"]],
+
+    ["GET", "/student/preferred-locations", [JobLocationController::class, "preferences"]],
+    ["PUT", "/student/preferred-locations", [JobLocationController::class, "savePreferences"]],
 
     // Update a specific job by ID
     ["PUT", "/jobs/{id:[0-9a-zA-Z\-_]+}", [JobController::class, "update"]],
