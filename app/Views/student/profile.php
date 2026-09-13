@@ -301,6 +301,50 @@
                 </div>
             </div>
 
+            <!-- 5. Khu Vực Làm Việc Mong Muốn (Preferred Work Locations) -->
+            <div class="form-section" id="preferred-locations-section">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.75rem;margin-bottom:0.75rem;">
+                    <div>
+                        <h3 class="form-section-title" style="margin-bottom:0.35rem;">
+                            5. Khu Vực Làm Việc Mong Muốn
+                        </h3>
+                        <p class="form-section-desc" style="margin:0;">
+                            Chọn tối đa 10 địa điểm/khu vực quanh nơi ở hoặc trường học để nhận gợi ý việc làm phù hợp và tính khoảng cách chính xác.
+                        </p>
+                    </div>
+                    <span id="pref-locs-counter" class="job-locations-counter">0 / 10 khu vực</span>
+                </div>
+
+                <!-- Autocomplete Input row -->
+                <div style="display:flex;gap:0.75rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1rem;">
+                    <div style="flex:1;min-width:260px;">
+                        <div id="pref-loc-ac-container"></div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                        <label for="pref-radius-select" style="font-size:0.85rem;font-weight:600;white-space:nowrap;color:var(--dark);">Bán kính:</label>
+                        <select id="pref-radius-select" class="form-control" style="width:auto;font-size:0.875rem;padding:0.6rem 0.85rem;">
+                            <option value="2">2 km</option>
+                            <option value="5">5 km</option>
+                            <option value="10" selected>10 km</option>
+                            <option value="20">20 km</option>
+                            <option value="50">50 km</option>
+                        </select>
+                        <button type="button" id="btn-add-pref-loc" class="btn btn-outline" style="padding:0.6rem 1rem;font-weight:600;white-space:nowrap;" onclick="handleAddPreferredLocation()">
+                            ➕ Thêm khu vực
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chips container -->
+                <div id="pref-locs-chips" class="preferred-locs-list">
+                    <!-- Rendered by JS -->
+                </div>
+
+                <div id="pref-locs-empty" style="padding:1rem;background:#f8fafc;border:1px dashed var(--border);border-radius:var(--radius-sm);text-align:center;font-size:0.85rem;color:var(--text-muted);">
+                    Chưa có khu vực mong muốn nào. Hãy tìm kiếm và thêm địa điểm ở trên.
+                </div>
+            </div>
+
             <div class="form-actions">
                 <a href="/student/dashboard" class="btn btn-outline">Hủy Bỏ</a>
                 <button type="submit" id="btn-save-profile" class="btn btn-primary btn-lg">
@@ -330,6 +374,8 @@
 
 <script>
 let cvAiExtraction = null;
+let preferredLocations = [];
+let prefLocAutocomplete = null;
 const DAYS = [
     { key: "monday", label: "T2" },
     { key: "tuesday", label: "T3" },
@@ -363,7 +409,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderScheduleTable();
     initCvHandlers();
     await Promise.all([loadLocations(), loadSkills()]);
-    await loadProfile();
+    // Initialize Preferred Location Autocomplete
+    prefLocAutocomplete = new AddressAutocomplete("#pref-loc-ac-container", {
+        id: "pref-loc-input",
+        placeholder: "Nhập địa điểm (ví dụ: Bến Nghé, Cầu Giấy, tên trường...)",
+        required: false
+    });
+
+    await Promise.all([loadProfile(), loadPreferredLocations()]);
 
     // Form Submit
     document.getElementById("profile-form").addEventListener("submit", handleSaveProfile);
@@ -528,6 +581,142 @@ async function loadProfile() {
     }
 }
 
+
+/* ==========================================================================
+   STUDENT PREFERRED LOCATIONS (MAX 10)
+   ========================================================================== */
+async function loadPreferredLocations() {
+    try {
+        const res = await apiRequest("/student/preferred-locations", { requireAuth: true });
+        if (res && res.success && Array.isArray(res.data)) {
+            preferredLocations = res.data;
+        } else {
+            preferredLocations = [];
+        }
+        renderPreferredLocations();
+    } catch (err) {
+        console.error("Load preferred locations error:", err);
+    }
+}
+
+function renderPreferredLocations() {
+    const chipsContainer = document.getElementById("pref-locs-chips");
+    const emptyEl = document.getElementById("pref-locs-empty");
+    const counterEl = document.getElementById("pref-locs-counter");
+    const addBtn = document.getElementById("btn-add-pref-loc");
+
+    counterEl.innerText = `${preferredLocations.length} / 10 khu vực`;
+    if (addBtn) {
+        addBtn.disabled = preferredLocations.length >= 10;
+        addBtn.title = preferredLocations.length >= 10 ? "Đã đạt tối đa 10 khu vực." : "";
+    }
+
+    if (preferredLocations.length === 0) {
+        chipsContainer.innerHTML = "";
+        emptyEl.style.display = "block";
+        return;
+    }
+
+    emptyEl.style.display = "none";
+    chipsContainer.innerHTML = preferredLocations.map((loc, idx) => {
+        const radius = loc.preferred_radius_km || 10;
+        const nameParts = [loc.commune, loc.province].filter(Boolean);
+        let displayName = nameParts.length > 0 ? nameParts.join(", ") : (loc.address_text || "Khu vực");
+        if (displayName.length > 35) displayName = displayName.substring(0, 32) + "...";
+
+        return `
+            <span class="preferred-loc-chip" title="${escapeHtml(loc.address_text || '')}">
+                <span>📍 ${escapeHtml(displayName)} · <strong>${radius} km</strong></span>
+                <button type="button" class="remove-chip-btn" onclick="handleRemovePreferredLocation(${idx})" title="Xóa khu vực này" aria-label="Xóa">&times;</button>
+            </span>
+        `;
+    }).join("");
+}
+
+function handleAddPreferredLocation() {
+    if (preferredLocations.length >= 10) {
+        showToast("Tối đa 10 khu vực mong muốn.", "warning");
+        return;
+    }
+
+    const selected = prefLocAutocomplete.getSelected();
+    const rawVal = prefLocAutocomplete.getValue();
+    const radius = parseInt(document.getElementById("pref-radius-select").value, 10) || 10;
+
+    if (!selected && rawVal.length < 2) {
+        showToast("Vui lòng chọn một địa điểm từ danh sách gợi ý.", "warning");
+        return;
+    }
+
+    // Tránh trùng lặp
+    const exists = preferredLocations.some(l => {
+        if (selected && l.place_id && l.place_id === selected.place_id) return true;
+        if (selected && l.provider_place_id && l.provider_place_id === selected.place_id) return true;
+        return (l.address_text || "").toLowerCase() === (rawVal || "").toLowerCase();
+    });
+
+    if (exists) {
+        showToast("Khu vực này đã có trong danh sách của bạn.", "info");
+        return;
+    }
+
+    preferredLocations.push({
+        place_id: selected ? selected.place_id : null,
+        session_token: selected ? selected.session_token : null,
+        preferred_radius_km: radius,
+        address_text: selected ? selected.description : rawVal,
+        commune: selected ? selected.commune : null,
+        province: selected ? selected.province : null,
+        district_text_legacy: selected ? selected.district_text_legacy : null
+    });
+
+    prefLocAutocomplete.clear();
+    renderPreferredLocations();
+    showToast("Đã thêm khu vực. Nhấn \"Lưu Hồ Sơ Sinh Viên\" để hoàn tất.", "success");
+}
+
+function handleRemovePreferredLocation(index) {
+    preferredLocations.splice(index, 1);
+    renderPreferredLocations();
+}
+
+async function savePreferredLocationsToServer() {
+    try {
+        const payload = {
+            locations: preferredLocations.map(l => {
+                const item = {
+                    preferred_radius_km: l.preferred_radius_km || 10
+                };
+                if (l.place_id) {
+                    item.place_id = l.place_id;
+                    if (l.session_token) item.session_token = l.session_token;
+                } else if (l.provider_place_id) {
+                    item.place_id = l.provider_place_id;
+                }
+                if (l.address_text) item.address_text = l.address_text;
+                if (l.latitude !== undefined && l.latitude !== null) item.latitude = l.latitude;
+                if (l.longitude !== undefined && l.longitude !== null) item.longitude = l.longitude;
+                if (l.commune) item.commune = l.commune;
+                if (l.province) item.province = l.province;
+                return item;
+            })
+        };
+
+        const res = await apiRequest("/student/preferred-locations", {
+            method: "PUT",
+            body: payload,
+            requireAuth: true
+        });
+
+        if (res && res.success && Array.isArray(res.data)) {
+            preferredLocations = res.data;
+            renderPreferredLocations();
+        }
+    } catch (err) {
+        console.error("Save preferred locations error:", err);
+    }
+}
+
 async function handleSaveProfile(e) {
     e.preventDefault();
     const btn = document.getElementById("btn-save-profile");
@@ -589,6 +778,7 @@ async function handleSaveProfile(e) {
     btn.innerText = "Lưu Hồ Sơ Sinh Viên";
 
     if (res && res.success) {
+        await savePreferredLocationsToServer();
         showToast("Lưu hồ sơ sinh viên thành công!", "success");
         if (res.data && res.data.profile_completion_percent !== undefined) {
             const pct = res.data.profile_completion_percent;

@@ -176,6 +176,48 @@
             </div>
         </div>
 
+                <!-- Commute Distance Check (Pre-application) -->
+        <div id="apply-commute-section" style="margin-bottom:1.25rem;">
+            <!-- Loading indicator -->
+            <div id="commute-loading" style="display:none;padding:0.6rem 0.85rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.83rem;color:var(--text-muted);align-items:center;gap:0.5rem;">
+                <div class="autocomplete-spinner" style="position:static;width:14px;height:14px;"></div>
+                <span>Đang kiểm tra khoảng cách đi làm...</span>
+            </div>
+
+            <!-- Soft Commute Warning (is_far === true) -->
+            <div id="commute-warning-box" class="commute-warning-banner" style="display:none;">
+                <div class="commute-warning-header">
+                    <span>⚠️</span>
+                    <span>Lưu ý về khoảng cách di chuyển</span>
+                </div>
+                <div id="commute-warning-message" class="commute-warning-text"></div>
+                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                    <button type="button" id="btn-route-distance" class="commute-action-link" onclick="checkRealRouteDistance()">
+                        🏍️ Xem quãng đường thực tế (Xe máy)
+                    </button>
+                    <span style="font-size:0.78rem;color:#92400e;">(Bạn vẫn có thể ứng tuyển)</span>
+                </div>
+            </div>
+
+            <!-- Near Distance Info (is_far === false) -->
+            <div id="commute-near-box" style="display:none;padding:0.65rem 0.9rem;background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #10b981;border-radius:var(--radius-sm);margin-bottom:0.75rem;">
+                <div style="font-size:0.85rem;color:#166534;font-weight:600;display:flex;align-items:center;gap:0.4rem;">
+                    <span>📍</span>
+                    <span id="commute-near-text"></span>
+                </div>
+                <button type="button" id="btn-route-distance-near" class="commute-action-link" style="margin-top:0.35rem;display:inline-block;color:#15803d;" onclick="checkRealRouteDistance()">
+                    🏍️ Xem quãng đường thực tế (Xe máy)
+                </button>
+            </div>
+
+            <!-- Manual trigger button if coordinates weren't requested yet -->
+            <div id="commute-check-cta" style="display:none;margin-bottom:0.75rem;">
+                <button type="button" class="btn btn-outline btn-sm" onclick="triggerCommuteCheck()" style="font-size:0.82rem;padding:0.35rem 0.75rem;display:inline-flex;align-items:center;gap:0.35rem;">
+                    <span>📍</span> <span>Kiểm tra khoảng cách đi làm từ vị trí của bạn</span>
+                </button>
+            </div>
+        </div>
+
         <div id="apply-error-box" style="display:none;margin-bottom:1rem;" class="toast toast-error"></div>
 
         <form id="apply-form" onsubmit="submitApplication(event)">
@@ -222,6 +264,7 @@
 <script>
 const currentJobId = <?= json_encode($jobId ?? "") ?>;
 let currentJobData = null;
+let ephemeralCoords = null; // Stored in runtime memory only during session
 
 document.addEventListener("DOMContentLoaded", async () => {
     if (!currentJobId) {
@@ -331,6 +374,156 @@ function handleApplyJob() {
 }
 
 let lastApplyFocusElement = null;
+
+
+/* ==========================================================================
+   WORK LOCATIONS & COMMUTE CHECK
+   ========================================================================== */
+function renderJobDetailLocations(locations) {
+    const card = document.getElementById("detail-locations-card");
+    const list = document.getElementById("detail-locations-list");
+    const countBadge = document.getElementById("detail-locs-count");
+
+    if (!Array.isArray(locations) || locations.length === 0) {
+        card.style.display = "none";
+        return;
+    }
+
+    card.style.display = "block";
+    countBadge.innerText = `${locations.length} cơ sở làm việc`;
+
+    list.innerHTML = locations.map((loc, idx) => {
+        const isPrimary = !!loc.is_primary;
+        const isVerified = loc.geocode_status === "verified" || loc.provider === "goong";
+        const branchName = loc.branch_name ? escapeHtml(loc.branch_name) : `Cơ sở ${idx + 1}`;
+        const addressText = escapeHtml(loc.address_text || "");
+        const parts = [loc.commune, loc.province].filter(Boolean);
+        const subAddress = parts.length > 0 ? parts.join(", ") : "";
+        const legacyDistrict = loc.district_text_legacy ? escapeHtml(loc.district_text_legacy) : "";
+
+        // Tạo Google Maps search link an toàn mà không leak Goong key
+        let mapUrl = "#";
+        if (loc.latitude && loc.longitude) {
+            mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc.latitude)},${encodeURIComponent(loc.longitude)}`;
+        } else if (loc.address_text) {
+            mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc.address_text)}`;
+        }
+
+        return `
+            <div class="location-card ${isPrimary ? 'is-primary' : ''}">
+                <div class="location-card-info">
+                    <div class="location-card-title">
+                        <span>${branchName}</span>
+                        ${isPrimary ? '<span class="badge-loc badge-loc-primary">★ Địa điểm chính</span>' : ''}
+                        ${isVerified ? '<span class="badge-loc badge-loc-verified">✓ Đã xác thực</span>' : '<span class="badge-loc badge-loc-manual">✎ Nhập thủ công</span>'}
+                    </div>
+                    <div class="location-card-address">${addressText}</div>
+                    <div class="location-card-meta">
+                        ${subAddress ? `<span style="font-size:0.8rem;color:var(--text-muted);">📍 ${escapeHtml(subAddress)}</span>` : ''}
+                        ${legacyDistrict ? `<span class="badge-loc" style="background:#e2e8f0;color:#475569;">${legacyDistrict}</span>` : ''}
+                    </div>
+                </div>
+                <div class="location-card-actions">
+                    <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="btn-loc-action" style="text-decoration:none;" title="Mở trên bản đồ">
+                        🗺️ Xem trên bản đồ
+                    </a>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+function triggerCommuteCheck() {
+    if (!navigator.geolocation) {
+        showToast("Trình duyệt không hỗ trợ xác định vị trí.", "warning");
+        return;
+    }
+    const cta = document.getElementById("commute-check-cta");
+    const loading = document.getElementById("commute-loading");
+    if (cta) cta.style.display = "none";
+    if (loading) loading.style.display = "flex";
+
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            ephemeralCoords = {
+                latitude: pos.coords.latitude,
+                longitude: pos.coords.longitude
+            };
+            runCommuteCheck(false);
+        },
+        (err) => {
+            if (loading) loading.style.display = "none";
+            if (cta) cta.style.display = "block";
+            console.warn("Geolocation error:", err);
+            showToast("Không thể xác định vị trí để kiểm tra khoảng cách đi làm.", "info");
+        },
+        { timeout: 8000, enableHighAccuracy: false }
+    );
+}
+
+async function runCommuteCheck(useRoute = false, vehicle = 'bike') {
+    if (!ephemeralCoords || !currentJobId) return;
+
+    const loading = document.getElementById("commute-loading");
+    const warningBox = document.getElementById("commute-warning-box");
+    const warningMsg = document.getElementById("commute-warning-message");
+    const nearBox = document.getElementById("commute-near-box");
+    const nearText = document.getElementById("commute-near-text");
+    const cta = document.getElementById("commute-check-cta");
+
+    if (loading) loading.style.display = "flex";
+    if (warningBox) warningBox.style.display = "none";
+    if (nearBox) nearBox.style.display = "none";
+    if (cta) cta.style.display = "none";
+
+    try {
+        const payload = {
+            latitude: ephemeralCoords.latitude,
+            longitude: ephemeralCoords.longitude,
+            max_commute_km: 15,
+            use_route: useRoute,
+            vehicle: vehicle
+        };
+
+        const res = await apiRequest(`/jobs/${encodeURIComponent(currentJobId)}/commute-check`, {
+            method: "POST",
+            body: payload
+        });
+
+        if (loading) loading.style.display = "none";
+
+        if (res && res.success && res.data) {
+            const d = res.data;
+            const distKm = d.route_distance_km || d.straight_line_distance_km;
+            const distVi = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 1 }).format(distKm);
+
+            if (d.is_far) {
+                if (warningMsg) {
+                    warningMsg.innerText = d.warning || `Công việc này cách khu vực của bạn khoảng ${distVi} km, vượt mức ${d.max_commute_km} km mong muốn. Bạn vẫn có thể ứng tuyển.`;
+                }
+                if (warningBox) warningBox.style.display = "block";
+
+                // Vẫn cho phép ứng tuyển và làm rõ nút submit
+                const submitBtn = document.getElementById("btn-submit-apply");
+                if (submitBtn && !submitBtn.disabled) {
+                    submitBtn.innerText = "Vẫn Gửi Đơn Ứng Tuyển";
+                }
+            } else {
+                if (nearText) {
+                    nearText.innerText = `Khoảng cách đi làm: khoảng ${distVi} km ${useRoute ? '(theo đường bộ xe máy)' : '(đường chim bay)'} - Thuận tiện đi lại!`;
+                }
+                if (nearBox) nearBox.style.display = "block";
+            }
+        }
+    } catch (err) {
+        if (loading) loading.style.display = "none";
+        console.error("Commute check error:", err);
+    }
+}
+
+function checkRealRouteDistance() {
+    runCommuteCheck(true, 'bike');
+}
 
 async function openApplyModal() {
     lastApplyFocusElement = document.activeElement;

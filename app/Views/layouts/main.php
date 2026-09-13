@@ -34,7 +34,9 @@
     <?php endif; ?>
     <link rel="stylesheet" href="/assets/css/support_comm.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/support_comm.css') ? filemtime(BASE_PATH . '/public/assets/css/support_comm.css') : time() ?>">
     <link rel="stylesheet" href="/assets/css/cv_builder.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/cv_builder.css') ? filemtime(BASE_PATH . '/public/assets/css/cv_builder.css') : time() ?>">
+    <link rel="stylesheet" href="/assets/css/location.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/location.css') ? filemtime(BASE_PATH . '/public/assets/css/location.css') : time() ?>">
     <script src="/assets/js/api.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/api.js') ? filemtime(BASE_PATH . '/public/assets/js/api.js') : time() ?>"></script>
+    <script src="/assets/js/address_autocomplete.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/address_autocomplete.js') ? filemtime(BASE_PATH . '/public/assets/js/address_autocomplete.js') : time() ?>"></script>
     <script src="/assets/js/theme.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/theme.js') ? filemtime(BASE_PATH . '/public/assets/js/theme.js') : time() ?>"></script>
 </head>
 <body>

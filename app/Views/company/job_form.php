@@ -177,6 +177,36 @@ $editingJobId = $jobId ?? "";
                 <textarea id="job-benefits" rows="4" class="form-control" placeholder="Hỗ trợ gửi xe, phụ cấp ăn trưa/tối, thưởng theo năng suất, linh hoạt đổi ca thi cử..."></textarea>
             </div>
 
+            <!-- Section: Địa điểm làm việc cụ thể (Work Locations) -->
+            <div class="job-locations-section" id="section-job-locations">
+                <div class="job-locations-header">
+                    <div>
+                        <h3 class="job-locations-title">
+                            <span>📍 Địa Điểm Làm Việc Cụ Thể</span>
+                            <span id="locs-count-badge" class="job-locations-counter">0 / 20</span>
+                        </h3>
+                        <small style="color:var(--text-muted);font-size:0.83rem;">
+                            Thêm các chi nhánh, cơ sở hoặc điểm làm việc cụ thể của tin tuyển dụng này để sinh viên dễ dàng tìm thấy việc làm gần mình.
+                        </small>
+                    </div>
+                    <button type="button" id="btn-open-add-location" class="btn btn-outline btn-sm" onclick="openAddLocationModal()" style="display:inline-flex;align-items:center;gap:0.35rem;">
+                        <span>➕</span> <span>Thêm địa điểm</span>
+                    </button>
+                </div>
+
+                <div id="job-locations-list" class="job-locations-grid">
+                    <!-- Cards rendered dynamically -->
+                </div>
+
+                <div id="job-locations-empty" style="display:none;padding:1.5rem;text-align:center;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:var(--radius-sm);">
+                    <div style="font-size:1.5rem;margin-bottom:0.35rem;">📍</div>
+                    <div style="font-weight:600;color:var(--dark);font-size:0.92rem;">Chưa có địa điểm làm việc cụ thể</div>
+                    <p style="font-size:0.82rem;color:var(--text-muted);margin:0.25rem auto 0.75rem;max-width:420px;">
+                        Nhấn nút <strong>"Thêm địa điểm"</strong> ở trên để thêm cơ sở làm việc qua bản đồ Goong. Tin có địa điểm chính xác sẽ được ưu tiên hiển thị cho sinh viên ở gần.
+                    </p>
+                </div>
+            </div>
+
             <!-- 12. Trạng thái xuất bản -->
             <div class="fieldset-card" style="margin-bottom:0;">
                 <label class="form-label" for="job-status" style="font-weight:700;">Trạng thái xuất bản tin</label>
@@ -204,10 +234,48 @@ $editingJobId = $jobId ?? "";
     </div>
 </div>
 
+<!-- Modal: Thêm / Sửa Địa Điểm Làm Việc -->
+<div id="modal-location-form" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:10000;align-items:center;justify-content:center;padding:1rem;" role="dialog" aria-modal="true" aria-labelledby="modal-loc-title">
+    <div style="background:#fff;border-radius:var(--radius);max-width:560px;width:100%;padding:1.5rem;box-shadow:var(--shadow);position:relative;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
+            <h3 id="modal-loc-title" style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:0;">Thêm Địa Điểm Làm Việc</h3>
+            <button type="button" onclick="closeLocationModal()" class="modal-close-btn" aria-label="Đóng">&times;</button>
+        </div>
+
+        <form id="form-location-modal" onsubmit="handleSaveLocation(event)">
+            <input type="hidden" id="loc-edit-id" value="">
+
+            <div class="form-group" style="margin-bottom:1rem;">
+                <label class="form-label" for="loc-branch-name">Tên chi nhánh / cơ sở (Tùy chọn)</label>
+                <input type="text" id="loc-branch-name" class="form-control" placeholder="Ví dụ: Chi nhánh Nguyễn Huệ, Cửa hàng số 2..." maxlength="150">
+            </div>
+
+            <div class="form-group" style="margin-bottom:1rem;">
+                <div id="loc-autocomplete-container"></div>
+                <small class="form-help">Tìm kiếm theo tên đường, phường/xã, quận/huyện để hệ thống tự động xác thực tọa độ.</small>
+            </div>
+
+            <div class="form-group" style="margin-bottom:1.25rem;">
+                <label style="display:inline-flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.9rem;font-weight:600;color:var(--dark);">
+                    <input type="checkbox" id="loc-is-primary" style="width:17px;height:17px;">
+                    <span>Đặt làm địa điểm chính (Hiển thị nổi bật trên tin tuyển dụng)</span>
+                </label>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;gap:0.75rem;">
+                <button type="button" class="btn btn-outline btn-sm" onclick="closeLocationModal()">Hủy</button>
+                <button type="submit" id="btn-save-loc" class="btn btn-primary btn-sm">Lưu Địa Điểm</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 const IS_EDIT_MODE = <?= $isEditMode ? "true" : "false" ?>;
 const EDIT_JOB_ID = "<?= htmlspecialchars($editingJobId, ENT_QUOTES, 'UTF-8') ?>";
 let companyVerificationStatus = "pending";
+let jobLocations = [];
+let locAutocompleteInstance = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
     // Auth UX Guard
@@ -292,6 +360,287 @@ async function loadSkills() {
                 ${escapeHtml(s.name)}
             </label>
         `).join("");
+    }
+}
+
+/* ==========================================================================
+   LOCATION MANAGEMENT (CRUD & MULTI-BRANCH)
+   ========================================================================== */
+async function loadJobLocations(jobId) {
+    const res = await apiRequest(`/jobs/${encodeURIComponent(jobId)}/locations`);
+    if (res && res.success && Array.isArray(res.data)) {
+        jobLocations = res.data;
+    } else {
+        jobLocations = [];
+    }
+    renderJobLocations();
+}
+
+function renderJobLocations() {
+    const container = document.getElementById("job-locations-list");
+    const emptyEl = document.getElementById("job-locations-empty");
+    const badgeEl = document.getElementById("locs-count-badge");
+    const addBtn = document.getElementById("btn-open-add-location");
+
+    badgeEl.innerText = `${jobLocations.length} / 20`;
+    if (addBtn) {
+        addBtn.disabled = jobLocations.length >= 20;
+        if (jobLocations.length >= 20) {
+            addBtn.title = "Đã đạt số lượng tối đa 20 địa điểm.";
+        } else {
+            addBtn.title = "";
+        }
+    }
+
+    if (jobLocations.length === 0) {
+        container.innerHTML = "";
+        emptyEl.style.display = "block";
+        return;
+    }
+
+    emptyEl.style.display = "none";
+    container.innerHTML = jobLocations.map((loc, idx) => {
+        const locId = loc.id || loc.temp_id || `loc-${idx}`;
+        const isPrimary = !!loc.is_primary;
+        const isVerified = loc.geocode_status === "verified" || loc.provider === "goong";
+        const branchName = loc.branch_name ? escapeHtml(loc.branch_name) : `Cơ sở ${idx + 1}`;
+        const addressText = escapeHtml(loc.address_text || "");
+
+        const parts = [loc.commune, loc.province].filter(Boolean);
+        const subAddress = parts.length > 0 ? parts.join(", ") : "";
+        const legacyDistrict = loc.district_text_legacy ? escapeHtml(loc.district_text_legacy) : "";
+
+        return `
+            <div class="location-card ${isPrimary ? 'is-primary' : ''}">
+                <div class="location-card-info">
+                    <div class="location-card-title">
+                        <span>${branchName}</span>
+                        ${isPrimary ? '<span class="badge-loc badge-loc-primary">★ Địa điểm chính</span>' : ''}
+                        ${isVerified ? '<span class="badge-loc badge-loc-verified">✓ Đã xác thực</span>' : '<span class="badge-loc badge-loc-manual">✎ Nhập thủ công</span>'}
+                    </div>
+                    <div class="location-card-address">${addressText}</div>
+                    <div class="location-card-meta">
+                        ${subAddress ? `<span style="font-size:0.8rem;color:var(--text-muted);">📍 ${escapeHtml(subAddress)}</span>` : ''}
+                        ${legacyDistrict ? `<span class="badge-loc" style="background:#e2e8f0;color:#475569;">${legacyDistrict}</span>` : ''}
+                    </div>
+                </div>
+                <div class="location-card-actions">
+                    ${!isPrimary ? `<button type="button" class="btn-set-primary" onclick="handleSetPrimaryLocation('${escapeHtml(locId)}')">Đặt làm chính</button>` : ''}
+                    <button type="button" class="btn-loc-action" onclick="openEditLocationModal('${escapeHtml(locId)}')">Sửa</button>
+                    <button type="button" class="btn-loc-action btn-danger-action" onclick="handleDeleteLocation('${escapeHtml(locId)}')">Xóa</button>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+function openAddLocationModal() {
+    if (jobLocations.length >= 20) {
+        showToast("Mỗi tin được có tối đa 20 địa điểm làm việc.", "warning");
+        return;
+    }
+    document.getElementById("modal-loc-title").innerText = "Thêm Địa Điểm Làm Việc";
+    document.getElementById("loc-edit-id").value = "";
+    document.getElementById("loc-branch-name").value = "";
+    document.getElementById("loc-is-primary").checked = jobLocations.length === 0;
+    locAutocompleteInstance.clear();
+
+    document.getElementById("modal-location-form").style.display = "flex";
+}
+
+function openEditLocationModal(id) {
+    const loc = jobLocations.find(l => (l.id || l.temp_id) === id);
+    if (!loc) return;
+
+    document.getElementById("modal-loc-title").innerText = "Chỉnh Sửa Địa Điểm Làm Việc";
+    document.getElementById("loc-edit-id").value = id;
+    document.getElementById("loc-branch-name").value = loc.branch_name || "";
+    document.getElementById("loc-is-primary").checked = !!loc.is_primary;
+    locAutocompleteInstance.setValue(loc.address_text || "", loc.place_id ? loc : null);
+
+    document.getElementById("modal-location-form").style.display = "flex";
+}
+
+function closeLocationModal() {
+    document.getElementById("modal-location-form").style.display = "none";
+}
+
+async function handleSaveLocation(e) {
+    e.preventDefault();
+    const editId = document.getElementById("loc-edit-id").value.trim();
+    const branchName = document.getElementById("loc-branch-name").value.trim();
+    const isPrimary = document.getElementById("loc-is-primary").checked;
+    const selected = locAutocompleteInstance.getSelected();
+    const rawAddress = locAutocompleteInstance.getValue();
+
+    if (!selected && rawAddress.length < 3) {
+        showToast("Vui lòng chọn hoặc nhập địa chỉ hợp lệ (ít nhất 3 ký tự).", "warning");
+        return;
+    }
+
+    const saveBtn = document.getElementById("btn-save-loc");
+    saveBtn.disabled = true;
+    saveBtn.innerText = "Đang lưu...";
+
+    if (IS_EDIT_MODE && EDIT_JOB_ID) {
+        try {
+            if (editId) {
+                const payload = {
+                    branch_name: branchName || null,
+                    is_primary: isPrimary
+                };
+                if (selected) {
+                    payload.place_id = selected.place_id;
+                    payload.session_token = selected.session_token;
+                } else if (rawAddress) {
+                    payload.address_text = rawAddress;
+                }
+
+                const res = await apiRequest(`/company/jobs/${encodeURIComponent(EDIT_JOB_ID)}/locations/${encodeURIComponent(editId)}`, {
+                    method: "PATCH",
+                    body: payload,
+                    requireAuth: true
+                });
+
+                if (res && res.success) {
+                    showToast("Đã cập nhật địa điểm làm việc.", "success");
+                    closeLocationModal();
+                    await loadJobLocations(EDIT_JOB_ID);
+                } else {
+                    showToast((res && res.message) ? res.message : "Cập nhật địa điểm thất bại.", "error");
+                }
+            } else {
+                const payload = {
+                    branch_name: branchName || null,
+                    is_primary: isPrimary
+                };
+                if (selected) {
+                    payload.place_id = selected.place_id;
+                    payload.session_token = selected.session_token;
+                } else {
+                    payload.address_text = rawAddress;
+                }
+
+                const res = await apiRequest(`/company/jobs/${encodeURIComponent(EDIT_JOB_ID)}/locations`, {
+                    method: "POST",
+                    body: payload,
+                    requireAuth: true
+                });
+
+                if (res && res.success) {
+                    showToast("Đã thêm địa điểm làm việc.", "success");
+                    closeLocationModal();
+                    await loadJobLocations(EDIT_JOB_ID);
+                } else {
+                    showToast((res && res.message) ? res.message : "Thêm địa điểm thất bại.", "error");
+                }
+            }
+        } catch (err) {
+            console.error("Save location error:", err);
+            showToast("Lỗi khi lưu địa điểm.", "error");
+        }
+    } else {
+        if (editId) {
+            const idx = jobLocations.findIndex(l => (l.id || l.temp_id) === editId);
+            if (idx !== -1) {
+                if (isPrimary) {
+                    jobLocations.forEach(l => l.is_primary = false);
+                }
+                jobLocations[idx] = {
+                    ...jobLocations[idx],
+                    branch_name: branchName || null,
+                    is_primary: isPrimary,
+                    address_text: selected ? selected.description : rawAddress,
+                    place_id: selected ? selected.place_id : (jobLocations[idx].place_id || null),
+                    session_token: selected ? selected.session_token : (jobLocations[idx].session_token || null),
+                    commune: selected ? selected.commune : jobLocations[idx].commune,
+                    province: selected ? selected.province : jobLocations[idx].province,
+                    district_text_legacy: selected ? selected.district_text_legacy : jobLocations[idx].district_text_legacy,
+                    geocode_status: selected ? "verified" : "manual"
+                };
+            }
+        } else {
+            if (isPrimary) {
+                jobLocations.forEach(l => l.is_primary = false);
+            }
+            jobLocations.push({
+                temp_id: "draft-" + Date.now() + "-" + Math.random().toString(36).substring(2, 6),
+                branch_name: branchName || null,
+                is_primary: isPrimary || jobLocations.length === 0,
+                address_text: selected ? selected.description : rawAddress,
+                place_id: selected ? selected.place_id : null,
+                session_token: selected ? selected.session_token : null,
+                commune: selected ? selected.commune : null,
+                province: selected ? selected.province : null,
+                district_text_legacy: selected ? selected.district_text_legacy : null,
+                geocode_status: selected ? "verified" : "manual"
+            });
+        }
+        closeLocationModal();
+        renderJobLocations();
+        showToast("Đã lưu địa điểm vào danh sách chờ.", "success");
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.innerText = "Lưu Địa Điểm";
+}
+
+async function handleDeleteLocation(id) {
+    if (!confirm("Bạn có chắc chắn muốn xóa địa điểm làm việc này khỏi tin tuyển dụng?")) {
+        return;
+    }
+
+    if (IS_EDIT_MODE && EDIT_JOB_ID) {
+        try {
+            const res = await apiRequest(`/company/jobs/${encodeURIComponent(EDIT_JOB_ID)}/locations/${encodeURIComponent(id)}`, {
+                method: "DELETE",
+                requireAuth: true
+            });
+            if (res && res.success) {
+                showToast("Đã xóa địa điểm làm việc.", "info");
+                await loadJobLocations(EDIT_JOB_ID);
+            } else {
+                showToast((res && res.message) ? res.message : "Xóa địa điểm thất bại.", "error");
+            }
+        } catch (err) {
+            console.error("Delete location error:", err);
+            showToast("Lỗi khi xóa địa điểm.", "error");
+        }
+    } else {
+        const deletedWasPrimary = jobLocations.find(l => (l.id || l.temp_id) === id)?.is_primary;
+        jobLocations = jobLocations.filter(l => (l.id || l.temp_id) !== id);
+        if (deletedWasPrimary && jobLocations.length > 0) {
+            jobLocations[0].is_primary = true;
+        }
+        renderJobLocations();
+        showToast("Đã xóa địa điểm khỏi danh sách.", "info");
+    }
+}
+
+async function handleSetPrimaryLocation(id) {
+    if (IS_EDIT_MODE && EDIT_JOB_ID) {
+        try {
+            const res = await apiRequest(`/company/jobs/${encodeURIComponent(EDIT_JOB_ID)}/locations/${encodeURIComponent(id)}`, {
+                method: "PATCH",
+                body: { is_primary: true },
+                requireAuth: true
+            });
+            if (res && res.success) {
+                showToast("Đã đặt làm địa điểm chính.", "success");
+                await loadJobLocations(EDIT_JOB_ID);
+            } else {
+                showToast((res && res.message) ? res.message : "Không thể đặt địa điểm chính.", "error");
+            }
+        } catch (err) {
+            console.error("Set primary error:", err);
+            showToast("Lỗi thao tác.", "error");
+        }
+    } else {
+        jobLocations.forEach(l => {
+            l.is_primary = (l.id || l.temp_id) === id;
+        });
+        renderJobLocations();
+        showToast("Đã đặt làm địa điểm chính.", "success");
     }
 }
 

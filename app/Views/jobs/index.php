@@ -84,6 +84,28 @@
         </form>
     </div>
 
+    <!-- Nearby Filter Bar (Active when user clicks "Việc làm gần tôi") -->
+    <div id="nearby-filter-bar" class="nearby-filter-bar" style="display:none;">
+        <div class="nearby-chips-group">
+            <span class="nearby-radius-label">📍 Bán kính:</span>
+            <button type="button" class="radius-chip" data-radius="2" onclick="setNearbyRadius(2)">2 km</button>
+            <button type="button" class="radius-chip" data-radius="5" onclick="setNearbyRadius(5)">5 km</button>
+            <button type="button" class="radius-chip active" data-radius="10" onclick="setNearbyRadius(10)">10 km</button>
+            <button type="button" class="radius-chip" data-radius="20" onclick="setNearbyRadius(20)">20 km</button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+            <div class="nearby-privacy-notice">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span>Vị trí chỉ dùng cho lần tìm kiếm này và không được lưu.</span>
+            </div>
+            <button type="button" class="btn-exit-nearby" onclick="exitNearbyMode()">✕ Bỏ lọc gần tôi</button>
+        </div>
+    </div>
+
+    <!-- Nearby Permission / Status Alert Banner -->
+    <div id="nearby-status-banner" style="display:none;margin-bottom:1.25rem;"></div>
+
     <!-- Results Header Toolbar -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:1rem;">
         <div>
@@ -119,6 +141,129 @@
 <script>
 let currentPage = 1;
 let currentSort = "newest";
+let userCoords = null; // Ephemeral only - never saved to storage or cookies
+let isNearbyMode = false;
+let nearbyRadiusKm = 10;
+
+function formatDistance(km) {
+    if (km === null || km === undefined) return "";
+    return new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 1 }).format(km) + " km";
+}
+
+function showNearbyBanner(htmlContent, type = "info") {
+    const banner = document.getElementById("nearby-status-banner");
+    if (!banner) return;
+    banner.className = `toast toast-${type}`;
+    banner.style.display = "block";
+    banner.innerHTML = htmlContent;
+}
+
+function hideNearbyBanner() {
+    const banner = document.getElementById("nearby-status-banner");
+    if (banner) banner.style.display = "none";
+}
+
+async function toggleNearbyJobs() {
+    if (isNearbyMode) {
+        exitNearbyMode();
+        return;
+    }
+
+    if (!navigator.geolocation) {
+        showNearbyBanner("Trình duyệt của bạn không hỗ trợ xác định vị trí địa lý.", "error");
+        return;
+    }
+
+    showNearbyBanner(`
+        <div style="display:flex;align-items:center;gap:0.6rem;">
+            <div class="autocomplete-spinner" style="position:static;width:16px;height:16px;"></div>
+            <span>Đang yêu cầu quyền truy cập vị trí hiện tại của bạn...</span>
+        </div>
+    `, "info");
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            // Tọa độ chỉ được lưu vào biến bộ nhớ phiên này, KHÔNG lưu xuống localStorage hay cookies
+            userCoords = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            };
+            isNearbyMode = true;
+            hideNearbyBanner();
+
+            document.getElementById("btn-nearby-jobs").classList.add("active");
+            document.getElementById("nearby-filter-bar").style.display = "flex";
+
+            // Thêm tùy chọn "Gần nhất" vào sort-select nếu chưa có
+            const sortSel = document.getElementById("sort-select");
+            let hasDistOpt = Array.from(sortSel.options).some(opt => opt.value === "nearby_distance");
+            if (!hasDistOpt) {
+                const opt = document.createElement("option");
+                opt.value = "nearby_distance";
+                opt.textContent = "Gần nhất";
+                sortSel.insertBefore(opt, sortSel.firstChild);
+            }
+            sortSel.value = "nearby_distance";
+
+            loadJobs(1);
+        },
+        (error) => {
+            console.warn("Geolocation error:", error);
+            let msg = "";
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    msg = "Bạn đã từ chối chia sẻ vị trí. Bạn có thể chọn khu vực mong muốn ở bộ lọc phía trên hoặc cho phép lại quyền vị trí trong cài đặt trình duyệt.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    msg = "Không thể xác định vị trí hiện tại của thiết bị. Vui lòng thử lại hoặc chọn tỉnh thành trong bộ lọc.";
+                    break;
+                case error.TIMEOUT:
+                    msg = "Yêu cầu vị trí quá thời gian chờ (timeout). Vui lòng kiểm tra lại kết nối mạng hoặc GPS.";
+                    break;
+                default:
+                    msg = "Đã xảy ra sự cố khi xác định vị trí của bạn.";
+                    break;
+            }
+
+            showNearbyBanner(`
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+                    <span>⚠️ ${escapeHtml(msg)}</span>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="hideNearbyBanner()" style="font-size:0.75rem;padding:0.2rem 0.5rem;">Đóng</button>
+                </div>
+            `, "warning");
+        },
+        {
+            timeout: 10000,
+            enableHighAccuracy: false
+        }
+    );
+}
+
+function setNearbyRadius(km) {
+    nearbyRadiusKm = km;
+    document.querySelectorAll(".radius-chip").forEach(chip => {
+        const r = parseInt(chip.getAttribute("data-radius"), 10);
+        chip.classList.toggle("active", r === km);
+    });
+    if (isNearbyMode) {
+        loadJobs(1);
+    }
+}
+
+function exitNearbyMode() {
+    isNearbyMode = false;
+    document.getElementById("btn-nearby-jobs").classList.remove("active");
+    document.getElementById("nearby-filter-bar").style.display = "none";
+    hideNearbyBanner();
+
+    // Revert sort selection if it was "nearby_distance"
+    const sortSel = document.getElementById("sort-select");
+    const distOpt = sortSel.querySelector('option[value="nearby_distance"]');
+    if (distOpt) distOpt.remove();
+    sortSel.value = "newest";
+
+    loadJobs(1);
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Parse initial query params from URL
@@ -184,6 +329,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 5. Reset Filters Event
     document.getElementById("btn-reset-filters").addEventListener("click", () => {
+        if (isNearbyMode) {
+            isNearbyMode = false;
+            document.getElementById("btn-nearby-jobs").classList.remove("active");
+            document.getElementById("nearby-filter-bar").style.display = "none";
+            hideNearbyBanner();
+        }
         document.getElementById("filter-form").reset();
         document.querySelectorAll(".quick-pill-btn").forEach(b => b.classList.remove("active"));
         const allBtn = document.querySelector('.quick-pill-btn[data-pill-type="all"]');
@@ -226,7 +377,8 @@ function updateFilterBadge() {
     }
 }
 
-async function loadJobs() {
+async function loadJobs(page = null) {
+    if (page !== null) currentPage = page;
     const container = document.getElementById("jobs-container");
     const countText = document.getElementById("job-count-text");
     const paginationContainer = document.getElementById("pagination-container");
@@ -240,6 +392,122 @@ async function loadJobs() {
         <div class="job-card skeleton" style="height:150px;"></div>
         <div class="job-card skeleton" style="height:150px;"></div>
     `;
+
+    // 1. NEARBY SEARCH MODE
+    if (isNearbyMode && userCoords) {
+        const payload = {
+            latitude: userCoords.latitude,
+            longitude: userCoords.longitude,
+            radius_km: nearbyRadiusKm,
+            page: currentPage,
+            per_page: 15
+        };
+
+        const catId = document.getElementById("filter-category") ? document.getElementById("filter-category").value : "";
+        if (catId) payload.category_id = catId;
+        const shiftType = document.getElementById("filter-shift") ? document.getElementById("filter-shift").value : "";
+        if (shiftType) payload.shift_type = shiftType;
+
+        const res = await apiRequest("/jobs/nearby-search", {
+            method: "POST",
+            body: payload
+        });
+
+        if (res && res.success && Array.isArray(res.data)) {
+            const jobs = res.data;
+            const meta = res.meta || {};
+            const total = meta.total || jobs.length;
+
+            countText.innerText = `Tìm thấy ${total} việc làm trong bán kính ${nearbyRadiusKm} km (Sắp xếp: Gần nhất)`;
+
+            if (jobs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);grid-column:1/-1;padding:3rem 1.5rem;">
+                        <div class="empty-icon" style="font-size:2.5rem;margin-bottom:0.75rem;">📍</div>
+                        <h3 style="font-size:1.2rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không tìm thấy việc làm trong bán kính ${nearbyRadiusKm} km</h3>
+                        <p style="color:var(--text-muted);max-width:460px;margin:0 auto 1rem;">Hãy thử mở rộng bán kính tìm kiếm (20 km) hoặc chuyển sang tìm việc theo tỉnh thành.</p>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="setNearbyRadius(20)">Mở rộng bán kính 20 km</button>
+                    </div>
+                `;
+                paginationContainer.innerHTML = "";
+                return;
+            }
+
+            container.innerHTML = jobs.map(job => {
+                const nearest = job.nearest_location;
+                let nearestName = "";
+                if (nearest) {
+                    const parts = [nearest.commune, nearest.province].filter(Boolean);
+                    nearestName = parts.length > 0 ? parts.join(", ") : (nearest.address_text || "");
+                    if (nearest.branch_name) {
+                        nearestName = `${nearest.branch_name} (${nearestName})`;
+                    }
+                }
+                if (!nearestName) {
+                    nearestName = job.location_name || job.city || "Việt Nam";
+                }
+
+                const extraCount = Array.isArray(job.work_locations) && job.work_locations.length > 1
+                    ? job.work_locations.length - 1
+                    : 0;
+
+                const distanceFormatted = formatDistance(job.distance_km);
+
+                return `
+                    <div class="topcv-job-card" onclick="window.location.href='/viec-lam/${encodeURIComponent(job.id)}'">
+                        <div>
+                            <div class="topcv-card-top">
+                                <div class="topcv-logo-wrapper">
+                                    ${job.company_logo ? `<img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company_name)}" class="topcv-logo-img" onerror="this.outerHTML='<div class=\\\'topcv-logo-fallback\\\'>${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : 'J')}</div>'">` : `<div class="topcv-logo-fallback">${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : "J")}</div>`}
+                                </div>
+                                <div class="topcv-card-info">
+                                    <div class="topcv-job-title" title="${escapeHtml(job.title)}">
+                                        ${job.is_featured ? '<span class="topcv-badge-hot">HOT</span>' : ''}
+                                        ${job.is_new ? '<span class="topcv-badge-new">MỚI</span>' : ''}
+                                        ${escapeHtml(job.title)}
+                                    </div>
+                                    <div class="topcv-company-name" title="${escapeHtml(job.company_name || 'Nhà tuyển dụng')}">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v14M21 7v14M6 11h2M6 15h2M16 11h2M16 15h2M10 21V3h4v18"/></svg>
+                                        <span>${escapeHtml(job.company_name || "Nhà tuyển dụng")}</span>
+                                    </div>
+                                </div>
+                                <button type="button" class="topcv-bookmark-btn" onclick="event.stopPropagation(); toggleFavoriteJob('${encodeURIComponent(job.id)}', this)" title="Lưu việc làm">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="topcv-pills-row">
+                            <span class="topcv-pill topcv-pill-distance" title="Khoảng cách theo đường chim bay từ vị trí hiện tại">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                                Cách bạn ${distanceFormatted}
+                            </span>
+                            <span class="topcv-pill topcv-pill-location" title="${escapeHtml(nearest ? nearest.address_text : nearestName)}">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                ${escapeHtml(nearestName)}
+                            </span>
+                            ${extraCount > 0 ? `<span class="topcv-pill topcv-pill-extra-locs">+${extraCount} địa điểm khác</span>` : ''}
+                            <span class="topcv-pill topcv-pill-salary">
+                                ${formatCurrency(job.salary_min)} - ${formatCurrency(job.salary_max)}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+            renderPagination(meta.page || 1, meta.total_pages || 1);
+            return;
+        } else {
+            container.innerHTML = `
+                <div class="empty-state" style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);grid-column:1/-1;">
+                    <div class="empty-icon" style="color:var(--danger);">⚠️</div>
+                    <h3 style="font-size:1.2rem;font-weight:700;color:var(--dark);">Đã xảy ra lỗi khi tìm kiếm việc làm gần bạn</h3>
+                    <p>${escapeHtml(res && res.message ? res.message : "Vui lòng thử lại sau.")}</p>
+                    <button onclick="loadJobs()" class="btn btn-outline btn-sm" style="margin-top:1rem;">Tải lại trang</button>
+                </div>
+            `;
+            return;
+        }
+    }
 
     // Construct API query
     const params = new URLSearchParams();
