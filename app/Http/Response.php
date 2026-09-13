@@ -41,6 +41,7 @@ class Response
     private array $headers;
     private bool $isHtml = false;
     private bool $isFile = false;
+    private bool $isBinary = false;
     private ?string $filePath = null;
 
     public function __construct(mixed $data = [], int $statusCode = self::HTTP_OK, array $headers = [], bool $isHtml = false)
@@ -146,6 +147,19 @@ class Response
         return $response;
     }
 
+    public static function binary(string $content, string $mimeType, array $headers = [], int $statusCode = self::HTTP_OK): static
+    {
+        $response = new static("", $statusCode, array_merge([
+            "Content-Type" => $mimeType,
+            "Content-Length" => (string)strlen($content),
+            "X-Content-Type-Options" => "nosniff",
+        ], $headers), true);
+        $response->payload = $content;
+        $response->isHtml = false;
+        $response->isBinary = true;
+        return $response;
+    }
+
     public static function redirect(string $url, int $statusCode = 302): static
     {
         return new static("", $statusCode, ["Location" => $url], true);
@@ -221,6 +235,11 @@ class Response
             if (file_exists($this->filePath)) {
                 readfile($this->filePath);
             }
+            return;
+        }
+
+        if ($this->isBinary) {
+            echo is_string($this->payload) ? $this->payload : "";
             return;
         }
 

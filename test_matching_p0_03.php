@@ -50,7 +50,6 @@ class DeterministicMatcherTestSuite
         $this->testSkillMatchingRulesExactSynonymRelated();
         $this->testAvailabilityCompatibilityAndConflict();
         $this->testDeterministicExperienceScoringMatrix();
-        $this->testLocationMatchingRules();
         $this->testClassificationScoreBoundaries();
         $this->testCoverageBelow60InsufficientData();
         $this->testDeterministicRepeatability();
@@ -187,13 +186,13 @@ class DeterministicMatcherTestSuite
         $this->assert($expA->state === DataState::UNKNOWN, 'Exp missing when required -> UNKNOWN');
         $this->assert($expA->score === null, 'Exp missing -> score is null');
 
-        // Case B: Job states no experience required -> NOT_APPLICABLE
+        // Case B: Job states no experience required -> automatically passed
         $jobB = new JobRequirementsContract(experienceRequirement: new ExperienceRequirementValue(state: DataState::NOT_APPLICABLE));
         $resB = $matcher->match($candidateA, $jobB);
 
         $expB = $this->getCriterion($resB, CriterionName::EXPERIENCE);
-        $this->assert($expB->state === DataState::NOT_APPLICABLE, 'Exp not required by job -> NOT_APPLICABLE');
-        $this->assert($expB->score === null, 'NOT_APPLICABLE exp -> score is null');
+        $this->assert($expB->state === DataState::AVAILABLE, 'Exp not required by job -> AVAILABLE');
+        $this->assert($expB->score === 100.0, 'Exp not required by job -> automatically scores 100');
     }
 
     /**
@@ -456,8 +455,9 @@ class DeterministicMatcherTestSuite
     {
         $matcher = new DeterministicMatcher();
 
-        // Only Location is AVAILABLE (Weight 10 -> coverage 10%)
+        // Employer requires all five criteria; candidate only has age data (coverage 10%).
         $candidate = new CandidateProfileContract(
+            ageYears: 20,
             skills: [],
             availability: new AvailabilityValue(state: DataState::UNKNOWN, slots: [], preferredShiftForApplication: null),
             experience: new ExperienceValue(state: DataState::UNKNOWN, items: []),
@@ -466,9 +466,12 @@ class DeterministicMatcherTestSuite
         );
 
         $job = new JobRequirementsContract(
-            skills: [], // NOT_APPLICABLE
-            schedule: new ScheduleRequirementValue(state: DataState::UNKNOWN),
-            location: new JobLocationValue(state: DataState::AVAILABLE, locationId: 'loc-1')
+            minimumAge: 18,
+            maximumAge: 22,
+            skills: [new SkillItem(canonicalName: 'Thu ngân', matchKey: 'thu ngan')],
+            experienceRequirement: new ExperienceRequirementValue(state: DataState::AVAILABLE, minimumMonths: 6),
+            educationRequirement: new EducationRequirementValue(state: DataState::AVAILABLE, majors: ['Kinh tế']),
+            schedule: new ScheduleRequirementValue(state: DataState::AVAILABLE, shiftType: ShiftType::EVENING)
         );
 
         $result = $matcher->match($candidate, $job);
@@ -502,16 +505,13 @@ class DeterministicMatcherTestSuite
     }
 
     /**
-     * 11. Missing data & deterministic scoring fixes:
-     * - If job experience requirement is UNKNOWN -> criterion UNKNOWN (score null, never default 85)
-     * - If job schedule/location is UNKNOWN -> does not penalize candidate (score null, not 0)
-     * - Role relevance does not default to 50 when signals are absent
+     * 11. Five-criteria policy: unspecified employer requirements pass automatically.
      */
     private function testMissingJobRequirementsScoringAndRoleRelevance(): void
     {
         $matcher = new DeterministicMatcher();
 
-        // 1. Job experience requirement is UNKNOWN, candidate HAS experience
+        // Job experience requirement is UNKNOWN: employer did not require it.
         $candidateWithExp = new CandidateProfileContract(
             experience: new ExperienceValue(
                 state: DataState::AVAILABLE,
@@ -523,10 +523,10 @@ class DeterministicMatcherTestSuite
         );
         $resExp = $matcher->match($candidateWithExp, $jobExpUnknown);
         $critExp = $this->getCriterion($resExp, CriterionName::EXPERIENCE);
-        $this->assert($critExp->state === DataState::UNKNOWN, 'Job exp UNKNOWN -> criterion state UNKNOWN');
-        $this->assert($critExp->score === null, 'Job exp UNKNOWN -> score is null (never default 85)');
+        $this->assert($critExp->state === DataState::AVAILABLE, 'Job exp UNKNOWN -> criterion automatically passes');
+        $this->assert($critExp->score === 100.0, 'Job exp UNKNOWN -> score 100');
 
-        // 2. Job schedule is UNKNOWN -> candidate not penalized
+        // Job schedule is UNKNOWN: employer did not require a fixed schedule.
         $candidateWithSched = new CandidateProfileContract(
             availability: new AvailabilityValue(
                 state: DataState::AVAILABLE,
@@ -538,59 +538,13 @@ class DeterministicMatcherTestSuite
         );
         $resSched = $matcher->match($candidateWithSched, $jobSchedUnknown);
         $critSched = $this->getCriterion($resSched, CriterionName::AVAILABILITY);
-        $this->assert($critSched->state === DataState::UNKNOWN, 'Job schedule UNKNOWN -> criterion state UNKNOWN');
-        $this->assert($critSched->score === null, 'Job schedule UNKNOWN -> score is null (no penalty)');
+        $this->assert($critSched->state === DataState::AVAILABLE, 'Job schedule UNKNOWN -> criterion automatically passes');
+        $this->assert($critSched->score === 100.0, 'Job schedule UNKNOWN -> score 100');
 
-        // 3. Job location is UNKNOWN -> candidate not penalized
-        $candidateWithLoc = new CandidateProfileContract(
-            locations: new CandidateLocationValue(
-                state: DataState::AVAILABLE,
-                locationIds: ['loc-001'],
-                names: ['Hà Nội']
-            )
-        );
-        $jobLocUnknown = new JobRequirementsContract(
-            location: new JobLocationValue(state: DataState::UNKNOWN)
-        );
-        $resLoc = $matcher->match($candidateWithLoc, $jobLocUnknown);
-        $critLoc = $this->getCriterion($resLoc, CriterionName::LOCATION);
-        $this->assert($critLoc->state === DataState::UNKNOWN, 'Job location UNKNOWN -> criterion state UNKNOWN');
-        $this->assert($critLoc->score === null, 'Job location UNKNOWN -> score is null (no penalty)');
-
-        // 4. Role relevance: candidate with signals but completely unrelated -> AVAILABLE, score 0.0
-        $candidateUnrelated = new CandidateProfileContract(
-            skills: [new SkillItem(canonicalName: 'Lập trình C++', matchKey: 'lap trinh c++')],
-            experience: new ExperienceValue(
-                state: DataState::AVAILABLE,
-                items: [new ExperienceItem(role: 'Lập trình viên')]
-            )
-        );
-        $jobServer = new JobRequirementsContract(
-            role: new RoleValue(title: 'Nhân viên phục vụ bàn')
-        );
-        $resRoleUnrelated = $matcher->match($candidateUnrelated, $jobServer);
-        $critRoleUnrelated = $this->getCriterion($resRoleUnrelated, CriterionName::ROLE_RELEVANCE);
-        $this->assert($critRoleUnrelated->state === DataState::AVAILABLE, 'Role relevance with unrelated signals -> state AVAILABLE');
-        $this->assert($critRoleUnrelated->score === 0.0, 'Role relevance with unrelated signals -> score 0.0 (not default 50)');
-
-        // 4b. Role relevance: candidate without any skills or experience (missing data) -> UNKNOWN, score null
-        $candidateNoSignals = new CandidateProfileContract(
-            skills: [],
-            experience: new ExperienceValue(state: DataState::UNKNOWN, items: [])
-        );
-        $resRoleNoSignals = $matcher->match($candidateNoSignals, $jobServer);
-        $critRoleNoSignals = $this->getCriterion($resRoleNoSignals, CriterionName::ROLE_RELEVANCE);
-        $this->assert($critRoleNoSignals->state === DataState::UNKNOWN, 'Role relevance without any signals -> state UNKNOWN');
-        $this->assert($critRoleNoSignals->score === null, 'Role relevance without any signals -> score null (not default 50)');
-
-        // 5. Role relevance: matching signals present -> AVAILABLE, >= 80.0
-        $candidateRelated = new CandidateProfileContract(
-            skills: [new SkillItem(canonicalName: 'Phục vụ', matchKey: 'phuc vu')]
-        );
-        $resRoleRelated = $matcher->match($candidateRelated, $jobServer);
-        $critRoleRelated = $this->getCriterion($resRoleRelated, CriterionName::ROLE_RELEVANCE);
-        $this->assert($critRoleRelated->state === DataState::AVAILABLE, 'Role relevance with signals -> state AVAILABLE');
-        $this->assert($critRoleRelated->score !== null && $critRoleRelated->score >= 80.0, 'Role relevance with signals -> score >= 80');
+        $result = $matcher->match(new CandidateProfileContract(), new JobRequirementsContract());
+        $names = array_map(fn($criterion) => $criterion->criterionName->value, $result->criteria);
+        sort($names);
+        $this->assert($names === ['age', 'availability', 'education', 'experience', 'skills'], 'Matcher exposes only the five approved criteria');
     }
 
     private function getCriterion(MatchResultContract $result, CriterionName $name): \JobMarket\Domain\Matching\ValueObjects\CriterionEvaluation
