@@ -8,6 +8,7 @@ use JsonSerializable;
 
 enum CriterionName: string implements JsonSerializable
 {
+    case AGE = 'age';
     case SKILLS = 'skills';
     case AVAILABILITY = 'availability';
     case EXPERIENCE = 'experience';

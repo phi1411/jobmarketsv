@@ -17,14 +17,16 @@ use JobMarket\Domain\Matching\ValueObjects\CriterionEvaluation;
 
 final class DeterministicMatcher
 {
-    public const MATCHER_VERSION = 'matcher.v1.1';
+    public const MATCHER_VERSION = 'matcher.v2.0-five-criteria';
 
+    public const WEIGHT_AGE = 10.0;
     public const WEIGHT_SKILLS = 30.0;
     public const WEIGHT_AVAILABILITY = 30.0;
-    public const WEIGHT_EXPERIENCE = 10.0;
-    public const WEIGHT_EDUCATION = 10.0;
-    public const WEIGHT_LOCATION = 10.0;
-    public const WEIGHT_ROLE_RELEVANCE = 10.0;
+    public const WEIGHT_EXPERIENCE = 15.0;
+    public const WEIGHT_EDUCATION = 15.0;
+    // Giữ hằng số 0 để dữ liệu/phép thử cũ còn đọc được; matcher v2 không phát sinh các tiêu chí này.
+    public const WEIGHT_LOCATION = 0.0;
+    public const WEIGHT_ROLE_RELEVANCE = 0.0;
     public const WEIGHT_SALARY = 0.0;
 
     public const EXP_WEIGHT_DURATION = 0.5;
@@ -61,6 +63,9 @@ final class DeterministicMatcher
         $considerations = [];
         $missingData = [];
 
+        // Chỉ chấm đúng 5 tiêu chí đã công bố cho cả sinh viên và nhà tuyển dụng.
+        $criteria[] = $this->evaluateAge($candidate, $job, $strengths, $considerations, $missingData);
+
         // 1. Skills Evaluation (Weight 30)
         $skillsEval = $this->evaluateSkills($candidate, $job, $strengths, $considerations, $missingData);
         $criteria[] = $skillsEval;
@@ -69,37 +74,13 @@ final class DeterministicMatcher
         $availabilityEval = $this->evaluateAvailability($candidate, $job, $strengths, $considerations, $missingData);
         $criteria[] = $availabilityEval;
 
-        // 3. Experience Evaluation (Weight 10)
+        // 3. Experience Evaluation (Weight 15)
         $experienceEval = $this->evaluateExperience($candidate, $job, $strengths, $considerations, $missingData);
         $criteria[] = $experienceEval;
 
-        // 4. Education Evaluation (Weight 10)
+        // 4. Education Evaluation (Weight 15)
         $educationEval = $this->evaluateEducation($candidate, $job, $strengths, $considerations, $missingData);
         $criteria[] = $educationEval;
-
-        // 5. Location Evaluation (Weight 10)
-        $locationEval = $this->evaluateLocation($candidate, $job, $strengths, $considerations, $missingData);
-        $criteria[] = $locationEval;
-
-        // 6. Role Relevance Evaluation (Weight 10)
-        $roleEval = $this->evaluateRoleRelevance($candidate, $job, $strengths, $considerations, $missingData);
-        $criteria[] = $roleEval;
-
-        // 7. Salary Expectation Evaluation (Weight 0 - NOT_AVAILABLE)
-        $salaryEval = new CriterionEvaluation(
-            criterionName: CriterionName::SALARY,
-            state: DataState::NOT_AVAILABLE,
-            score: null,
-            weight: self::WEIGHT_SALARY,
-            confidence: 1.0,
-            provenance: Provenance::STRUCTURED,
-            evidence: 'Hồ sơ ứng viên chưa hỗ trợ trường kỳ vọng lương',
-            details: ['reason' => 'Candidate salary expectation field is NOT_AVAILABLE']
-        );
-        $criteria[] = $salaryEval;
-        $missingData['salary_expectation'] = DataState::NOT_AVAILABLE->value;
-        $missingData['projects'] = DataState::NOT_AVAILABLE->value;
-        $missingData['desired_roles'] = DataState::NOT_AVAILABLE->value;
 
         // Calculate Overall Score and Coverage
         $effectiveWeightSum = 0.0;
@@ -145,6 +126,68 @@ final class DeterministicMatcher
         );
     }
 
+    private function evaluateAge(
+        CandidateProfileContract $candidate,
+        JobRequirementsContract $job,
+        array &$strengths,
+        array &$considerations,
+        array &$missingData
+    ): CriterionEvaluation {
+        $minimumAge = $job->minimumAge;
+        $maximumAge = $job->maximumAge;
+
+        if ($minimumAge === null && $maximumAge === null) {
+            return new CriterionEvaluation(
+                criterionName: CriterionName::AGE,
+                state: DataState::AVAILABLE,
+                score: 100.0,
+                weight: self::WEIGHT_AGE,
+                confidence: 1.0,
+                provenance: Provenance::STRUCTURED,
+                evidence: 'Nhà tuyển dụng không yêu cầu độ tuổi',
+                details: ['requirement_applied' => false]
+            );
+        }
+
+        if ($candidate->ageYears === null) {
+            $missingData['age_years'] = DataState::UNKNOWN->value;
+            $considerations[] = 'Hồ sơ chưa có ngày sinh để đối chiếu yêu cầu độ tuổi.';
+            return new CriterionEvaluation(
+                criterionName: CriterionName::AGE,
+                state: DataState::UNKNOWN,
+                score: null,
+                weight: self::WEIGHT_AGE,
+                confidence: 0.0,
+                provenance: Provenance::STRUCTURED,
+                evidence: 'Hồ sơ chưa có dữ liệu tuổi',
+                details: ['requirement_applied' => true, 'minimum_age' => $minimumAge, 'maximum_age' => $maximumAge]
+            );
+        }
+
+        $matched = ($minimumAge === null || $candidate->ageYears >= $minimumAge)
+            && ($maximumAge === null || $candidate->ageYears <= $maximumAge);
+        if ($matched) {
+            $strengths[] = 'Độ tuổi đáp ứng yêu cầu của tin tuyển dụng.';
+        } else {
+            $considerations[] = 'Độ tuổi hiện tại chưa nằm trong khoảng nhà tuyển dụng yêu cầu.';
+        }
+
+        $range = $minimumAge !== null && $maximumAge !== null
+            ? "{$minimumAge}–{$maximumAge} tuổi"
+            : ($minimumAge !== null ? "từ {$minimumAge} tuổi" : "đến {$maximumAge} tuổi");
+
+        return new CriterionEvaluation(
+            criterionName: CriterionName::AGE,
+            state: DataState::AVAILABLE,
+            score: $matched ? 100.0 : 0.0,
+            weight: self::WEIGHT_AGE,
+            confidence: 1.0,
+            provenance: Provenance::STRUCTURED,
+            evidence: $matched ? "Đáp ứng yêu cầu độ tuổi ({$range})" : "Chưa đáp ứng yêu cầu độ tuổi ({$range})",
+            details: ['requirement_applied' => true, 'minimum_age' => $minimumAge, 'maximum_age' => $maximumAge]
+        );
+    }
+
     private function evaluateSkills(
         CandidateProfileContract $candidate,
         JobRequirementsContract $job,
@@ -157,13 +200,13 @@ final class DeterministicMatcher
         if (empty($jobSkills)) {
             return new CriterionEvaluation(
                 criterionName: CriterionName::SKILLS,
-                state: DataState::NOT_APPLICABLE,
-                score: null,
+                state: DataState::AVAILABLE,
+                score: 100.0,
                 weight: self::WEIGHT_SKILLS,
                 confidence: 1.0,
                 provenance: Provenance::STRUCTURED,
                 evidence: 'Tin tuyển dụng không yêu cầu kỹ năng cụ thể',
-                details: []
+                details: ['requirement_applied' => false]
             );
         }
 
@@ -266,26 +309,26 @@ final class DeterministicMatcher
         if (!$jobSched || $jobSched->state === DataState::UNKNOWN) {
             return new CriterionEvaluation(
                 criterionName: CriterionName::AVAILABILITY,
-                state: DataState::UNKNOWN,
-                score: null,
+                state: DataState::AVAILABLE,
+                score: 100.0,
                 weight: self::WEIGHT_AVAILABILITY,
                 confidence: 0.0,
                 provenance: Provenance::STRUCTURED,
-                evidence: 'Tin tuyển dụng chưa xác định rõ ca làm việc',
-                details: ['reason' => 'job_schedule_unknown']
+                evidence: 'Nhà tuyển dụng không yêu cầu lịch làm việc cụ thể',
+                details: ['requirement_applied' => false]
             );
         }
 
         if ($jobSched->state === DataState::NOT_APPLICABLE || $jobSched->shiftType === null) {
             return new CriterionEvaluation(
                 criterionName: CriterionName::AVAILABILITY,
-                state: DataState::NOT_APPLICABLE,
-                score: null,
+                state: DataState::AVAILABLE,
+                score: 100.0,
                 weight: self::WEIGHT_AVAILABILITY,
                 confidence: 1.0,
                 provenance: Provenance::STRUCTURED,
                 evidence: 'Công việc không ràng buộc ca cụ thể',
-                details: []
+                details: ['requirement_applied' => false]
             );
         }
 
@@ -388,28 +431,27 @@ final class DeterministicMatcher
             $strengths[] = 'Công việc không yêu cầu kinh nghiệm trước đó, rất phù hợp với sinh viên.';
             return new CriterionEvaluation(
                 criterionName: CriterionName::EXPERIENCE,
-                state: DataState::NOT_APPLICABLE,
-                score: null,
+                state: DataState::AVAILABLE,
+                score: 100.0,
                 weight: self::WEIGHT_EXPERIENCE,
                 confidence: 1.0,
                 provenance: Provenance::STRUCTURED,
                 evidence: 'Tin tuyển dụng không yêu cầu kinh nghiệm',
-                details: []
+                details: ['requirement_applied' => false]
             );
         }
 
         // 2. If job experience requirement is UNKNOWN -> criterion must be UNKNOWN, score null
         if (!$jobExp || $jobExp->state === DataState::UNKNOWN) {
-            $missingData['job_experience_requirement'] = DataState::UNKNOWN->value;
             return new CriterionEvaluation(
                 criterionName: CriterionName::EXPERIENCE,
-                state: DataState::UNKNOWN,
-                score: null,
+                state: DataState::AVAILABLE,
+                score: 100.0,
                 weight: self::WEIGHT_EXPERIENCE,
-                confidence: 0.0,
+                confidence: 1.0,
                 provenance: Provenance::STRUCTURED,
-                evidence: 'Tin tuyển dụng chưa xác định rõ yêu cầu kinh nghiệm',
-                details: ['reason' => 'job_experience_requirement_unknown']
+                evidence: 'Nhà tuyển dụng không yêu cầu kinh nghiệm',
+                details: ['requirement_applied' => false]
             );
         }
 
@@ -558,13 +600,13 @@ final class DeterministicMatcher
         if (!$jobEdu || $jobEdu->state === DataState::UNKNOWN || empty($jobEdu->majors)) {
             return new CriterionEvaluation(
                 criterionName: CriterionName::EDUCATION,
-                state: DataState::NOT_APPLICABLE,
-                score: null,
+                state: DataState::AVAILABLE,
+                score: 100.0,
                 weight: self::WEIGHT_EDUCATION,
                 confidence: 1.0,
                 provenance: Provenance::STRUCTURED,
                 evidence: 'Công việc không yêu cầu chuyên ngành học cụ thể',
-                details: []
+                details: ['requirement_applied' => false]
             );
         }
 

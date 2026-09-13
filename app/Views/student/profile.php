@@ -258,12 +258,27 @@
             </div>
 
             <div class="form-section" id="schedule-section">
-                <h3 class="form-section-title">
-                    4. Lịch Rảnh Trong Tuần (Availability Schedule)
-                </h3>
-                <p class="form-section-desc">
-                    Đánh dấu các ca bạn có thể đi làm part-time để hệ thống ưu tiên gợi ý việc làm khớp lịch học:
-                </p>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
+                    <div>
+                        <h3 class="form-section-title" style="margin-bottom:0.35rem;">
+                            4. Lịch Rảnh Trong Tuần (Availability Schedule)
+                        </h3>
+                        <p class="form-section-desc" style="margin:0;">
+                            Đánh dấu các ca bạn có thể đi làm part-time để hệ thống ưu tiên gợi ý việc làm khớp lịch học:
+                        </p>
+                    </div>
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="selectAllSchedule();" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;background:#f0fdf4;border-color:#86efac;color:#166534;font-weight:600;">
+                            <span>⚡</span> Rảnh cả tuần
+                        </button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="selectEveningsOnly();" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;background:#eff6ff;border-color:#93c5fd;color:#1e40af;font-weight:600;">
+                            <span>🌙</span> Rảnh tất cả ca tối
+                        </button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="clearAllSchedule();" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;color:#b91c1c;border-color:#fca5a5;background:#fef2f2;font-weight:600;">
+                            <span>🧹</span> Xóa chọn tất cả
+                        </button>
+                    </div>
+                </div>
 
                 <div class="table-responsive" style="margin-bottom:1rem;">
                     <table class="data-table" style="text-align:center;">
@@ -356,16 +371,69 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function renderScheduleTable() {
     const tbody = document.getElementById("schedule-matrix-body");
-    tbody.innerHTML = SHIFTS.map(shift => `
+    const dayRow = `
+        <tr style="background:#f8fafc;border-bottom:2px solid var(--border);">
+            <td style="padding:0.65rem 0.75rem;text-align:left;font-weight:700;color:var(--primary);font-size:0.84rem;">
+                ⚡ Rảnh cả ngày
+            </td>
+            ${DAYS.map(day => `
+                <td style="padding:0.65rem 0.75rem;">
+                    <label style="display:inline-flex;flex-direction:column;align-items:center;cursor:pointer;gap:0.2rem;font-size:0.75rem;font-weight:600;color:var(--text-muted);" title="Chọn rảnh cả ngày ${escapeHtml(day.label)}">
+                        <input type="checkbox" class="schedule-day-check" data-day="${escapeHtml(day.key)}" onchange="toggleDaySchedule('${escapeHtml(day.key)}', this.checked)" style="width:17px;height:17px;cursor:pointer;accent-color:var(--primary);">
+                        <span style="font-size:0.72rem;">Cả ngày</span>
+                    </label>
+                </td>
+            `).join("")}
+        </tr>
+    `;
+
+    const shiftRows = SHIFTS.map(shift => `
         <tr style="border-bottom:1px solid var(--border);">
             <td style="padding:0.75rem;text-align:left;font-weight:600;color:var(--dark);">${escapeHtml(shift.label)}</td>
             ${DAYS.map(day => `
                 <td style="padding:0.75rem;">
-                    <input type="checkbox" class="schedule-check" data-day="${escapeHtml(day.key)}" data-shift="${escapeHtml(shift.key)}" style="width:18px;height:18px;cursor:pointer;">
+                    <input type="checkbox" class="schedule-check" data-day="${escapeHtml(day.key)}" data-shift="${escapeHtml(shift.key)}" onchange="syncAllDayCheckboxes()" style="width:18px;height:18px;cursor:pointer;accent-color:var(--primary);">
                 </td>
             `).join("")}
         </tr>
     `).join("");
+
+    tbody.innerHTML = dayRow + shiftRows;
+}
+
+function selectAllSchedule() {
+    document.querySelectorAll(".schedule-check").forEach(cb => { cb.checked = true; });
+    syncAllDayCheckboxes();
+    showToast("Đã chọn rảnh tất cả các ca trong tuần!", "info");
+}
+
+function clearAllSchedule() {
+    document.querySelectorAll(".schedule-check").forEach(cb => { cb.checked = false; });
+    syncAllDayCheckboxes();
+    showToast("Đã xóa tất cả các ca đã chọn!", "info");
+}
+
+function selectEveningsOnly() {
+    document.querySelectorAll(".schedule-check").forEach(cb => {
+        cb.checked = (cb.getAttribute("data-shift") === "evening");
+    });
+    syncAllDayCheckboxes();
+    showToast("Đã chọn tất cả ca tối (18:00 - 22:00)!", "info");
+}
+
+function toggleDaySchedule(dayKey, isChecked) {
+    document.querySelectorAll(`.schedule-check[data-day="${dayKey}"]`).forEach(cb => {
+        cb.checked = isChecked;
+    });
+}
+
+function syncAllDayCheckboxes() {
+    DAYS.forEach(day => {
+        const dayChecks = Array.from(document.querySelectorAll(`.schedule-check[data-day="${day.key}"]`));
+        const allChecked = dayChecks.length > 0 && dayChecks.every(cb => cb.checked);
+        const dayHeaderCb = document.querySelector(`.schedule-day-check[data-day="${day.key}"]`);
+        if (dayHeaderCb) dayHeaderCb.checked = allChecked;
+    });
 }
 
 async function loadLocations() {
@@ -453,6 +521,7 @@ async function loadProfile() {
                     cb.checked = sched[day].includes(shift);
                 }
             });
+            syncAllDayCheckboxes();
         }
     } else {
         showToast((res && res.message) ? res.message : "Không thể tải hồ sơ sinh viên.", "error");

@@ -118,7 +118,8 @@ $migrations = [
     \JobMarket\Migrations\SavedSearchJobAlertMigration::class,
     \JobMarket\Migrations\ProfileJobAlertMigration::class,
     \JobMarket\Migrations\MarketplaceSafetyTimelineMigration::class,
-    \JobMarket\Migrations\ApplicationDecisionNotificationMigration::class
+    \JobMarket\Migrations\ApplicationDecisionNotificationMigration::class,
+    \JobMarket\Migrations\JobMatchingCriteriaMigration::class
 ];
 
 $ranCount = 0;

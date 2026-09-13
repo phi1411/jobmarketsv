@@ -410,7 +410,7 @@ function renderMatchExplanation(job) {
         <h4 class="match-explanation-title">Chi tiết từng tiêu chí</h4>
         <div class="criterion-list">${criterionHtml}</div>
         ${suggestionsHtml}
-        <p class="score-note"><strong>Cách tính:</strong> điểm tổng hợp là trung bình có trọng số của các tiêu chí đủ dữ liệu. Kỹ năng và lịch rảnh mỗi mục chiếm 30%; kinh nghiệm, học vấn, khu vực và vai trò mỗi mục 10%. Đây không phải xác suất được tuyển.</p>
+        <p class="score-note"><strong>Cách tính:</strong> hệ thống chỉ đối chiếu 5 tiêu chí: độ tuổi 10%, kinh nghiệm 15%, kỹ năng 30%, học vấn 15% và lịch làm việc 30%. Tiêu chí nhà tuyển dụng để trống được tính là đạt 100%. Đây không phải xác suất được tuyển.</p>
     `;
 }
 

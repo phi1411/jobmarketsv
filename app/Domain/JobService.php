@@ -251,6 +251,19 @@ class JobService
             $errors["salary_min"][] = "Mức lương tối thiểu không được lớn hơn mức lương tối đa.";
         }
 
+        // Age requirement is optional. Blank means the criterion is automatically met.
+        $minimumAge = isset($data["minimum_age"]) && $data["minimum_age"] !== "" ? (int)$data["minimum_age"] : null;
+        $maximumAge = isset($data["maximum_age"]) && $data["maximum_age"] !== "" ? (int)$data["maximum_age"] : null;
+        if ($minimumAge !== null && ($minimumAge < 15 || $minimumAge > 80)) {
+            $errors["minimum_age"][] = "Tuổi tối thiểu phải từ 15 đến 80.";
+        }
+        if ($maximumAge !== null && ($maximumAge < 15 || $maximumAge > 80)) {
+            $errors["maximum_age"][] = "Tuổi tối đa phải từ 15 đến 80.";
+        }
+        if ($minimumAge !== null && $maximumAge !== null && $minimumAge > $maximumAge) {
+            $errors["minimum_age"][] = "Tuổi tối thiểu không được lớn hơn tuổi tối đa.";
+        }
+
         // Work Type Whitelist
         if (!empty($data["work_type"])) {
             $allowedWorkTypes = ["part_time", "internship", "freelance", "part-time"];

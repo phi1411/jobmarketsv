@@ -195,13 +195,11 @@ class JobRecommendationService
     private function criterionLabel(string $key): string
     {
         return [
+            "age" => "Độ tuổi",
             "skills" => "Kỹ năng",
             "availability" => "Lịch rảnh và ca làm",
             "experience" => "Kinh nghiệm",
             "education" => "Học vấn",
-            "location" => "Khu vực",
-            "role_relevance" => "Vị trí mong muốn",
-            "salary" => "Mức lương",
         ][$key] ?? $key;
     }
 
@@ -284,6 +282,9 @@ class JobRecommendationService
         $hasData = ($criterion["state"] ?? "") === "AVAILABLE";
 
         return match ($key) {
+            "age" => $hasData
+                ? "Độ tuổi nằm ngoài khoảng yêu cầu; hãy ưu tiên các tin không giới hạn tuổi hoặc có khoảng tuổi phù hợp."
+                : "Bổ sung ngày sinh trong hồ sơ để hệ thống đối chiếu yêu cầu tuổi.",
             "skills" => $missing !== []
                 ? "Nếu bạn đã có " . implode(", ", array_slice($missing, 0, 3)) . ", hãy bổ sung vào hồ sơ; nếu chưa, đây là các kỹ năng nên ưu tiên học."
                 : "Cập nhật đầy đủ các kỹ năng thực tế liên quan đến công việc trong hồ sơ.",
@@ -296,10 +297,6 @@ class JobRecommendationService
             "education" => $hasData
                 ? "Kiểm tra yêu cầu học vấn của tin và làm rõ ngành học, năm học hoặc chứng chỉ liên quan trong hồ sơ."
                 : "Bổ sung trường, ngành, năm học và các chứng chỉ liên quan để hoàn thiện phần học vấn.",
-            "location" => $hasData
-                ? "Cân nhắc khoảng cách di chuyển hoặc cập nhật thêm khu vực bạn có thể làm việc."
-                : "Thêm khu vực làm việc mong muốn để hệ thống ưu tiên các việc gần bạn.",
-            "role_relevance" => "Làm rõ kỹ năng, kinh nghiệm hoặc dự án liên quan trực tiếp đến vai trò này trong hồ sơ.",
             default => null,
         };
     }

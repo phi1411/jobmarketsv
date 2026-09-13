@@ -43,8 +43,24 @@ final class CandidateProfileAdapter
         ?string $applicationPreferredShift = null,
         ?string $sourceApplicationId = null
     ): CandidateProfileContract {
-        // Redaction is enforced by construction: we never read or pass name, email, phone, dob, gender, address, cv path
+        // Redaction is enforced by construction: DOB is converted to age only and never leaves this adapter.
         $profileId = isset($studentProfile['id']) ? (string)$studentProfile['id'] : null;
+
+        $ageYears = null;
+        if (!empty($studentProfile['date_of_birth'])) {
+            try {
+                $birthDate = new \DateTimeImmutable((string)$studentProfile['date_of_birth']);
+                $today = new \DateTimeImmutable('today');
+                if ($birthDate <= $today) {
+                    $calculatedAge = $birthDate->diff($today)->y;
+                    if ($calculatedAge >= 0 && $calculatedAge <= 120) {
+                        $ageYears = $calculatedAge;
+                    }
+                }
+            } catch (\Throwable) {
+                $ageYears = null;
+            }
+        }
 
         $knownName = !empty($studentProfile['full_name'])
             ? (string)$studentProfile['full_name']
@@ -170,7 +186,8 @@ final class CandidateProfileAdapter
             certifications: $certifications,
             locations: $locations,
             desiredRoles: $desiredRoles,
-            salaryExpectation: $salaryExpectation
+            salaryExpectation: $salaryExpectation,
+            ageYears: $ageYears
         );
     }
 }

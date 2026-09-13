@@ -161,6 +161,8 @@ final class JobRequirementsAdapter
         // 8. Application State
         $status = !empty($job['status']) ? (string)$job['status'] : 'published';
         $deadline = !empty($job['application_deadline']) ? (string)$job['application_deadline'] : null;
+        $minimumAge = isset($job['minimum_age']) && $job['minimum_age'] !== '' ? (int)$job['minimum_age'] : null;
+        $maximumAge = isset($job['maximum_age']) && $job['maximum_age'] !== '' ? (int)$job['maximum_age'] : null;
 
         return new JobRequirementsContract(
             schemaVersion: JobRequirementsContract::SCHEMA_VERSION,
@@ -175,7 +177,9 @@ final class JobRequirementsAdapter
             applicationState: [
                 'status' => $status,
                 'deadline' => $deadline,
-            ]
+            ],
+            minimumAge: $minimumAge,
+            maximumAge: $maximumAge
         );
     }
 }

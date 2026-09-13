@@ -30,7 +30,10 @@ foreach ($result["items"] as $item) {
 }
 
 assertExplanation(is_array($job), "Có việc mẫu để kiểm tra giải thích");
-assertExplanation(count($job["criteria"] ?? []) === 6, "Trả về đủ 6 tiêu chí có trọng số");
+assertExplanation(count($job["criteria"] ?? []) === 5, "Trả về đúng 5 tiêu chí có trọng số");
+$criterionKeys = array_column($job["criteria"] ?? [], "key");
+sort($criterionKeys);
+assertExplanation($criterionKeys === ["age", "availability", "education", "experience", "skills"], "Chỉ dùng 5 tiêu chí: tuổi, kinh nghiệm, kỹ năng, học vấn và lịch làm việc");
 assertExplanation(!empty($job["score_disclaimer"]), "Có lưu ý điểm không phải xác suất tuyển dụng");
 
 $criteriaByKey = [];

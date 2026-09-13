@@ -190,12 +190,11 @@ class ProfileJobAlertService
     private function criterionLabel(string $key): string
     {
         return [
+            "age" => "Độ tuổi",
             "skills" => "Kỹ năng",
             "availability" => "Lịch rảnh và ca làm",
             "experience" => "Kinh nghiệm",
             "education" => "Học vấn",
-            "location" => "Khu vực",
-            "role_relevance" => "Vị trí công việc",
         ][$key] ?? $key;
     }
 }

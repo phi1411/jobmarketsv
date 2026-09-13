@@ -102,6 +102,7 @@ $editingJobId = $jobId ?? "";
                 <div class="form-group">
                     <label class="form-label" for="job-shift-type">Ca làm việc chính</label>
                     <select id="job-shift-type" class="form-control">
+                        <option value="">Không yêu cầu ca cố định</option>
                         <option value="morning">Ca Sáng (08:00 - 12:00)</option>
                         <option value="afternoon">Ca Chiều (13:00 - 17:00)</option>
                         <option value="evening">Ca Tối (18:00 - 22:00)</option>
@@ -117,7 +118,23 @@ $editingJobId = $jobId ?? "";
                 </div>
             </div>
 
-            <!-- 6. Số lượng tuyển & Hạn nộp -->
+            <!-- 6. Độ tuổi yêu cầu -->
+            <div class="fieldset-card">
+                <label class="fieldset-card-title">Độ tuổi ứng viên</label>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="job-minimum-age">Tuổi tối thiểu</label>
+                        <input type="number" id="job-minimum-age" class="form-control" placeholder="Để trống nếu không yêu cầu" min="15" max="80">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="job-maximum-age">Tuổi tối đa</label>
+                        <input type="number" id="job-maximum-age" class="form-control" placeholder="Để trống nếu không yêu cầu" min="15" max="80">
+                    </div>
+                </div>
+                <small class="form-help">Bỏ trống cả hai ô thì mọi sinh viên đều đạt tiêu chí độ tuổi.</small>
+            </div>
+
+            <!-- 7. Số lượng tuyển & Hạn nộp -->
             <div class="form-grid-2" style="margin-bottom:1.25rem;">
                 <div class="form-group">
                     <label class="form-label" for="job-quantity">Số lượng cần tuyển</label>
@@ -130,34 +147,37 @@ $editingJobId = $jobId ?? "";
                 </div>
             </div>
 
-            <!-- 7. Kỹ năng yêu cầu (Skills) -->
+            <!-- 8. Kỹ năng yêu cầu (Skills) -->
             <div class="form-group" style="margin-bottom:1.25rem;">
                 <label class="form-label">Kỹ năng / Phẩm chất mong muốn</label>
                 <div id="job-skills-container" style="display:flex;flex-wrap:wrap;gap:0.5rem;padding:0.75rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);max-height:150px;overflow-y:auto;">
                     <!-- Checkboxes rendered dynamically -->
                 </div>
+                <label class="form-label" for="job-custom-skills" style="margin-top:.75rem;">Kỹ năng khác</label>
+                <input type="text" id="job-custom-skills" class="form-control" maxlength="1000" placeholder="Ví dụ: Chụp hình sản phẩm, quản lý fanpage (ngăn cách bằng dấu phẩy)">
+                <small class="form-help">Có thể vừa tích kỹ năng có sẵn, vừa nhập kỹ năng riêng. Mỗi kỹ năng cách nhau bằng dấu phẩy.</small>
             </div>
 
-            <!-- 8. Mô tả công việc -->
+            <!-- 9. Mô tả công việc -->
             <div class="form-group" style="margin-bottom:1.25rem;">
                 <label class="form-label" for="job-desc">Mô tả công việc <span style="color:var(--danger)">*</span></label>
                 <textarea id="job-desc" rows="5" class="form-control" placeholder="Chi tiết các nhiệm vụ hàng ngày sinh viên sẽ thực hiện..." required minlength="10"></textarea>
                 <small class="form-help">Tối thiểu 10 ký tự.</small>
             </div>
 
-            <!-- 9. Yêu cầu ứng viên -->
+            <!-- 10. Yêu cầu ứng viên -->
             <div class="form-group" style="margin-bottom:1.25rem;">
                 <label class="form-label" for="job-req">Yêu cầu ứng viên</label>
                 <textarea id="job-req" rows="4" class="form-control" placeholder="Sinh viên năm 1-4, chăm chỉ, đúng giờ, giao tiếp tốt, không yêu cầu kinh nghiệm..."></textarea>
             </div>
 
-            <!-- 10. Quyền lợi được hưởng -->
+            <!-- 11. Quyền lợi được hưởng -->
             <div class="form-group" style="margin-bottom:1.25rem;">
                 <label class="form-label" for="job-benefits">Quyền lợi & Đãi ngộ</label>
                 <textarea id="job-benefits" rows="4" class="form-control" placeholder="Hỗ trợ gửi xe, phụ cấp ăn trưa/tối, thưởng theo năng suất, linh hoạt đổi ca thi cử..."></textarea>
             </div>
 
-            <!-- 11. Trạng thái xuất bản -->
+            <!-- 12. Trạng thái xuất bản -->
             <div class="fieldset-card" style="margin-bottom:0;">
                 <label class="form-label" for="job-status" style="font-weight:700;">Trạng thái xuất bản tin</label>
                 <select id="job-status" class="form-control" style="font-weight:600;">
@@ -297,7 +317,9 @@ async function loadJobForEditing(id) {
         document.getElementById("job-salary-type").value = j.salary_type || "hourly";
         document.getElementById("job-salary-min").value = j.salary_min || "";
         document.getElementById("job-salary-max").value = j.salary_max || "";
-        document.getElementById("job-shift-type").value = j.shift_type || "morning";
+        document.getElementById("job-shift-type").value = j.shift_type || "";
+        document.getElementById("job-minimum-age").value = j.minimum_age ?? "";
+        document.getElementById("job-maximum-age").value = j.maximum_age ?? "";
         document.getElementById("job-working-schedule").value = j.working_schedule || "";
         document.getElementById("job-quantity").value = j.quantity || "";
         document.getElementById("job-deadline").value = j.application_deadline ? j.application_deadline.substring(0, 10) : "";
@@ -322,9 +344,16 @@ async function loadJobForEditing(id) {
                 skillIds = j.required_skills.split(",").map(s => s.trim()).filter(Boolean);
             }
         }
+        const knownSkillIds = new Set(Array.from(document.querySelectorAll("input[name='skill_id']")).map(cb => cb.value));
+        const customSkills = [];
         document.querySelectorAll("input[name='skill_id']").forEach(cb => {
-            if (skillIds.includes(cb.value)) cb.checked = true;
+            if (skillIds.map(String).includes(cb.value)) cb.checked = true;
         });
+        skillIds.forEach(skill => {
+            const value = String(skill || "").trim();
+            if (value && !knownSkillIds.has(value)) customSkills.push(value);
+        });
+        document.getElementById("job-custom-skills").value = customSkills.join(", ");
     } else {
         showToast((res && res.message) ? res.message : "Không thể tải thông tin tin việc làm.", "error");
         setTimeout(() => { window.location.href = "/company/jobs"; }, 1500);
@@ -342,6 +371,12 @@ async function handleSubmitJob(e) {
     document.querySelectorAll("input[name='skill_id']:checked").forEach(cb => {
         selectedSkills.push(cb.value);
     });
+    document.getElementById("job-custom-skills").value
+        .split(/[,;\n]+/)
+        .map(skill => skill.trim())
+        .filter(Boolean)
+        .forEach(skill => selectedSkills.push(skill));
+    const uniqueSkills = Array.from(new Map(selectedSkills.map(skill => [skill.toLocaleLowerCase("vi"), skill])).values());
 
     const statusVal = document.getElementById("job-status").value;
 
@@ -363,15 +398,17 @@ async function handleSubmitJob(e) {
         salary_type: document.getElementById("job-salary-type").value,
         salary_min: document.getElementById("job-salary-min").value ? parseInt(document.getElementById("job-salary-min").value) : null,
         salary_max: document.getElementById("job-salary-max").value ? parseInt(document.getElementById("job-salary-max").value) : null,
-        shift_type: document.getElementById("job-shift-type").value,
+        shift_type: document.getElementById("job-shift-type").value || null,
         working_schedule: document.getElementById("job-working-schedule").value.trim() || null,
+        minimum_age: document.getElementById("job-minimum-age").value ? parseInt(document.getElementById("job-minimum-age").value, 10) : null,
+        maximum_age: document.getElementById("job-maximum-age").value ? parseInt(document.getElementById("job-maximum-age").value, 10) : null,
         quantity: document.getElementById("job-quantity").value ? parseInt(document.getElementById("job-quantity").value) : 1,
         application_deadline: document.getElementById("job-deadline").value || null,
         description: document.getElementById("job-desc").value.trim(),
         requirements: document.getElementById("job-req").value.trim() || null,
         benefits: document.getElementById("job-benefits").value.trim() || null,
         status: statusVal,
-        required_skills: selectedSkills
+        required_skills: uniqueSkills
     };
 
     btn.disabled = true;

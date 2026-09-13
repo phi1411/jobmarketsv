@@ -21,6 +21,8 @@ final readonly class JobRequirementsContract implements JsonSerializable
     public const ALLOWED_KEYS = [
         'schema_version',
         'source_job_id',
+        'minimum_age',
+        'maximum_age',
         'role',
         'skills',
         'experience_requirement',
@@ -45,7 +47,9 @@ final readonly class JobRequirementsContract implements JsonSerializable
         public ?ScheduleRequirementValue $schedule = null,
         public ?JobLocationValue $location = null,
         public ?SalaryValue $salary = null,
-        public array $applicationState = ['status' => 'published', 'deadline' => null]
+        public array $applicationState = ['status' => 'published', 'deadline' => null],
+        public ?int $minimumAge = null,
+        public ?int $maximumAge = null
     ) {
         if ($this->schemaVersion !== self::SCHEMA_VERSION) {
             throw new \JobMarket\Domain\Matching\Exceptions\MatchingContractValidationException(
@@ -56,6 +60,20 @@ final readonly class JobRequirementsContract implements JsonSerializable
         ValidationGuard::assertStringLength($this->schemaVersion, 'schema_version', 32);
         ValidationGuard::assertStringLength($this->sourceJobId, 'source_job_id', 64, true);
         ValidationGuard::assertArrayLimit($this->skills, 'skills', 100);
+        foreach (['minimum_age' => $this->minimumAge, 'maximum_age' => $this->maximumAge] as $field => $value) {
+            if ($value !== null && ($value < 15 || $value > 80)) {
+                throw new \JobMarket\Domain\Matching\Exceptions\MatchingContractValidationException(
+                    [$field => "{$field} phải nằm trong khoảng 15 đến 80."],
+                    'Khoảng tuổi không hợp lệ'
+                );
+            }
+        }
+        if ($this->minimumAge !== null && $this->maximumAge !== null && $this->minimumAge > $this->maximumAge) {
+            throw new \JobMarket\Domain\Matching\Exceptions\MatchingContractValidationException(
+                ['minimum_age' => 'Tuổi tối thiểu không được lớn hơn tuổi tối đa.'],
+                'Khoảng tuổi không hợp lệ'
+            );
+        }
     }
 
     /**
@@ -79,6 +97,16 @@ final readonly class JobRequirementsContract implements JsonSerializable
             64,
             true
         );
+        $minimumAge = $data['minimum_age'] ?? null;
+        $maximumAge = $data['maximum_age'] ?? null;
+        foreach (['minimum_age' => $minimumAge, 'maximum_age' => $maximumAge] as $field => $value) {
+            if ($value !== null && !is_int($value)) {
+                throw new \JobMarket\Domain\Matching\Exceptions\MatchingContractValidationException(
+                    [$field => "Trường {$field} phải là số nguyên hoặc null."],
+                    "Sai kiểu dữ liệu {$field}"
+                );
+            }
+        }
 
         $role = null;
         if (isset($data['role'])) {
@@ -167,7 +195,9 @@ final readonly class JobRequirementsContract implements JsonSerializable
             applicationState: [
                 'status' => $status,
                 'deadline' => $deadline,
-            ]
+            ],
+            minimumAge: $minimumAge,
+            maximumAge: $maximumAge
         );
     }
 
@@ -179,6 +209,8 @@ final readonly class JobRequirementsContract implements JsonSerializable
         return [
             'schema_version' => $this->schemaVersion,
             'source_job_id' => $this->sourceJobId,
+            'minimum_age' => $this->minimumAge,
+            'maximum_age' => $this->maximumAge,
             'role' => $this->role?->toArray(),
             'skills' => array_map(fn(SkillItem $s) => $s->toArray(), $this->skills),
             'experience_requirement' => ($this->experienceRequirement ?? new ExperienceRequirementValue())->toArray(),

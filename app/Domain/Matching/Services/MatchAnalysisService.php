@@ -842,7 +842,8 @@ class MatchAnalysisService
             certifications: $contract->certifications,
             locations: $contract->locations,
             desiredRoles: $contract->desiredRoles,
-            salaryExpectation: $contract->salaryExpectation
+            salaryExpectation: $contract->salaryExpectation,
+            ageYears: $contract->ageYears
         );
     }
 
@@ -996,7 +997,9 @@ class MatchAnalysisService
             schedule: $effectiveSchedule,
             location: $contract->location,
             salary: $contract->salary,
-            applicationState: $contract->applicationState
+            applicationState: $contract->applicationState,
+            minimumAge: $contract->minimumAge,
+            maximumAge: $contract->maximumAge
         );
     }
 

@@ -25,6 +25,7 @@ final readonly class CandidateProfileContract implements JsonSerializable
         'source_type',
         'source_profile_id',
         'source_application_id',
+        'age_years',
         'skills',
         'availability',
         'experience',
@@ -52,7 +53,8 @@ final readonly class CandidateProfileContract implements JsonSerializable
         public ?MissingDataSection $certifications = null,
         public ?CandidateLocationValue $locations = null,
         public ?MissingDataSection $desiredRoles = null,
-        public ?SalaryValue $salaryExpectation = null
+        public ?SalaryValue $salaryExpectation = null,
+        public ?int $ageYears = null
     ) {
         if ($this->schemaVersion !== self::SCHEMA_VERSION) {
             throw new \JobMarket\Domain\Matching\Exceptions\MatchingContractValidationException(
@@ -71,6 +73,12 @@ final readonly class CandidateProfileContract implements JsonSerializable
         ValidationGuard::assertStringLength($this->sourceProfileId, 'source_profile_id', 64, true);
         ValidationGuard::assertStringLength($this->sourceApplicationId, 'source_application_id', 64, true);
         ValidationGuard::assertArrayLimit($this->skills, 'skills', 100);
+        if ($this->ageYears !== null && ($this->ageYears < 0 || $this->ageYears > 120)) {
+            throw new \JobMarket\Domain\Matching\Exceptions\MatchingContractValidationException(
+                ['age_years' => 'Số tuổi dùng để đối chiếu phải nằm trong khoảng 0 đến 120.'],
+                'Số tuổi không hợp lệ'
+            );
+        }
     }
 
     /**
@@ -105,6 +113,13 @@ final readonly class CandidateProfileContract implements JsonSerializable
             64,
             true
         );
+        $ageYears = $data['age_years'] ?? null;
+        if ($ageYears !== null && !is_int($ageYears)) {
+            throw new \JobMarket\Domain\Matching\Exceptions\MatchingContractValidationException(
+                ['age_years' => 'Trường age_years phải là số nguyên hoặc null.'],
+                'Sai kiểu dữ liệu age_years'
+            );
+        }
 
         $rawSkills = ValidationGuard::assertArrayLimit($data['skills'] ?? [], 'skills', 100);
         $skills = [];
@@ -203,7 +218,8 @@ final readonly class CandidateProfileContract implements JsonSerializable
             certifications: $certifications,
             locations: $locations,
             desiredRoles: $desiredRoles,
-            salaryExpectation: $salaryExpectation
+            salaryExpectation: $salaryExpectation,
+            ageYears: $ageYears
         );
     }
 
@@ -217,6 +233,7 @@ final readonly class CandidateProfileContract implements JsonSerializable
             'source_type' => $this->sourceType,
             'source_profile_id' => $this->sourceProfileId,
             'source_application_id' => $this->sourceApplicationId,
+            'age_years' => $this->ageYears,
             'skills' => array_map(fn(SkillItem $s) => $s->toArray(), $this->skills),
             'availability' => ($this->availability ?? new AvailabilityValue(state: DataState::UNKNOWN))->toArray(),
             'experience' => ($this->experience ?? new ExperienceValue(state: DataState::UNKNOWN))->toArray(),

@@ -695,14 +695,13 @@ function renderMatchModalContent(data, applicationId) {
     const strengths = Array.isArray(summary.strengths) ? summary.strengths : [];
     const considerations = Array.isArray(summary.considerations) ? summary.considerations : [];
 
-    // 6 MVP Criteria Normalization (skills, availability, experience, education, location, role_relevance)
+    // 5 published criteria used consistently across student and employer views.
     const MVP_CRITERIA = [
-        { key: "skills", label: "Kỹ Năng", icon: "🛠️", weight: 35 },
-        { key: "availability", label: "Lịch Làm Việc", icon: "⏰", weight: 20 },
+        { key: "age", label: "Độ Tuổi", icon: "🎂", weight: 10 },
         { key: "experience", label: "Kinh Nghiệm", icon: "💼", weight: 15 },
-        { key: "education", label: "Học Vấn", icon: "🎓", weight: 10 },
-        { key: "location", label: "Địa Điểm", icon: "📍", weight: 10 },
-        { key: "role_relevance", label: "Độ Phù Hợp Vị Trí", icon: "🎯", weight: 10 }
+        { key: "skills", label: "Kỹ Năng", icon: "🛠️", weight: 30 },
+        { key: "education", label: "Học Vấn", icon: "🎓", weight: 15 },
+        { key: "availability", label: "Lịch Làm Việc", icon: "⏰", weight: 30 }
     ];
 
     const criteriaMap = {};
@@ -795,8 +794,8 @@ function renderMatchModalContent(data, applicationId) {
             ` : ''}
         </div>
 
-        <!-- 6 Criteria Breakdown -->
-        <h4 style="font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:0.75rem;">Chi Tiết 6 Tiêu Chí Đánh Giá</h4>
+        <!-- 5 Criteria Breakdown -->
+        <h4 style="font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:0.75rem;">Chi Tiết 5 Tiêu Chí Đánh Giá</h4>
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:0.75rem;margin-bottom:1.25rem;">
             ${MVP_CRITERIA.map(c => {
                 const crit = criteriaMap[c.key] || criteriaMap[c.key.replace(/s$/, "")] || {};

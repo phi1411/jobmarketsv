@@ -75,6 +75,7 @@ final class CanonicalHashService
 
         $matchingPayload = [
             'schema_version' => $arr['schema_version'],
+            'age_years' => $arr['age_years'],
             'skills' => $skills,
             'availability' => $availability,
             'experience' => $arr['experience'],
@@ -121,6 +122,8 @@ final class CanonicalHashService
 
         $matchingPayload = [
             'schema_version' => $arr['schema_version'],
+            'minimum_age' => $arr['minimum_age'],
+            'maximum_age' => $arr['maximum_age'],
             'role' => $arr['role'],
             'skills' => $jobSkills,
             'experience_requirement' => $arr['experience_requirement'],

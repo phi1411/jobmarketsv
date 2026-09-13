@@ -258,7 +258,7 @@ class JobRepository implements JobRepositoryInterface
                 `description`, `requirements`, `benefits`, `location`, `city`, 
                 `district`, `address`, `status`, `work_type`, `work_mode`, 
                 `salary_type`, `salary_min`, `salary_max`, `currency`, `shift_type`, 
-                `shift_information`, `working_schedule`, `required_skills`, `quantity`, 
+                `shift_information`, `working_schedule`, `required_skills`, `minimum_age`, `maximum_age`, `quantity`, 
                 `application_deadline`, `rejection_reason`, `published_at`, `type`, 
                 `work_format`, `deadline`, `category`
             ) VALUES (
@@ -266,7 +266,7 @@ class JobRepository implements JobRepositoryInterface
                 ?, ?, ?, ?, ?, 
                 ?, ?, ?, ?, ?, 
                 ?, ?, ?, ?, ?, 
-                ?, ?, ?, ?, 
+                ?, ?, ?, ?, ?, ?, 
                 ?, ?, ?, ?, 
                 ?, ?, ?
             )"
@@ -301,6 +301,8 @@ class JobRepository implements JobRepositoryInterface
             $job->getShiftInformation(),
             $job->getWorkingSchedule(),
             $job->getRequiredSkills(),
+            $job->getMinimumAge(),
+            $job->getMaximumAge(),
             $job->getQuantity(),
             $job->getApplicationDeadline(),
             $job->getRejectionReason(),
@@ -340,6 +342,8 @@ class JobRepository implements JobRepositoryInterface
                 `shift_information` = ?,
                 `working_schedule` = ?,
                 `required_skills` = ?,
+                `minimum_age` = ?,
+                `maximum_age` = ?,
                 `quantity` = ?,
                 `application_deadline` = ?,
                 `deadline` = ?,
@@ -379,6 +383,8 @@ class JobRepository implements JobRepositoryInterface
             $job->getShiftInformation(),
             $job->getWorkingSchedule(),
             $job->getRequiredSkills(),
+            $job->getMinimumAge(),
+            $job->getMaximumAge(),
             $job->getQuantity(),
             $job->getApplicationDeadline(),
             $job->getApplicationDeadline(),

@@ -23,10 +23,12 @@ class Job
     private ?int $salary_min = null;
     private ?int $salary_max = null;
     private string $currency = "VND";
-    private string $shift_type = "morning";
+    private ?string $shift_type = null;
     private ?string $shift_information = null;
     private ?string $working_schedule = null;
     private ?string $required_skills = null;
+    private ?int $minimum_age = null;
+    private ?int $maximum_age = null;
     private int $quantity = 1;
     private ?string $application_deadline = null;
     private ?string $rejection_reason = null;
@@ -93,7 +95,7 @@ class Job
         $job->salary_min = isset($data["salary_min"]) ? (int)$data["salary_min"] : null;
         $job->salary_max = isset($data["salary_max"]) ? (int)$data["salary_max"] : null;
         $job->currency = $data["currency"] ?? "VND";
-        $job->shift_type = $data["shift_type"] ?? "morning";
+        $job->shift_type = !empty($data["shift_type"]) ? (string)$data["shift_type"] : null;
         $job->shift_information = $data["shift_information"] ?? null;
         $job->working_schedule = $data["working_schedule"] ?? null;
         if (isset($data["required_skills"])) {
@@ -109,6 +111,8 @@ class Job
         } else {
             $job->required_skills = null;
         }
+        $job->minimum_age = isset($data["minimum_age"]) && $data["minimum_age"] !== "" ? (int)$data["minimum_age"] : null;
+        $job->maximum_age = isset($data["maximum_age"]) && $data["maximum_age"] !== "" ? (int)$data["maximum_age"] : null;
         $job->quantity = isset($data["quantity"]) ? (int)$data["quantity"] : 1;
         $job->application_deadline = $data["application_deadline"] ?? ($data["deadline"] ?? null);
         $job->rejection_reason = $data["rejection_reason"] ?? null;
@@ -147,6 +151,8 @@ class Job
             "working_schedule"     => $this->working_schedule,
             "required_skills"      => $this->required_skills,
             "skills"               => $this->getRequiredSkillsArray(),
+            "minimum_age"          => $this->minimum_age,
+            "maximum_age"          => $this->maximum_age,
             "quantity"             => $this->quantity,
             "application_deadline" => $this->application_deadline,
             "deadline"             => $this->application_deadline,
@@ -212,10 +218,12 @@ class Job
     public function getSalaryMin(): ?int { return $this->salary_min; }
     public function getSalaryMax(): ?int { return $this->salary_max; }
     public function getCurrency(): string { return $this->currency; }
-    public function getShiftType(): string { return $this->shift_type; }
+    public function getShiftType(): ?string { return $this->shift_type; }
     public function getShiftInformation(): ?string { return $this->shift_information; }
     public function getWorkingSchedule(): ?string { return $this->working_schedule; }
     public function getRequiredSkills(): ?string { return $this->required_skills; }
+    public function getMinimumAge(): ?int { return $this->minimum_age; }
+    public function getMaximumAge(): ?int { return $this->maximum_age; }
     public function getRequiredSkillsArray(): array
     {
         if (empty($this->required_skills)) {
@@ -259,7 +267,7 @@ class Job
     public function setSalaryMin(?int $salary_min): self { $this->salary_min = $salary_min; return $this; }
     public function setSalaryMax(?int $salary_max): self { $this->salary_max = $salary_max; return $this; }
     public function setCurrency(string $currency): self { $this->currency = $currency; return $this; }
-    public function setShiftType(string $shift_type): self { $this->shift_type = $shift_type; return $this; }
+    public function setShiftType(?string $shift_type): self { $this->shift_type = $shift_type; return $this; }
     public function setShiftInformation(?string $info): self { $this->shift_information = $info; return $this; }
     public function setWorkingSchedule(?string $schedule): self { $this->working_schedule = $schedule; return $this; }
     public function setRequiredSkills(string|array|null $skills): self
@@ -275,6 +283,8 @@ class Job
         }
         return $this;
     }
+    public function setMinimumAge(?int $age): self { $this->minimum_age = $age; return $this; }
+    public function setMaximumAge(?int $age): self { $this->maximum_age = $age; return $this; }
     public function setQuantity(int $quantity): self { $this->quantity = $quantity; return $this; }
     public function setApplicationDeadline(?string $deadline): self { $this->application_deadline = $deadline; return $this; }
     public function setRejectionReason(?string $reason): self { $this->rejection_reason = $reason; return $this; }
