@@ -100,18 +100,30 @@
 
     <!-- Nearby Filter Bar (Active when user clicks "Việc làm gần tôi") -->
     <div id="nearby-filter-bar" class="nearby-filter-bar" style="display:none;">
-        <div class="nearby-chips-group">
-            <span class="nearby-radius-label">📍 Bán kính:</span>
-            <button type="button" class="radius-chip" data-radius="2" onclick="setNearbyRadius(2)">2 km</button>
-            <button type="button" class="radius-chip" data-radius="5" onclick="setNearbyRadius(5)">5 km</button>
-            <button type="button" class="radius-chip active" data-radius="10" onclick="setNearbyRadius(10)">10 km</button>
-            <button type="button" class="radius-chip" data-radius="20" onclick="setNearbyRadius(20)">20 km</button>
+        <div style="display:flex;align-items:center;gap:0.65rem;flex-wrap:wrap;">
+            <div class="nearby-chips-group">
+                <span class="nearby-radius-label">📍 Bán kính:</span>
+                <button type="button" class="radius-chip" data-radius="2" onclick="setNearbyRadius(2)">2 km</button>
+                <button type="button" class="radius-chip" data-radius="5" onclick="setNearbyRadius(5)">5 km</button>
+                <button type="button" class="radius-chip active" data-radius="10" onclick="setNearbyRadius(10)">10 km</button>
+                <button type="button" class="radius-chip" data-radius="20" onclick="setNearbyRadius(20)">20 km</button>
+            </div>
+
+            <div id="nearby-origin-info" style="font-size:0.84rem;color:#1e293b;background:#eff6ff;padding:0.25rem 0.65rem;border-radius:4px;border:1px solid #bfdbfe;display:inline-flex;align-items:center;gap:0.4rem;">
+                <span style="color:#64748b;">Tâm tìm:</span>
+                <strong id="nearby-origin-label" style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Vị trí của bạn</strong>
+                <button type="button" onclick="openStudentNearbyModal()" style="background:none;border:none;color:#2563eb;cursor:pointer;font-size:0.75rem;font-weight:700;text-decoration:underline;">[Đổi]</button>
+            </div>
+
+            <button type="button" id="btn-save-preferred-loc" class="btn btn-outline btn-sm" style="display:none;font-size:0.78rem;padding:0.25rem 0.65rem;border-color:#10b981;color:#059669;font-weight:700;" onclick="saveCurrentNearbyToPreferred()">
+                💾 Lưu làm khu vực mong muốn
+            </button>
         </div>
 
         <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
             <div class="nearby-privacy-notice">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                <span>Vị trí chỉ dùng cho lần tìm kiếm này và không được lưu.</span>
+                <span>Vị trí chỉ dùng cho lần tìm kiếm này và không tự động lưu.</span>
             </div>
             <button type="button" class="btn-exit-nearby" onclick="exitNearbyMode()">✕ Bỏ lọc gần tôi</button>
         </div>
@@ -152,6 +164,127 @@
     <div id="pagination-container" class="pagination" style="margin-top:2rem;"></div>
 </div>
 
+<!-- Modal: Chọn Vị Trí Tìm Việc Gần Bạn Cho Sinh Viên -->
+<div id="modal-student-nearby" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:10000;align-items:center;justify-content:center;padding:1rem;" role="dialog" aria-modal="true" aria-labelledby="modal-student-nearby-title">
+    <div style="background:#fff;border-radius:var(--radius);max-width:580px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;box-shadow:var(--shadow);position:relative;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
+            <h3 id="modal-student-nearby-title" style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:0;">Chọn Vị Trí Tìm Việc Làm Gần Bạn</h3>
+            <button type="button" onclick="closeStudentNearbyModal()" class="modal-close-btn" aria-label="Đóng">&times;</button>
+        </div>
+
+        <!-- Hai lựa chọn lớn: Dùng vị trí hiện tại vs Nhập địa chỉ -->
+        <div class="loc-method-selector">
+            <button type="button" class="loc-method-btn active" id="btn-stu-tab-gps" onclick="switchStudentLocMethod('gps')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M2 12h4m12 0h4m-7 0a5 5 0 1 1-10 0 5 5 0 0 1 10 0z"/></svg>
+                <span>Dùng vị trí hiện tại</span>
+            </button>
+            <button type="button" class="loc-method-btn" id="btn-stu-tab-manual" onclick="switchStudentLocMethod('manual')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                <span>Nhập địa chỉ</span>
+            </button>
+        </div>
+
+        <!-- Panel 1: Dùng vị trí hiện tại (GPS) -->
+        <div id="panel-stu-gps" class="loc-gps-box">
+            <div class="loc-gps-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg>
+            </div>
+            <div style="font-weight:700;color:var(--dark);font-size:0.95rem;margin-bottom:0.35rem;">Lấy vị trí GPS từ thiết bị</div>
+            <div class="loc-gps-desc">
+                Hệ thống sẽ lấy tọa độ GPS từ trình duyệt và chuẩn hóa qua Goong để tìm việc quanh bạn. Vị trí không lưu vào bộ nhớ hay gửi cookie.
+                <div style="margin-top:0.4rem;color:#d97706;font-size:0.8rem;font-weight:600;">⚠️ Yêu cầu kết nối bảo mật HTTPS để kích hoạt GPS.</div>
+            </div>
+            <div class="loc-gps-actions">
+                <button type="button" id="btn-get-stu-gps" class="btn btn-outline" style="font-weight:600;display:inline-flex;align-items:center;gap:0.45rem;" onclick="fetchStudentGpsLocation()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>Lấy vị trí GPS</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel 2: Nhập địa chỉ (Manual) -->
+        <div id="panel-stu-manual" style="display:none;margin-bottom:1.25rem;">
+            <!-- Subtabs: Hiện hành vs Cũ -->
+            <div class="loc-subtabs">
+                <button type="button" class="loc-subtab-btn active" id="subtab-stu-mode-current" onclick="switchStudentManualMode('current')">
+                    Địa chỉ hiện hành
+                </button>
+                <button type="button" class="loc-subtab-btn" id="subtab-stu-mode-legacy" onclick="switchStudentManualMode('legacy')">
+                    Địa chỉ cũ (có Quận/Huyện)
+                </button>
+            </div>
+
+            <!-- Fields: Hiện hành -->
+            <div id="fields-stu-mode-current">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" style="font-size:0.84rem;">Tỉnh / Thành phố *</label>
+                        <input type="text" id="stu-manual-curr-province" class="form-control" placeholder="VD: TP. Hồ Chí Minh, Hà Nội...">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" style="font-size:0.84rem;">Phường / Xã *</label>
+                        <input type="text" id="stu-manual-curr-ward" class="form-control" placeholder="VD: Phường Bến Nghé, Xã An Khánh...">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0.75rem;">
+                    <label class="form-label" style="font-size:0.84rem;">Địa chỉ chi tiết *</label>
+                    <input type="text" id="stu-manual-curr-detail" class="form-control" placeholder="Số nhà, tên đường, tên tòa nhà/ký túc xá...">
+                </div>
+            </div>
+
+            <!-- Fields: Cũ -->
+            <div id="fields-stu-mode-legacy" style="display:none;">
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;margin-bottom:0.75rem;">
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" style="font-size:0.84rem;">Tỉnh / TP *</label>
+                        <input type="text" id="stu-manual-leg-province" class="form-control" placeholder="VD: TP. HCM">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" style="font-size:0.84rem;">Quận / Huyện *</label>
+                        <input type="text" id="stu-manual-leg-district" class="form-control" placeholder="VD: Quận 1">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label" style="font-size:0.84rem;">Phường / Xã *</label>
+                        <input type="text" id="stu-manual-leg-ward" class="form-control" placeholder="VD: Bến Nghé">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0.75rem;">
+                    <label class="form-label" style="font-size:0.84rem;">Địa chỉ chi tiết *</label>
+                    <input type="text" id="stu-manual-leg-detail" class="form-control" placeholder="Số nhà, tên đường, tên trường học/KTX...">
+                </div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;">
+                <button type="button" id="btn-stu-resolve-manual" class="btn btn-outline btn-sm" style="font-weight:600;" onclick="resolveStudentManualAddress()">
+                    🔍 Xác thực & Chuẩn hóa địa chỉ
+                </button>
+            </div>
+        </div>
+
+        <!-- Hộp kết quả chuẩn hóa (Result Preview Box) -->
+        <div id="stu-resolved-preview" class="loc-resolved-preview" style="display:none;">
+            <div class="loc-resolved-header">
+                <span class="loc-resolved-badge">✓ Đã xác thực tọa độ tìm kiếm</span>
+                <span id="stu-preview-coords" class="resolved-coords-chip">10.77, 106.70</span>
+            </div>
+            <div id="stu-preview-address" class="loc-resolved-address">Địa chỉ hiển thị ở đây</div>
+            <div class="loc-resolved-details">
+                <span id="stu-preview-province" class="loc-resolved-tag">Tỉnh/TP: ...</span>
+                <span id="stu-preview-commune" class="loc-resolved-tag">Phường/Xã: ...</span>
+                <span id="stu-preview-district" class="loc-resolved-tag" style="display:none;">Quận/Huyện cũ: ...</span>
+            </div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="closeStudentNearbyModal()">Hủy</button>
+            <button type="button" id="btn-apply-stu-nearby" class="btn btn-primary btn-sm" disabled onclick="applyStudentNearbySearch()">
+                Áp Dụng Tìm Việc Quanh Đây
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
 let currentPage = 1;
 let currentSort = "newest";
@@ -178,84 +311,383 @@ function hideNearbyBanner() {
     if (banner) banner.style.display = "none";
 }
 
+let studentResolvedLocation = null;
+
+function openStudentNearbyModal() {
+    studentResolvedLocation = null;
+    const previewBox = document.getElementById("stu-resolved-preview");
+    if (previewBox) previewBox.style.display = "none";
+    const applyBtn = document.getElementById("btn-apply-stu-nearby");
+    if (applyBtn) applyBtn.disabled = true;
+
+    // Reset inputs
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+    setVal("stu-manual-curr-province", "");
+    setVal("stu-manual-curr-ward", "");
+    setVal("stu-manual-curr-detail", "");
+    setVal("stu-manual-leg-province", "");
+    setVal("stu-manual-leg-district", "");
+    setVal("stu-manual-leg-ward", "");
+    setVal("stu-manual-leg-detail", "");
+
+    switchStudentLocMethod("gps");
+    switchStudentManualMode("current");
+
+    const modal = document.getElementById("modal-student-nearby");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeStudentNearbyModal() {
+    const modal = document.getElementById("modal-student-nearby");
+    if (modal) modal.style.display = "none";
+}
+
+function switchStudentLocMethod(method) {
+    const btnGps = document.getElementById("btn-stu-tab-gps");
+    const btnManual = document.getElementById("btn-stu-tab-manual");
+    const panelGps = document.getElementById("panel-stu-gps");
+    const panelManual = document.getElementById("panel-stu-manual");
+
+    if (method === "gps") {
+        btnGps.classList.add("active");
+        btnManual.classList.remove("active");
+        panelGps.style.display = "block";
+        panelManual.style.display = "none";
+    } else {
+        btnManual.classList.add("active");
+        btnGps.classList.remove("active");
+        panelGps.style.display = "none";
+        panelManual.style.display = "block";
+    }
+}
+
+function switchStudentManualMode(mode) {
+    const btnCurr = document.getElementById("subtab-stu-mode-current");
+    const btnLeg = document.getElementById("subtab-stu-mode-legacy");
+    const fieldsCurr = document.getElementById("fields-stu-mode-current");
+    const fieldsLeg = document.getElementById("fields-stu-mode-legacy");
+
+    if (mode === "current") {
+        btnCurr.classList.add("active");
+        btnLeg.classList.remove("active");
+        fieldsCurr.style.display = "block";
+        fieldsLeg.style.display = "none";
+    } else {
+        btnLeg.classList.add("active");
+        btnCurr.classList.remove("active");
+        fieldsCurr.style.display = "none";
+        fieldsLeg.style.display = "block";
+    }
+}
+
+function renderStudentResolvedPreview(data) {
+    studentResolvedLocation = data;
+    const previewBox = document.getElementById("stu-resolved-preview");
+    const coordsEl = document.getElementById("stu-preview-coords");
+    const addrEl = document.getElementById("stu-preview-address");
+    const provEl = document.getElementById("stu-preview-province");
+    const commEl = document.getElementById("stu-preview-commune");
+    const distEl = document.getElementById("stu-preview-district");
+    const applyBtn = document.getElementById("btn-apply-stu-nearby");
+
+    if (!data || data.latitude == null || data.longitude == null) {
+        if (previewBox) previewBox.style.display = "none";
+        if (applyBtn) applyBtn.disabled = true;
+        return;
+    }
+
+    const latStr = typeof data.latitude === "number" ? data.latitude.toFixed(5) : data.latitude;
+    const lngStr = typeof data.longitude === "number" ? data.longitude.toFixed(5) : data.longitude;
+
+    if (coordsEl) coordsEl.innerText = `${latStr}, ${lngStr}`;
+    if (addrEl) addrEl.innerText = data.address_text || "Vị trí đã chọn";
+    if (provEl) provEl.innerText = `Tỉnh/TP: ${data.province || "Chưa rõ"}`;
+    if (commEl) commEl.innerText = `Phường/Xã: ${data.commune || "Chưa rõ"}`;
+
+    if (distEl) {
+        if (data.district_text_legacy) {
+            distEl.innerText = `Quận/Huyện cũ: ${data.district_text_legacy}`;
+            distEl.style.display = "inline-block";
+        } else {
+            distEl.style.display = "none";
+        }
+    }
+
+    if (previewBox) previewBox.style.display = "block";
+    if (applyBtn) applyBtn.disabled = false;
+}
+
+async function fetchStudentGpsLocation() {
+    if (!window.isSecureContext && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
+        showToast("Tính năng GPS chỉ hoạt động trên HTTPS.", "warning");
+    }
+
+    if (!navigator.geolocation) {
+        showToast("Trình duyệt của bạn không hỗ trợ định vị GPS.", "error");
+        return;
+    }
+
+    const btn = document.getElementById("btn-get-stu-gps");
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="autocomplete-spinner" style="position:static;width:14px;height:14px;display:inline-block;margin-right:0.35rem;"></span> Đang lấy vị trí GPS...`;
+
+    navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            // Tọa độ GPS chỉ lưu trong bộ nhớ phiên này, KHÔNG lưu xuống localStorage hay cookies
+
+            try {
+                const res = await apiRequest("/map/resolve-location", {
+                    method: "POST",
+                    body: {
+                        source: "gps",
+                        latitude: lat,
+                        longitude: lng
+                    }
+                });
+
+                if (res && res.success && res.data) {
+                    renderStudentResolvedPreview(res.data);
+                    showToast("Đã xác thực vị trí GPS thành công qua Goong.", "success");
+                } else {
+                    showToast((res && res.message) ? res.message : "Không thể nhận diện địa chỉ từ GPS.", "error");
+                }
+            } catch (err) {
+                console.error("GPS resolve error:", err);
+                showToast("Lỗi khi xác thực vị trí GPS.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        },
+        (err) => {
+            console.warn("Student GPS error:", err);
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+
+            let msg = "Không thể lấy vị trí GPS.";
+            if (err.code === err.PERMISSION_DENIED) {
+                msg = "Bạn đã từ chối quyền truy cập vị trí. Hãy chuyển sang tab Nhập địa chỉ.";
+            } else if (err.code === err.POSITION_UNAVAILABLE) {
+                msg = "Không xác định được vị trí GPS. Vui lòng chuyển sang tab Nhập địa chỉ.";
+            } else if (err.code === err.TIMEOUT) {
+                msg = "Quá thời gian chờ định vị GPS. Vui lòng thử lại hoặc nhập địa chỉ.";
+            }
+            showToast(msg, "warning");
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+    );
+}
+
+async function resolveStudentManualAddress() {
+    const isLegacy = document.getElementById("subtab-stu-mode-legacy").classList.contains("active");
+    let province = "";
+    let district = "";
+    let ward = "";
+    let detail = "";
+
+    if (isLegacy) {
+        province = document.getElementById("stu-manual-leg-province").value.trim();
+        district = document.getElementById("stu-manual-leg-district").value.trim();
+        ward = document.getElementById("stu-manual-leg-ward").value.trim();
+        detail = document.getElementById("stu-manual-leg-detail").value.trim();
+
+        if (!province) { showToast("Vui lòng nhập Tỉnh/Thành phố.", "warning"); return; }
+        if (!district) { showToast("Vui lòng nhập Quận/Huyện cũ.", "warning"); return; }
+        if (!ward) { showToast("Vui lòng nhập Phường/Xã.", "warning"); return; }
+        if (!detail || detail.length < 3) { showToast("Vui lòng nhập địa chỉ chi tiết.", "warning"); return; }
+    } else {
+        province = document.getElementById("stu-manual-curr-province").value.trim();
+        ward = document.getElementById("stu-manual-curr-ward").value.trim();
+        detail = document.getElementById("stu-manual-curr-detail").value.trim();
+
+        if (!province) { showToast("Vui lòng nhập Tỉnh/Thành phố.", "warning"); return; }
+        if (!ward) { showToast("Vui lòng nhập Phường/Xã.", "warning"); return; }
+        if (!detail || detail.length < 3) { showToast("Vui lòng nhập địa chỉ chi tiết.", "warning"); return; }
+    }
+
+    const btn = document.getElementById("btn-stu-resolve-manual");
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="autocomplete-spinner" style="position:static;width:14px;height:14px;display:inline-block;margin-right:0.35rem;"></span> Đang xác thực...`;
+
+    try {
+        const payload = {
+            source: "manual",
+            administrative_mode: isLegacy ? "legacy" : "current",
+            province: province,
+            ward: ward,
+            address_detail: detail
+        };
+        if (isLegacy && district) {
+            payload.district = district;
+        }
+
+        const res = await apiRequest("/map/resolve-location", {
+            method: "POST",
+            body: payload
+        });
+
+        if (res && res.success && res.data) {
+            renderStudentResolvedPreview(res.data);
+            showToast("Địa chỉ đã được chuẩn hóa và xác thực tọa độ.", "success");
+        } else {
+            showToast((res && res.message) ? res.message : "Goong không tìm thấy địa chỉ phù hợp.", "error");
+        }
+    } catch (err) {
+        console.error("Manual address resolve error:", err);
+        showToast("Lỗi khi kết nối chuẩn hóa địa chỉ.", "error");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+function applyStudentNearbySearch() {
+    if (!studentResolvedLocation || studentResolvedLocation.latitude == null || studentResolvedLocation.longitude == null) {
+        showToast("Chưa có tọa độ hợp lệ để tìm kiếm.", "warning");
+        return;
+    }
+
+    // Tọa độ chỉ lưu tạm trong bộ nhớ phiên này, KHÔNG lưu xuống localStorage hay cookies
+    userCoords = {
+        latitude: studentResolvedLocation.latitude,
+        longitude: studentResolvedLocation.longitude,
+        address_text: studentResolvedLocation.address_text || "Vị trí đã chọn",
+        province: studentResolvedLocation.province || null,
+        commune: studentResolvedLocation.commune || null,
+        district_text_legacy: studentResolvedLocation.district_text_legacy || null
+    };
+
+    isNearbyMode = true;
+    closeStudentNearbyModal();
+
+    document.getElementById("btn-nearby-jobs").classList.add("active");
+    document.getElementById("btn-nearby-jobs").setAttribute("aria-pressed", "true");
+    document.querySelectorAll(".quick-pill-nearby").forEach(b => b.classList.add("active"));
+    document.getElementById("nearby-filter-bar").style.display = "flex";
+
+    const originLabel = document.getElementById("nearby-origin-label");
+    if (originLabel) {
+        originLabel.innerText = userCoords.address_text;
+        originLabel.title = userCoords.address_text;
+    }
+
+    // Hiển thị nút "Lưu làm khu vực mong muốn" nếu là sinh viên đã đăng nhập
+    const savePrefBtn = document.getElementById("btn-save-preferred-loc");
+    if (savePrefBtn) {
+        const user = (typeof TokenStorage !== "undefined" && TokenStorage.isLoggedIn()) ? TokenStorage.getUser() : null;
+        if (user && (user.role === "student" || user.role === "developer")) {
+            savePrefBtn.style.display = "inline-flex";
+            savePrefBtn.innerHTML = "💾 Lưu làm khu vực mong muốn";
+            savePrefBtn.disabled = false;
+        } else {
+            savePrefBtn.style.display = "none";
+        }
+    }
+
+    // Thêm tùy chọn "Gần nhất" vào sort-select nếu chưa có
+    const sortSel = document.getElementById("sort-select");
+    let hasDistOpt = Array.from(sortSel.options).some(opt => opt.value === "nearby_distance");
+    if (!hasDistOpt) {
+        const opt = document.createElement("option");
+        opt.value = "nearby_distance";
+        opt.textContent = "Gần nhất";
+        sortSel.insertBefore(opt, sortSel.firstChild);
+    }
+    sortSel.value = "nearby_distance";
+    sortSel.disabled = true;
+    currentSort = "nearby_distance";
+
+    loadJobs(1);
+}
+
+async function saveCurrentNearbyToPreferred() {
+    if (typeof TokenStorage === "undefined" || !TokenStorage.isLoggedIn()) {
+        showToast("Vui lòng đăng nhập với tài khoản sinh viên để lưu khu vực mong muốn.", "warning");
+        return;
+    }
+    const user = TokenStorage.getUser();
+    if (!user || (user.role !== "student" && user.role !== "developer")) {
+        showToast("Chỉ tài khoản sinh viên mới có tính năng này.", "warning");
+        return;
+    }
+    if (!userCoords || userCoords.latitude == null || userCoords.longitude == null) {
+        showToast("Chưa có vị trí hợp lệ để lưu.", "warning");
+        return;
+    }
+
+    const btn = document.getElementById("btn-save-preferred-loc");
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerText = "Đang lưu...";
+
+    try {
+        const getRes = await apiRequest("/student/preferred-locations", { requireAuth: true });
+        let existingList = (getRes && getRes.success && Array.isArray(getRes.data)) ? getRes.data : [];
+
+        const isDuplicate = existingList.some(item =>
+            Math.abs(item.latitude - userCoords.latitude) < 0.001 &&
+            Math.abs(item.longitude - userCoords.longitude) < 0.001
+        );
+
+        if (isDuplicate) {
+            showToast("Vị trí này đã có trong danh sách khu vực mong muốn của bạn.", "info");
+            btn.innerHTML = "✓ Đã lưu trước đó";
+            return;
+        }
+
+        if (existingList.length >= 10) {
+            showToast("Bạn đã lưu tối đa 10 khu vực mong muốn trong hồ sơ.", "warning");
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+        }
+
+        const newEntry = {
+            address_text: userCoords.address_text || "Vị trí đã chọn",
+            province: userCoords.province || null,
+            commune: userCoords.commune || null,
+            district_text_legacy: userCoords.district_text_legacy || null,
+            latitude: userCoords.latitude,
+            longitude: userCoords.longitude,
+            preferred_radius_km: nearbyRadiusKm
+        };
+
+        const updatedLocations = [...existingList, newEntry];
+
+        const saveRes = await apiRequest("/student/preferred-locations", {
+            method: "PUT",
+            body: {
+                locations: updatedLocations
+            },
+            requireAuth: true
+        });
+
+        if (saveRes && saveRes.success) {
+            showToast("Đã lưu khu vực vào danh sách mong muốn thành công!", "success");
+            btn.innerHTML = "✓ Đã lưu khu vực";
+        } else {
+            showToast((saveRes && saveRes.message) ? saveRes.message : "Không thể lưu khu vực mong muốn.", "error");
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    } catch (err) {
+        console.error("Save preferred location error:", err);
+        showToast("Lỗi khi lưu khu vực mong muốn.", "error");
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
 async function toggleNearbyJobs() {
     if (isNearbyMode) {
         exitNearbyMode();
         return;
     }
-
-    if (!navigator.geolocation) {
-        showNearbyBanner("Trình duyệt của bạn không hỗ trợ xác định vị trí địa lý.", "error");
-        return;
-    }
-
-    showNearbyBanner(`
-        <div style="display:flex;align-items:center;gap:0.6rem;">
-            <div class="autocomplete-spinner" style="position:static;width:16px;height:16px;"></div>
-            <span>Đang yêu cầu quyền truy cập vị trí hiện tại của bạn...</span>
-        </div>
-    `, "info");
-
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            // Tọa độ chỉ được lưu vào biến bộ nhớ phiên này, KHÔNG lưu xuống localStorage hay cookies
-            userCoords = {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude
-            };
-            isNearbyMode = true;
-            hideNearbyBanner();
-
-            document.getElementById("btn-nearby-jobs").classList.add("active");
-            document.getElementById("btn-nearby-jobs").setAttribute("aria-pressed", "true");
-            document.querySelectorAll(".quick-pill-nearby").forEach(b => b.classList.add("active"));
-            document.getElementById("nearby-filter-bar").style.display = "flex";
-
-            // Thêm tùy chọn "Gần nhất" vào sort-select nếu chưa có
-            const sortSel = document.getElementById("sort-select");
-            let hasDistOpt = Array.from(sortSel.options).some(opt => opt.value === "nearby_distance");
-            if (!hasDistOpt) {
-                const opt = document.createElement("option");
-                opt.value = "nearby_distance";
-                opt.textContent = "Gần nhất";
-                sortSel.insertBefore(opt, sortSel.firstChild);
-            }
-            sortSel.value = "nearby_distance";
-            sortSel.disabled = true;
-            currentSort = "nearby_distance";
-
-            loadJobs(1);
-        },
-        (error) => {
-            console.warn("Geolocation error:", error);
-            let msg = "";
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    msg = "Bạn đã từ chối chia sẻ vị trí. Bạn có thể chọn khu vực mong muốn ở bộ lọc phía trên hoặc cho phép lại quyền vị trí trong cài đặt trình duyệt.";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    msg = "Không thể xác định vị trí hiện tại của thiết bị. Vui lòng thử lại hoặc chọn tỉnh thành trong bộ lọc.";
-                    break;
-                case error.TIMEOUT:
-                    msg = "Yêu cầu vị trí quá thời gian chờ (timeout). Vui lòng kiểm tra lại kết nối mạng hoặc GPS.";
-                    break;
-                default:
-                    msg = "Đã xảy ra sự cố khi xác định vị trí của bạn.";
-                    break;
-            }
-
-            showNearbyBanner(`
-                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
-                    <span>⚠️ ${escapeHtml(msg)}</span>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="hideNearbyBanner()" style="font-size:0.75rem;padding:0.2rem 0.5rem;">Đóng</button>
-                </div>
-            `, "warning");
-        },
-        {
-            timeout: 10000,
-            enableHighAccuracy: false
-        }
-    );
+    openStudentNearbyModal();
 }
 
 function setNearbyRadius(km) {

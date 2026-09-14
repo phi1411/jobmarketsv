@@ -16,8 +16,8 @@ class AuthMiddleware implements MiddlewareInterface
      * Routes accessible publicly without authentication
      */
     private array $publicRoutes = [
-        "GET"  => ["/", "/jobs", "/categories", "/skills", "/locations", "/locations/hierarchy", "/developers", "/viec-lam", "/mau-cv-sinh-vien", "/cv/templates", "/login", "/register", "/logout", "/auth/google/start", "/auth/google/callback", "/auto-runner"],
-        "POST" => ["/login", "/register", "/assistant/chat", "/assistant/feedback", "/jobs/nearby-search"]
+        "GET"  => ["/", "/jobs", "/categories", "/skills", "/locations", "/locations/hierarchy", "/developers", "/viec-lam", "/mau-cv-sinh-vien", "/cv/templates", "/login", "/register", "/logout", "/auth/google/start", "/auth/google/callback", "/auto-runner", "/map/places/autocomplete"],
+        "POST" => ["/login", "/register", "/assistant/chat", "/assistant/feedback", "/jobs/nearby-search", "/map/places/detail", "/map/geocode", "/map/reverse-geocode", "/map/resolve-location"]
     ];
 
     public function __invoke(Request $request): Response

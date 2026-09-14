@@ -1223,3 +1223,179 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================================================
+   7. Top-Level Method Selector & Manual Address Resolver Styles
+   ========================================================================== */
+
+.loc-method-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    background: #f1f5f9;
+    padding: 0.35rem;
+    border-radius: var(--radius-sm, 6px);
+    margin-bottom: 1.25rem;
+}
+
+.loc-method-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 0.75rem;
+    background: transparent;
+    border: none;
+    border-radius: calc(var(--radius-sm, 6px) - 2px);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.loc-method-btn:hover {
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.loc-method-btn.active {
+    background: #ffffff;
+    color: var(--primary, #10b981);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* GPS Panel Styles */
+.loc-gps-box {
+    text-align: center;
+    padding: 1.75rem 1.25rem;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: var(--radius-sm, 6px);
+    margin-bottom: 1.25rem;
+}
+
+.loc-gps-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #e6fcf5;
+    color: var(--primary, #10b981);
+    margin-bottom: 0.75rem;
+}
+
+.loc-gps-desc {
+    font-size: 0.88rem;
+    color: #64748b;
+    max-width: 420px;
+    margin: 0 auto 1.25rem;
+    line-height: 1.45;
+}
+
+.loc-gps-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+/* Manual Address Subtabs */
+.loc-subtabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1rem;
+    padding-bottom: 0.25rem;
+}
+
+.loc-subtab-btn {
+    background: none;
+    border: none;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    margin-bottom: -0.25rem;
+}
+
+.loc-subtab-btn:hover {
+    color: #0f172a;
+}
+
+.loc-subtab-btn.active {
+    color: var(--primary, #10b981);
+    border-bottom-color: var(--primary, #10b981);
+}
+
+/* Resolved Address Preview Box */
+.loc-resolved-preview {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: var(--radius-sm, 6px);
+    padding: 0.9rem 1rem;
+    margin-bottom: 1.25rem;
+    position: relative;
+}
+
+.loc-resolved-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.loc-resolved-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: #dcfce7;
+    color: #166534;
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+}
+
+.loc-resolved-address {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.4;
+    margin-bottom: 0.4rem;
+}
+
+.loc-resolved-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+    font-size: 0.78rem;
+    color: #374151;
+    margin-bottom: 0.4rem;
+}
+
+.loc-resolved-tag {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.resolved-coords-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    background: #e2e8f0;
+    color: #334155;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+

@@ -246,7 +246,7 @@ $editingJobId = $jobId ?? "";
 
 <!-- Modal: Thêm / Sửa Địa Điểm Làm Việc -->
 <div id="modal-location-form" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:10000;align-items:center;justify-content:center;padding:1rem;" role="dialog" aria-modal="true" aria-labelledby="modal-loc-title">
-    <div style="background:#fff;border-radius:var(--radius);max-width:560px;width:100%;padding:1.5rem;box-shadow:var(--shadow);position:relative;">
+    <div style="background:#fff;border-radius:var(--radius);max-width:600px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;box-shadow:var(--shadow);position:relative;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
             <h3 id="modal-loc-title" style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:0;">Thêm Địa Điểm Làm Việc</h3>
             <button type="button" onclick="closeLocationModal()" class="modal-close-btn" aria-label="Đóng">&times;</button>
@@ -255,16 +255,121 @@ $editingJobId = $jobId ?? "";
         <form id="form-location-modal" onsubmit="handleSaveLocation(event)">
             <input type="hidden" id="loc-edit-id" value="">
 
+            <!-- Hai lựa chọn lớn: Dùng vị trí hiện tại vs Nhập địa chỉ -->
+            <div class="loc-method-selector">
+                <button type="button" class="loc-method-btn active" id="btn-tab-gps" onclick="switchLocationMethod('gps')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M2 12h4m12 0h4m-7 0a5 5 0 1 1-10 0 5 5 0 0 1 10 0z"/></svg>
+                    <span>Dùng vị trí hiện tại</span>
+                </button>
+                <button type="button" class="loc-method-btn" id="btn-tab-manual" onclick="switchLocationMethod('manual')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    <span>Nhập địa chỉ</span>
+                </button>
+            </div>
+
+            <!-- Panel 1: Dùng vị trí hiện tại (GPS) -->
+            <div id="panel-loc-gps" class="loc-gps-box">
+                <div class="loc-gps-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polygon points="12 8 8 12 12 16 16 12 12 8"></polygon></svg>
+                </div>
+                <div style="font-weight:700;color:var(--dark);font-size:0.95rem;margin-bottom:0.35rem;">Định vị GPS từ thiết bị</div>
+                <div class="loc-gps-desc">
+                    Trình duyệt sẽ lấy tọa độ GPS thực tế và hệ thống sẽ tự động xác thực địa chỉ qua Goong. Tọa độ chỉ dùng cho phiên này và không lưu vào bộ nhớ trình duyệt.
+                    <div style="margin-top:0.4rem;color:#d97706;font-size:0.8rem;font-weight:600;">⚠️ Lưu ý: GPS chỉ hoạt động trên kết nối an toàn HTTPS hoặc localhost.</div>
+                </div>
+                <div class="loc-gps-actions">
+                    <button type="button" id="btn-get-modal-gps" class="btn btn-outline" style="font-weight:600;display:inline-flex;align-items:center;gap:0.45rem;" onclick="fetchModalGpsLocation()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        <span>Lấy vị trí GPS</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel 2: Nhập địa chỉ (Manual) -->
+            <div id="panel-loc-manual" style="display:none;margin-bottom:1.25rem;">
+                <!-- Subtabs: Hiện hành vs Cũ -->
+                <div class="loc-subtabs">
+                    <button type="button" class="loc-subtab-btn active" id="subtab-mode-current" onclick="switchManualMode('current')">
+                        Địa chỉ hiện hành
+                    </button>
+                    <button type="button" class="loc-subtab-btn" id="subtab-mode-legacy" onclick="switchManualMode('legacy')">
+                        Địa chỉ cũ (có Quận/Huyện)
+                    </button>
+                </div>
+
+                <!-- Fields: Địa chỉ hiện hành -->
+                <div id="fields-mode-current">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
+                        <div class="form-group" style="margin:0;">
+                            <label class="form-label" style="font-size:0.84rem;">Tỉnh / Thành phố *</label>
+                            <input type="text" id="manual-curr-province" class="form-control" placeholder="VD: TP. Hồ Chí Minh, Hà Nội...">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label class="form-label" style="font-size:0.84rem;">Phường / Xã *</label>
+                            <input type="text" id="manual-curr-ward" class="form-control" placeholder="VD: Phường Bến Nghé, Xã An Khánh...">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0.75rem;">
+                        <label class="form-label" style="font-size:0.84rem;">Địa chỉ chi tiết *</label>
+                        <input type="text" id="manual-curr-detail" class="form-control" placeholder="Số nhà, tên đường, tên tòa nhà/cửa hàng...">
+                    </div>
+                </div>
+
+                <!-- Fields: Địa chỉ cũ -->
+                <div id="fields-mode-legacy" style="display:none;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;margin-bottom:0.75rem;">
+                        <div class="form-group" style="margin:0;">
+                            <label class="form-label" style="font-size:0.84rem;">Tỉnh / TP *</label>
+                            <input type="text" id="manual-leg-province" class="form-control" placeholder="VD: TP. HCM">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label class="form-label" style="font-size:0.84rem;">Quận / Huyện *</label>
+                            <input type="text" id="manual-leg-district" class="form-control" placeholder="VD: Quận 1">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label class="form-label" style="font-size:0.84rem;">Phường / Xã *</label>
+                            <input type="text" id="manual-leg-ward" class="form-control" placeholder="VD: Bến Nghé">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0.75rem;">
+                        <label class="form-label" style="font-size:0.84rem;">Địa chỉ chi tiết *</label>
+                        <input type="text" id="manual-leg-detail" class="form-control" placeholder="Số nhà, tên đường, tên tòa nhà/cửa hàng...">
+                    </div>
+                </div>
+
+                <div style="display:flex;justify-content:flex-end;">
+                    <button type="button" id="btn-resolve-manual" class="btn btn-outline btn-sm" style="font-weight:600;" onclick="resolveManualAddressModal()">
+                        🔍 Xác thực & Chuẩn hóa địa chỉ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Autocomplete fallback / quick search container -->
+            <div id="loc-autocomplete-wrapper" style="display:none;margin-bottom:1rem;">
+                <div id="loc-autocomplete-container"></div>
+            </div>
+
+            <!-- Hộp kết quả chuẩn hóa (Result Preview Box) -->
+            <div id="loc-resolved-preview" class="loc-resolved-preview" style="display:none;">
+                <div class="loc-resolved-header">
+                    <span class="loc-resolved-badge">✓ Đã chuẩn hóa & xác thực tọa độ</span>
+                    <span id="loc-preview-coords" class="resolved-coords-chip">10.77, 106.70</span>
+                </div>
+                <div id="loc-preview-address" class="loc-resolved-address">Địa chỉ hiển thị ở đây</div>
+                <div class="loc-resolved-details">
+                    <span id="loc-preview-province" class="loc-resolved-tag">Tỉnh/TP: ...</span>
+                    <span id="loc-preview-commune" class="loc-resolved-tag">Phường/Xã: ...</span>
+                    <span id="loc-preview-district" class="loc-resolved-tag" style="display:none;">Quận/Huyện cũ: ...</span>
+                </div>
+            </div>
+
+            <!-- Trường chi nhánh -->
             <div class="form-group" style="margin-bottom:1rem;">
                 <label class="form-label" for="loc-branch-name">Tên chi nhánh / cơ sở (Tùy chọn)</label>
                 <input type="text" id="loc-branch-name" class="form-control" placeholder="Ví dụ: Chi nhánh Nguyễn Huệ, Cửa hàng số 2..." maxlength="150">
             </div>
 
-            <div class="form-group" style="margin-bottom:1rem;">
-                <div id="loc-autocomplete-container"></div>
-                <small class="form-help">Tìm kiếm theo tên đường, phường/xã, quận/huyện để hệ thống tự động xác thực tọa độ.</small>
-            </div>
-
+            <!-- Trường làm địa điểm chính -->
             <div class="form-group" style="margin-bottom:1.25rem;">
                 <label style="display:inline-flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.9rem;font-weight:600;color:var(--dark);">
                     <input type="checkbox" id="loc-is-primary" style="width:17px;height:17px;">
@@ -272,9 +377,10 @@ $editingJobId = $jobId ?? "";
                 </label>
             </div>
 
+            <!-- Actions -->
             <div style="display:flex;justify-content:flex-end;gap:0.75rem;">
                 <button type="button" class="btn btn-outline btn-sm" onclick="closeLocationModal()">Hủy</button>
-                <button type="submit" id="btn-save-loc" class="btn btn-primary btn-sm">Lưu Địa Điểm</button>
+                <button type="submit" id="btn-save-loc" class="btn btn-primary btn-sm" disabled>Lưu Địa Điểm</button>
             </div>
         </form>
     </div>
@@ -456,6 +562,211 @@ function renderJobLocations() {
     }).join("");
 }
 
+let currentResolvedLocation = null;
+
+function switchLocationMethod(method) {
+    const btnGps = document.getElementById("btn-tab-gps");
+    const btnManual = document.getElementById("btn-tab-manual");
+    const panelGps = document.getElementById("panel-loc-gps");
+    const panelManual = document.getElementById("panel-loc-manual");
+
+    if (method === "gps") {
+        btnGps.classList.add("active");
+        btnManual.classList.remove("active");
+        panelGps.style.display = "block";
+        panelManual.style.display = "none";
+    } else {
+        btnManual.classList.add("active");
+        btnGps.classList.remove("active");
+        panelGps.style.display = "none";
+        panelManual.style.display = "block";
+    }
+}
+
+function switchManualMode(mode) {
+    const btnCurr = document.getElementById("subtab-mode-current");
+    const btnLeg = document.getElementById("subtab-mode-legacy");
+    const fieldsCurr = document.getElementById("fields-mode-current");
+    const fieldsLeg = document.getElementById("fields-mode-legacy");
+
+    if (mode === "current") {
+        btnCurr.classList.add("active");
+        btnLeg.classList.remove("active");
+        fieldsCurr.style.display = "block";
+        fieldsLeg.style.display = "none";
+    } else {
+        btnLeg.classList.add("active");
+        btnCurr.classList.remove("active");
+        fieldsCurr.style.display = "none";
+        fieldsLeg.style.display = "block";
+    }
+}
+
+function renderResolvedPreview(data) {
+    currentResolvedLocation = data;
+    const previewBox = document.getElementById("loc-resolved-preview");
+    const coordsEl = document.getElementById("loc-preview-coords");
+    const addrEl = document.getElementById("loc-preview-address");
+    const provEl = document.getElementById("loc-preview-province");
+    const commEl = document.getElementById("loc-preview-commune");
+    const distEl = document.getElementById("loc-preview-district");
+    const saveBtn = document.getElementById("btn-save-loc");
+
+    if (!data || data.latitude == null || data.longitude == null) {
+        if (previewBox) previewBox.style.display = "none";
+        if (saveBtn) saveBtn.disabled = true;
+        return;
+    }
+
+    const latStr = typeof data.latitude === "number" ? data.latitude.toFixed(5) : data.latitude;
+    const lngStr = typeof data.longitude === "number" ? data.longitude.toFixed(5) : data.longitude;
+
+    if (coordsEl) coordsEl.innerText = `${latStr}, ${lngStr}`;
+    if (addrEl) addrEl.innerText = data.address_text || "Địa chỉ không tên";
+    if (provEl) provEl.innerText = `Tỉnh/TP: ${data.province || "Chưa rõ"}`;
+    if (commEl) commEl.innerText = `Phường/Xã: ${data.commune || "Chưa rõ"}`;
+
+    if (distEl) {
+        if (data.district_text_legacy) {
+            distEl.innerText = `Quận/Huyện cũ: ${data.district_text_legacy}`;
+            distEl.style.display = "inline-block";
+        } else {
+            distEl.style.display = "none";
+        }
+    }
+
+    if (previewBox) previewBox.style.display = "block";
+    if (saveBtn) saveBtn.disabled = false;
+}
+
+async function fetchModalGpsLocation() {
+    if (!window.isSecureContext && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
+        showToast("Tính năng GPS chỉ hoạt động trên kết nối an toàn HTTPS.", "warning");
+    }
+
+    if (!navigator.geolocation) {
+        showToast("Trình duyệt không hỗ trợ Geolocation GPS.", "error");
+        return;
+    }
+
+    const btn = document.getElementById("btn-get-modal-gps");
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="autocomplete-spinner" style="position:static;width:14px;height:14px;display:inline-block;margin-right:0.35rem;"></span> Đang lấy vị trí GPS...`;
+
+    navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            // Tọa độ GPS chỉ lưu tạm trong bộ nhớ phiên, tuyệt đối KHÔNG lưu vào localStorage hay sessionStorage
+
+            try {
+                const res = await apiRequest("/map/resolve-location", {
+                    method: "POST",
+                    body: {
+                        source: "gps",
+                        latitude: lat,
+                        longitude: lng
+                    }
+                });
+
+                if (res && res.success && res.data) {
+                    renderResolvedPreview(res.data);
+                    showToast("Đã xác thực vị trí GPS thành công qua Goong.", "success");
+                } else {
+                    showToast((res && res.message) ? res.message : "Không thể nhận diện địa chỉ từ GPS.", "error");
+                }
+            } catch (err) {
+                console.error("GPS resolve error:", err);
+                showToast("Lỗi khi xác thực vị trí GPS.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        },
+        (err) => {
+            console.warn("Modal GPS error:", err);
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+
+            let msg = "Không thể lấy vị trí GPS.";
+            if (err.code === err.PERMISSION_DENIED) {
+                msg = "Bạn đã từ chối quyền truy cập vị trí GPS. Hãy nhập địa chỉ thủ công ở tab bên cạnh.";
+            } else if (err.code === err.POSITION_UNAVAILABLE) {
+                msg = "Vị trí GPS không khả dụng. Vui lòng chuyển sang tab Nhập địa chỉ.";
+            } else if (err.code === err.TIMEOUT) {
+                msg = "Quá thời gian chờ định vị GPS. Vui lòng thử lại hoặc nhập địa chỉ.";
+            }
+            showToast(msg, "warning");
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+    );
+}
+
+async function resolveManualAddressModal() {
+    const isLegacy = document.getElementById("subtab-mode-legacy").classList.contains("active");
+    let province = "";
+    let district = "";
+    let ward = "";
+    let detail = "";
+
+    if (isLegacy) {
+        province = document.getElementById("manual-leg-province").value.trim();
+        district = document.getElementById("manual-leg-district").value.trim();
+        ward = document.getElementById("manual-leg-ward").value.trim();
+        detail = document.getElementById("manual-leg-detail").value.trim();
+
+        if (!province) { showToast("Vui lòng nhập Tỉnh/Thành phố.", "warning"); return; }
+        if (!district) { showToast("Vui lòng nhập Quận/Huyện cũ.", "warning"); return; }
+        if (!ward) { showToast("Vui lòng nhập Phường/Xã.", "warning"); return; }
+        if (!detail || detail.length < 3) { showToast("Vui lòng nhập địa chỉ chi tiết (số nhà, đường...).", "warning"); return; }
+    } else {
+        province = document.getElementById("manual-curr-province").value.trim();
+        ward = document.getElementById("manual-curr-ward").value.trim();
+        detail = document.getElementById("manual-curr-detail").value.trim();
+
+        if (!province) { showToast("Vui lòng nhập Tỉnh/Thành phố.", "warning"); return; }
+        if (!ward) { showToast("Vui lòng nhập Phường/Xã.", "warning"); return; }
+        if (!detail || detail.length < 3) { showToast("Vui lòng nhập địa chỉ chi tiết (số nhà, đường...).", "warning"); return; }
+    }
+
+    const btn = document.getElementById("btn-resolve-manual");
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="autocomplete-spinner" style="position:static;width:14px;height:14px;display:inline-block;margin-right:0.35rem;"></span> Đang xác thực...`;
+
+    try {
+        const payload = {
+            source: "manual",
+            administrative_mode: isLegacy ? "legacy" : "current",
+            province: province,
+            ward: ward,
+            address_detail: detail
+        };
+        if (isLegacy && district) {
+            payload.district = district;
+        }
+
+        const res = await apiRequest("/map/resolve-location", {
+            method: "POST",
+            body: payload
+        });
+
+        if (res && res.success && res.data) {
+            renderResolvedPreview(res.data);
+            showToast("Địa chỉ đã được chuẩn hóa và xác thực tọa độ thành công.", "success");
+        } else {
+            showToast((res && res.message) ? res.message : "Goong không tìm thấy địa chỉ phù hợp.", "error");
+        }
+    } catch (err) {
+        console.error("Manual address resolve error:", err);
+        showToast("Lỗi khi kết nối chuẩn hóa địa chỉ.", "error");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
 function openAddLocationModal() {
     if (jobLocations.length >= 20) {
         showToast("Mỗi tin được có tối đa 20 địa điểm làm việc.", "warning");
@@ -465,7 +776,22 @@ function openAddLocationModal() {
     document.getElementById("loc-edit-id").value = "";
     document.getElementById("loc-branch-name").value = "";
     document.getElementById("loc-is-primary").checked = jobLocations.length === 0;
-    locAutocompleteInstance.clear();
+
+    // Reset inputs
+    document.getElementById("manual-curr-province").value = "";
+    document.getElementById("manual-curr-ward").value = "";
+    document.getElementById("manual-curr-detail").value = "";
+    document.getElementById("manual-leg-province").value = "";
+    document.getElementById("manual-leg-district").value = "";
+    document.getElementById("manual-leg-ward").value = "";
+    document.getElementById("manual-leg-detail").value = "";
+
+    if (locAutocompleteInstance) locAutocompleteInstance.clear();
+    currentResolvedLocation = null;
+    renderResolvedPreview(null);
+
+    switchLocationMethod("gps");
+    switchManualMode("current");
 
     document.getElementById("modal-location-form").style.display = "flex";
 }
@@ -478,13 +804,34 @@ function openEditLocationModal(id) {
     document.getElementById("loc-edit-id").value = id;
     document.getElementById("loc-branch-name").value = loc.branch_name || "";
     document.getElementById("loc-is-primary").checked = !!loc.is_primary;
-    const providerPlaceId = loc.provider_place_id || loc.place_id || null;
-    const draftSelectedPlace = loc.temp_id && providerPlaceId ? {
-        ...loc,
-        place_id: providerPlaceId,
-        description: loc.address_text || ""
-    } : null;
-    locAutocompleteInstance.setValue(loc.address_text || "", draftSelectedPlace);
+
+    currentResolvedLocation = {
+        address_text: loc.address_text,
+        province: loc.province,
+        commune: loc.commune,
+        district_text_legacy: loc.district_text_legacy,
+        latitude: loc.latitude,
+        longitude: loc.longitude,
+        provider_place_id: loc.provider_place_id || loc.place_id || null,
+        geocode_status: loc.geocode_status || "verified"
+    };
+
+    // Populate manual inputs for editing convenience
+    if (loc.district_text_legacy) {
+        switchManualMode("legacy");
+        document.getElementById("manual-leg-province").value = loc.province || "";
+        document.getElementById("manual-leg-district").value = loc.district_text_legacy || "";
+        document.getElementById("manual-leg-ward").value = loc.commune || "";
+        document.getElementById("manual-leg-detail").value = loc.address_text || "";
+    } else {
+        switchManualMode("current");
+        document.getElementById("manual-curr-province").value = loc.province || "";
+        document.getElementById("manual-curr-ward").value = loc.commune || "";
+        document.getElementById("manual-curr-detail").value = loc.address_text || "";
+    }
+
+    renderResolvedPreview(currentResolvedLocation);
+    switchLocationMethod("manual");
 
     document.getElementById("modal-location-form").style.display = "flex";
 }
@@ -498,13 +845,10 @@ async function handleSaveLocation(e) {
     const editId = document.getElementById("loc-edit-id").value.trim();
     const branchName = document.getElementById("loc-branch-name").value.trim();
     const isPrimary = document.getElementById("loc-is-primary").checked;
-    const selected = locAutocompleteInstance.getSelected();
-    const rawAddress = locAutocompleteInstance.getValue();
-    const currentLocation = editId ? jobLocations.find(l => (l.id || l.temp_id) === editId) : null;
-    const isUnchangedExistingAddress = !!currentLocation && rawAddress === (currentLocation.address_text || "");
 
-    if (!selected && !isUnchangedExistingAddress) {
-        showToast("Vui lòng chọn một địa chỉ trong danh sách gợi ý Goong để xác thực tọa độ.", "warning");
+    // Check if valid coordinates have been obtained
+    if (!currentResolvedLocation || currentResolvedLocation.latitude == null || currentResolvedLocation.longitude == null) {
+        showToast("Vui lòng chọn một địa chỉ trong danh sách gợi ý Goong hoặc xác thực vị trí để có tọa độ hợp lệ.", "warning");
         return;
     }
 
@@ -512,18 +856,22 @@ async function handleSaveLocation(e) {
     saveBtn.disabled = true;
     saveBtn.innerText = "Đang lưu...";
 
+    const payload = {
+        branch_name: branchName || null,
+        is_primary: isPrimary,
+        address_text: currentResolvedLocation.address_text,
+        province: currentResolvedLocation.province || null,
+        commune: currentResolvedLocation.commune || null,
+        district_text_legacy: currentResolvedLocation.district_text_legacy || null,
+        latitude: currentResolvedLocation.latitude,
+        longitude: currentResolvedLocation.longitude,
+        provider_place_id: currentResolvedLocation.provider_place_id || null,
+        geocode_status: currentResolvedLocation.geocode_status || "verified"
+    };
+
     if (IS_EDIT_MODE && EDIT_JOB_ID) {
         try {
             if (editId) {
-                const payload = {
-                    branch_name: branchName || null,
-                    is_primary: isPrimary
-                };
-                if (selected) {
-                    payload.place_id = selected.place_id;
-                    payload.session_token = selected.session_token;
-                }
-
                 const res = await apiRequest(`/company/jobs/${encodeURIComponent(EDIT_JOB_ID)}/locations/${encodeURIComponent(editId)}`, {
                     method: "PATCH",
                     body: payload,
@@ -538,15 +886,6 @@ async function handleSaveLocation(e) {
                     showToast((res && res.message) ? res.message : "Cập nhật địa điểm thất bại.", "error");
                 }
             } else {
-                const payload = {
-                    branch_name: branchName || null,
-                    is_primary: isPrimary
-                };
-                if (selected) {
-                    payload.place_id = selected.place_id;
-                    payload.session_token = selected.session_token;
-                }
-
                 const res = await apiRequest(`/company/jobs/${encodeURIComponent(EDIT_JOB_ID)}/locations`, {
                     method: "POST",
                     body: payload,
@@ -566,6 +905,7 @@ async function handleSaveLocation(e) {
             showToast("Lỗi khi lưu địa điểm.", "error");
         }
     } else {
+        // Draft job: persist in frontend jobLocations array
         if (editId) {
             const idx = jobLocations.findIndex(l => (l.id || l.temp_id) === editId);
             if (idx !== -1) {
@@ -574,15 +914,8 @@ async function handleSaveLocation(e) {
                 }
                 jobLocations[idx] = {
                     ...jobLocations[idx],
-                    branch_name: branchName || null,
-                    is_primary: isPrimary,
-                    address_text: selected ? selected.description : jobLocations[idx].address_text,
-                    place_id: selected ? selected.place_id : (jobLocations[idx].place_id || jobLocations[idx].provider_place_id || null),
-                    session_token: selected ? selected.session_token : (jobLocations[idx].session_token || null),
-                    commune: selected ? selected.commune : jobLocations[idx].commune,
-                    province: selected ? selected.province : jobLocations[idx].province,
-                    district_text_legacy: selected ? selected.district_text_legacy : jobLocations[idx].district_text_legacy,
-                    geocode_status: selected ? "verified" : jobLocations[idx].geocode_status
+                    ...payload,
+                    temp_id: editId
                 };
             }
         } else {
@@ -591,15 +924,8 @@ async function handleSaveLocation(e) {
             }
             jobLocations.push({
                 temp_id: "draft-" + Date.now() + "-" + Math.random().toString(36).substring(2, 6),
-                branch_name: branchName || null,
-                is_primary: isPrimary || jobLocations.length === 0,
-                address_text: selected.description,
-                place_id: selected.place_id,
-                session_token: selected.session_token,
-                commune: selected.commune || null,
-                province: selected.province || null,
-                district_text_legacy: selected.district_text_legacy || null,
-                geocode_status: "verified"
+                ...payload,
+                is_primary: isPrimary || jobLocations.length === 0
             });
         }
         closeLocationModal();
@@ -893,11 +1219,23 @@ async function persistDraftJobLocations(jobId) {
     const errors = [];
     for (const location of jobLocations) {
         const payload = {
-            place_id: location.place_id || location.provider_place_id,
-            session_token: location.session_token || undefined,
             branch_name: location.branch_name || null,
-            is_primary: !!location.is_primary
+            is_primary: !!location.is_primary,
+            address_text: location.address_text,
+            province: location.province || null,
+            commune: location.commune || null,
+            district_text_legacy: location.district_text_legacy || null,
+            latitude: location.latitude,
+            longitude: location.longitude,
+            provider_place_id: location.provider_place_id || location.place_id || null,
+            geocode_status: location.geocode_status || "verified"
         };
+        if (location.place_id) {
+            payload.place_id = location.place_id;
+        }
+        if (location.session_token) {
+            payload.session_token = location.session_token;
+        }
         const result = await apiRequest(`/company/jobs/${encodeURIComponent(jobId)}/locations`, {
             method: "POST",
             body: payload,

@@ -196,6 +196,33 @@ runTest("API chuẩn hóa dùng chung hỗ trợ GPS và form địa chỉ cho s
     }
 });
 
+runTest("Modal địa điểm trong job_form.php có 2 lựa chọn lớn (GPS & Nhập địa chỉ) và hộp preview tọa độ", function () {
+    $content = file_get_contents(BASE_PATH . "/app/Views/company/job_form.php");
+    if (!str_contains($content, "loc-method-selector")) throw new Exception("Thiếu bộ chọn 2 phương thức lớn (loc-method-selector)");
+    if (!str_contains($content, "Dùng vị trí hiện tại")) throw new Exception("Thiếu tab Dùng vị trí hiện tại");
+    if (!str_contains($content, "Nhập địa chỉ")) throw new Exception("Thiếu tab Nhập địa chỉ");
+    if (!str_contains($content, 'id="btn-get-modal-gps"')) throw new Exception("Thiếu nút Lấy vị trí GPS");
+    if (!str_contains($content, "fetchModalGpsLocation")) throw new Exception("Thiếu hàm fetchModalGpsLocation");
+    if (!str_contains($content, "resolveManualAddressModal")) throw new Exception("Thiếu hàm resolveManualAddressModal");
+    if (!str_contains($content, 'id="loc-resolved-preview"')) throw new Exception("Thiếu hộp xem trước địa chỉ đã chuẩn hóa");
+    if (!str_contains($content, "Địa chỉ hiện hành")) throw new Exception("Thiếu tab Địa chỉ hiện hành");
+    if (!str_contains($content, "Địa chỉ cũ")) throw new Exception("Thiếu tab Địa chỉ cũ");
+    if (!str_contains($content, '"/map/resolve-location"')) throw new Exception("Thiếu gọi API /map/resolve-location");
+});
+
+runTest("Giao diện sinh viên trong jobs/index.php hỗ trợ chọn tâm tìm kiếm (GPS / Nhập địa chỉ) và lưu mong muốn", function () {
+    $content = file_get_contents(BASE_PATH . "/app/Views/jobs/index.php");
+    if (!str_contains($content, 'id="modal-student-nearby"')) throw new Exception("Thiếu modal chọn vị trí tìm việc cho sinh viên");
+    if (!str_contains($content, "openStudentNearbyModal")) throw new Exception("Thiếu hàm openStudentNearbyModal");
+    if (!str_contains($content, "fetchStudentGpsLocation")) throw new Exception("Thiếu hàm fetchStudentGpsLocation");
+    if (!str_contains($content, "resolveStudentManualAddress")) throw new Exception("Thiếu hàm resolveStudentManualAddress");
+    if (!str_contains($content, "applyStudentNearbySearch")) throw new Exception("Thiếu hàm applyStudentNearbySearch");
+    if (!str_contains($content, 'id="nearby-origin-label"')) throw new Exception("Thiếu nhãn hiển thị tâm tìm kiếm nearby-origin-label");
+    if (!str_contains($content, 'id="btn-save-preferred-loc"')) throw new Exception("Thiếu nút lưu khu vực mong muốn");
+    if (!str_contains($content, "saveCurrentNearbyToPreferred")) throw new Exception("Thiếu hàm saveCurrentNearbyToPreferred");
+    if (!str_contains($content, "/student/preferred-locations")) throw new Exception("Thiếu gọi API preferred-locations khi sinh viên bấm lưu");
+});
+
 // 3. Kiểm tra An toàn & Bảo mật
 echo "\n3. Kiểm tra tiêu chuẩn An toàn & Bảo mật (Security & Privacy):\n";
 
