@@ -7,6 +7,38 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 class MailService
 {
+    /** @return array{status:string,error:?string,preview_path:?string} */
+    public function sendPasswordChangeCode(array $recipient, string $code, int $validMinutes): array
+    {
+        $e = fn(mixed $value): string => htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
+        $subject = "Mã xác nhận đổi mật khẩu JobMarketSV";
+        $html = "<!doctype html><html><body style=\"margin:0;background:#f4f7fb;font-family:Arial,sans-serif;color:#14213d\">"
+            . "<div style=\"max-width:560px;margin:24px auto;background:#fff;border:1px solid #e6eaf0;border-radius:16px;overflow:hidden\">"
+            . "<div style=\"padding:22px;background:#2563eb;color:#fff;font-size:21px;font-weight:700\">JobMarketSV</div>"
+            . "<div style=\"padding:28px\"><p>Chào " . $e($recipient["name"] ?? "bạn") . ",</p>"
+            . "<p>Dùng mã sau để xác nhận yêu cầu đổi mật khẩu:</p>"
+            . "<div style=\"font-size:34px;letter-spacing:8px;font-weight:800;text-align:center;padding:18px;background:#eff6ff;border-radius:12px;color:#1d4ed8\">" . $e($code) . "</div>"
+            . "<p>Mã có hiệu lực {$validMinutes} phút và chỉ sử dụng một lần.</p>"
+            . "<p style=\"font-size:12px;color:#64748b\">Nếu bạn không yêu cầu thao tác này, hãy bỏ qua email và kiểm tra lại tài khoản.</p>"
+            . "</div></div></body></html>";
+        return $this->sendAccountSecurityEmail($recipient, $subject, $html, "Mã xác nhận của bạn là {$code}. Mã có hiệu lực {$validMinutes} phút.", "password-code");
+    }
+
+    /** @return array{status:string,error:?string,preview_path:?string} */
+    public function sendPasswordChangedNotice(array $recipient): array
+    {
+        $e = fn(mixed $value): string => htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
+        $subject = "Mật khẩu JobMarketSV đã được cập nhật";
+        $html = "<!doctype html><html><body style=\"margin:0;background:#f4f7fb;font-family:Arial,sans-serif;color:#14213d\">"
+            . "<div style=\"max-width:560px;margin:24px auto;background:#fff;border:1px solid #e6eaf0;border-radius:16px;overflow:hidden\">"
+            . "<div style=\"padding:22px;background:#059669;color:#fff;font-size:21px;font-weight:700\">JobMarketSV</div>"
+            . "<div style=\"padding:28px\"><p>Chào " . $e($recipient["name"] ?? "bạn") . ",</p>"
+            . "<p>Mật khẩu tài khoản của bạn vừa được cập nhật. Các phiên đăng nhập cũ đã bị thu hồi.</p>"
+            . "<p style=\"font-size:12px;color:#64748b\">Nếu không phải bạn thực hiện, hãy liên hệ hỗ trợ ngay.</p>"
+            . "</div></div></body></html>";
+        return $this->sendAccountSecurityEmail($recipient, $subject, $html, "Mật khẩu tài khoản JobMarketSV của bạn vừa được cập nhật.", "password-changed");
+    }
+
     /**
      * @return array{status:string,error:?string,preview_path:?string}
      */
@@ -213,5 +245,35 @@ class MailService
         @file_put_contents($path, $meta . $html);
 
         return ["status" => "preview", "error" => null, "preview_path" => $path];
+    }
+
+    private function sendAccountSecurityEmail(array $recipient, string $subject, string $html, string $altBody, string $previewId): array
+    {
+        if (!Config::isMailConfigured()) {
+            return $this->writePreview($recipient, ["id" => $previewId], $subject, $html);
+        }
+        try {
+            $config = Config::mail();
+            $mailer = new PHPMailer(true);
+            $mailer->isSMTP();
+            $mailer->Host = $config["host"];
+            $mailer->Port = $config["port"];
+            $mailer->SMTPAuth = true;
+            $mailer->Username = $config["username"];
+            $mailer->Password = $config["password"];
+            if ($config["encryption"] !== "" && $config["encryption"] !== "none") $mailer->SMTPSecure = $config["encryption"];
+            $mailer->CharSet = "UTF-8";
+            $fromAddress = str_ends_with($config["from"], ".local") ? $config["username"] : $config["from"];
+            $mailer->setFrom($fromAddress, $config["from_name"]);
+            $mailer->addAddress((string)$recipient["email"], (string)($recipient["name"] ?? ""));
+            $mailer->isHTML(true);
+            $mailer->Subject = $subject;
+            $mailer->Body = $html;
+            $mailer->AltBody = $altBody;
+            $mailer->send();
+            return ["status" => "sent", "error" => null, "preview_path" => null];
+        } catch (\Throwable $e) {
+            return ["status" => "failed", "error" => mb_substr($e->getMessage(), 0, 500), "preview_path" => null];
+        }
     }
 }

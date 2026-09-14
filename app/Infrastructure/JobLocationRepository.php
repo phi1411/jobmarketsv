@@ -179,6 +179,10 @@ class JobLocationRepository
             $where[] = "j.location_id = ?";
             $whereParams[] = $filters["location_id"];
         }
+        if (!empty($filters["city"])) {
+            $where[] = "j.city LIKE ?";
+            $whereParams[] = "%" . QueryHelper::escapeLike((string)$filters["city"]) . "%";
+        }
         if (!empty($filters["salary_min"]) && is_numeric($filters["salary_min"])) {
             $where[] = "(j.salary_max >= ? OR j.salary_min >= ?)";
             $whereParams[] = (int)$filters["salary_min"];

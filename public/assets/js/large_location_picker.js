@@ -5,7 +5,7 @@
  * Hỗ trợ:
  * - Multi-select (tối đa 20 khu vực, chọn nhanh cả tỉnh, tag chips)
  * - Single-select (chọn 1 khu vực cho nhà tuyển dụng đăng tin)
- * - Tìm kiếm thời gian thực tỉnh thành và quận huyện
+ * - Tìm kiếm thời gian thực toàn bộ tỉnh/thành và phường/xã
  * - Tối ưu hoá mobile: chế độ stepped view linh hoạt
  * - Cache dữ liệu phân cấp từ GET /locations/hierarchy
  */
@@ -30,6 +30,7 @@
             .replace(/đ/g, 'd')
             .replace(/Đ/g, 'D')
             .toLowerCase()
+            .replace(/^(tinh|thanh pho|tp\.?)\s+/i, '')
             .trim();
     }
 
@@ -216,7 +217,7 @@
                                         <circle cx="11" cy="11" r="8"></circle>
                                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                     </svg>
-                                    <input type="text" class="llp-search-input llp-search-district" placeholder="Tìm quận, huyện...">
+                                    <input type="text" class="llp-search-input llp-search-district" placeholder="Tìm phường, xã...">
                                     <button type="button" class="llp-search-clear" style="display:none;" title="Xóa tìm kiếm">&times;</button>
                                 </div>
 
@@ -224,7 +225,7 @@
                                 <div class="llp-check-all-province-wrapper" style="${this.options.mode === 'single' ? 'display:none;' : 'display:flex;'}">
                                     <label class="llp-checkbox-label">
                                         <input type="checkbox" class="llp-check-all-province-input">
-                                        <span class="llp-check-all-province-text">Tất cả quận/huyện trong tỉnh này</span>
+                                        <span class="llp-check-all-province-text">Tất cả phường/xã trong tỉnh này</span>
                                     </label>
                                 </div>
                             </div>
@@ -304,7 +305,7 @@
                 this._renderProvincesList();
             });
 
-            // District search input
+            // Ward/commune search input
             const distInput = m.querySelector('.llp-search-district');
             const distClear = distInput.nextElementSibling;
             distInput.addEventListener('input', (e) => {
@@ -504,6 +505,12 @@
 
             const pData = LargeLocationPicker.provinceMap.get(provinceName);
             if (pData && Array.isArray(pData.areas)) {
+                if (this.options.mode === 'multi' && pData.areas.length > this.options.maxSelect) {
+                    if (typeof window.showToast === 'function') {
+                        window.showToast(`Tỉnh này có ${pData.areas.length} phường/xã. Hãy chọn tối đa ${this.options.maxSelect} khu vực cụ thể.`, 'warning');
+                    }
+                    return false;
+                }
                 this.selectedIds.clear();
                 pData.areas.forEach(a => this.selectedIds.add(String(a.id)));
                 this.draftSelectedIds = new Set(this.selectedIds);
@@ -513,7 +520,9 @@
                 if (triggerApply && typeof this.options.onApply === 'function') {
                     this.options.onApply(Array.from(this.selectedIds), this.getSelectedItems(), this.getDisplayText());
                 }
+                return true;
             }
+            return false;
         }
 
         _updateTriggerUI() {
@@ -707,12 +716,12 @@
                 titleEl.textContent = `Khu vực tại ${this.activeProvince}`;
             }
             if (checkAllText) {
-                checkAllText.textContent = `Tất cả quận/huyện tại ${this.activeProvince}`;
+                checkAllText.textContent = `Tất cả phường/xã tại ${this.activeProvince}`;
             }
 
             const pData = LargeLocationPicker.provinceMap.get(this.activeProvince);
             if (!pData || !Array.isArray(pData.areas) || pData.areas.length === 0) {
-                listEl.innerHTML = '<div class="llp-empty-notice">Chưa có dữ liệu quận/huyện cho tỉnh này.</div>';
+                listEl.innerHTML = '<div class="llp-empty-notice">Chưa có dữ liệu phường/xã cho tỉnh này.</div>';
                 if (checkAllInput) {
                     checkAllInput.checked = false;
                     checkAllInput.indeterminate = false;
@@ -745,7 +754,7 @@
             }
 
             if (areas.length === 0) {
-                listEl.innerHTML = '<div class="llp-empty-notice">Không tìm thấy quận/huyện nào phù hợp.</div>';
+                listEl.innerHTML = '<div class="llp-empty-notice">Không tìm thấy phường/xã nào phù hợp.</div>';
                 return;
             }
 

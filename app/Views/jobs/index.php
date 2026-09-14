@@ -76,6 +76,7 @@
                             </svg>
                         </button>
                         <input type="hidden" id="filter-location" name="location_ids" value="">
+                        <input type="hidden" id="filter-city" name="city" value="">
                     </div>
 
                     <div class="form-group" style="margin:0;">
@@ -219,11 +220,15 @@
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
                     <div class="form-group" style="margin:0;">
                         <label class="form-label" style="font-size:0.84rem;">Tỉnh / Thành phố *</label>
-                        <input type="text" id="stu-manual-curr-province" class="form-control" placeholder="VD: TP. Hồ Chí Minh, Hà Nội...">
+                        <select id="stu-manual-curr-province" class="form-control" data-vn-address-group="student-current" data-vn-address-level="province" data-vn-address-schema="current" data-vn-address-autoload>
+                            <option value="">Đang tải Tỉnh/Thành phố...</option>
+                        </select>
                     </div>
                     <div class="form-group" style="margin:0;">
                         <label class="form-label" style="font-size:0.84rem;">Phường / Xã *</label>
-                        <input type="text" id="stu-manual-curr-ward" class="form-control" placeholder="VD: Phường Bến Nghé, Xã An Khánh...">
+                        <select id="stu-manual-curr-ward" class="form-control" data-vn-address-group="student-current" data-vn-address-level="commune" disabled>
+                            <option value="">Chọn Tỉnh/Thành phố trước</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom:0.75rem;">
@@ -237,15 +242,21 @@
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;margin-bottom:0.75rem;">
                     <div class="form-group" style="margin:0;">
                         <label class="form-label" style="font-size:0.84rem;">Tỉnh / TP *</label>
-                        <input type="text" id="stu-manual-leg-province" class="form-control" placeholder="VD: TP. HCM">
+                        <select id="stu-manual-leg-province" class="form-control" data-vn-address-group="student-legacy" data-vn-address-level="province" data-vn-address-schema="legacy">
+                            <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                        </select>
                     </div>
                     <div class="form-group" style="margin:0;">
                         <label class="form-label" style="font-size:0.84rem;">Quận / Huyện *</label>
-                        <input type="text" id="stu-manual-leg-district" class="form-control" placeholder="VD: Quận 1">
+                        <select id="stu-manual-leg-district" class="form-control" data-vn-address-group="student-legacy" data-vn-address-level="district" disabled>
+                            <option value="">Chọn Tỉnh/Thành phố trước</option>
+                        </select>
                     </div>
                     <div class="form-group" style="margin:0;">
                         <label class="form-label" style="font-size:0.84rem;">Phường / Xã *</label>
-                        <input type="text" id="stu-manual-leg-ward" class="form-control" placeholder="VD: Bến Nghé">
+                        <select id="stu-manual-leg-ward" class="form-control" data-vn-address-group="student-legacy" data-vn-address-level="commune" disabled>
+                            <option value="">Chọn Quận/Huyện trước</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom:0.75rem;">
@@ -322,12 +333,9 @@ function openStudentNearbyModal() {
 
     // Reset inputs
     const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
-    setVal("stu-manual-curr-province", "");
-    setVal("stu-manual-curr-ward", "");
+    VietnamAddressPicker.reset("student-current");
     setVal("stu-manual-curr-detail", "");
-    setVal("stu-manual-leg-province", "");
-    setVal("stu-manual-leg-district", "");
-    setVal("stu-manual-leg-ward", "");
+    VietnamAddressPicker.reset("student-legacy");
     setVal("stu-manual-leg-detail", "");
 
     switchStudentLocMethod("gps");
@@ -361,7 +369,7 @@ function switchStudentLocMethod(method) {
     }
 }
 
-function switchStudentManualMode(mode) {
+async function switchStudentManualMode(mode) {
     const btnCurr = document.getElementById("subtab-stu-mode-current");
     const btnLeg = document.getElementById("subtab-stu-mode-legacy");
     const fieldsCurr = document.getElementById("fields-stu-mode-current");
@@ -372,11 +380,13 @@ function switchStudentManualMode(mode) {
         btnLeg.classList.remove("active");
         fieldsCurr.style.display = "block";
         fieldsLeg.style.display = "none";
+        await VietnamAddressPicker.initGroup("student-current");
     } else {
         btnLeg.classList.add("active");
         btnCurr.classList.remove("active");
         fieldsCurr.style.display = "none";
         fieldsLeg.style.display = "block";
+        await VietnamAddressPicker.initGroup("student-legacy");
     }
 }
 
@@ -494,17 +504,17 @@ async function resolveStudentManualAddress() {
         ward = document.getElementById("stu-manual-leg-ward").value.trim();
         detail = document.getElementById("stu-manual-leg-detail").value.trim();
 
-        if (!province) { showToast("Vui lòng nhập Tỉnh/Thành phố.", "warning"); return; }
-        if (!district) { showToast("Vui lòng nhập Quận/Huyện cũ.", "warning"); return; }
-        if (!ward) { showToast("Vui lòng nhập Phường/Xã.", "warning"); return; }
+        if (!province) { showToast("Vui lòng chọn Tỉnh/Thành phố.", "warning"); return; }
+        if (!district) { showToast("Vui lòng chọn Quận/Huyện cũ.", "warning"); return; }
+        if (!ward) { showToast("Vui lòng chọn Phường/Xã.", "warning"); return; }
         if (!detail || detail.length < 3) { showToast("Vui lòng nhập địa chỉ chi tiết.", "warning"); return; }
     } else {
         province = document.getElementById("stu-manual-curr-province").value.trim();
         ward = document.getElementById("stu-manual-curr-ward").value.trim();
         detail = document.getElementById("stu-manual-curr-detail").value.trim();
 
-        if (!province) { showToast("Vui lòng nhập Tỉnh/Thành phố.", "warning"); return; }
-        if (!ward) { showToast("Vui lòng nhập Phường/Xã.", "warning"); return; }
+        if (!province) { showToast("Vui lòng chọn Tỉnh/Thành phố.", "warning"); return; }
+        if (!ward) { showToast("Vui lòng chọn Phường/Xã.", "warning"); return; }
         if (!detail || detail.length < 3) { showToast("Vui lòng nhập địa chỉ chi tiết.", "warning"); return; }
     }
 
@@ -514,11 +524,15 @@ async function resolveStudentManualAddress() {
     btn.innerHTML = `<span class="autocomplete-spinner" style="position:static;width:14px;height:14px;display:inline-block;margin-right:0.35rem;"></span> Đang xác thực...`;
 
     try {
+        const administrativeCodes = VietnamAddressPicker.getCodes(isLegacy ? "student-legacy" : "student-current");
         const payload = {
             source: "manual",
             administrative_mode: isLegacy ? "legacy" : "current",
             province: province,
+            province_code: administrativeCodes.province_code,
+            district_code: administrativeCodes.district_code,
             ward: ward,
+            commune_code: administrativeCodes.commune_code,
             address_detail: detail
         };
         if (isLegacy && district) {
@@ -734,6 +748,7 @@ document.addEventListener("DOMContentLoaded", () => {
         badgeElement: '#location-picker-badge',
         hiddenInput: '#filter-location',
         onApply: (selectedIds, selectedItems, displayText) => {
+            document.getElementById("filter-city").value = "";
             updateFilterBadge();
             currentPage = 1;
             loadJobs();
@@ -753,6 +768,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("filter-location").value = locId;
         locationPickerInstance.setSelected(locId);
     }
+    if (urlParams.has("city")) document.getElementById("filter-city").value = urlParams.get("city");
     if (urlParams.has("shift_type")) document.getElementById("filter-shift").value = urlParams.get("shift_type");
     if (urlParams.has("salary_min")) document.getElementById("filter-salary-min").value = urlParams.get("salary_min");
     if (urlParams.has("sort_by")) {
@@ -786,20 +802,16 @@ document.addEventListener("DOMContentLoaded", () => {
             if (pillType === "all") {
                 document.getElementById("filter-shift").value = "";
                 document.getElementById("filter-location").value = "";
+                document.getElementById("filter-city").value = "";
                 document.getElementById("filter-salary-min").value = "";
                 if (locationPickerInstance) locationPickerInstance.clear(false);
             } else if (pillType === "shift") {
                 document.getElementById("filter-shift").value = pillVal || "";
             } else if (pillType === "location") {
                 if (locationPickerInstance) {
-                    if (pillVal === "loc-001" || pillVal.includes("Hà Nội")) {
-                        locationPickerInstance.selectProvince("Hà Nội", false);
-                    } else if (pillVal === "loc-004" || pillVal.includes("TP. HCM")) {
-                        locationPickerInstance.selectProvince("TP. Hồ Chí Minh", false);
-                    } else {
-                        locationPickerInstance.setSelected(pillVal);
-                    }
+                    locationPickerInstance.clear(false);
                 }
+                document.getElementById("filter-city").value = (pillVal || "").includes("Hà Nội") ? "Hà Nội" : "Hồ Chí Minh";
             } else if (pillType === "salary") {
                 document.getElementById("filter-salary-min").value = pillVal || "";
             }
@@ -835,6 +847,7 @@ document.addEventListener("DOMContentLoaded", () => {
             currentSort = "newest";
         }
         document.getElementById("filter-form").reset();
+        document.getElementById("filter-city").value = "";
         if (locationPickerInstance) locationPickerInstance.clear(false);
         document.querySelectorAll(".quick-pill-btn").forEach(b => b.classList.remove("active"));
         const allBtn = document.querySelector('.quick-pill-btn[data-pill-type="all"]');
@@ -858,11 +871,13 @@ document.addEventListener("DOMContentLoaded", () => {
 function updateFilterBadge() {
     const category = document.getElementById("filter-category").value;
     const location = document.getElementById("filter-location").value;
+    const city = document.getElementById("filter-city").value;
     const shift = document.getElementById("filter-shift").value;
     const salary = document.getElementById("filter-salary-min").value;
     let count = 0;
     if (category) count++;
     if (location) count++;
+    if (city) count++;
     if (shift) count++;
     if (salary) count++;
 
@@ -916,6 +931,8 @@ async function loadJobs(page = null) {
             payload.location_id = locationId;
             payload.location_ids = locationId.split(",").map(s => s.trim()).filter(Boolean);
         }
+        const city = document.getElementById("filter-city") ? document.getElementById("filter-city").value.trim() : "";
+        if (city) payload.city = city;
 
         const res = await apiRequest("/jobs/nearby-search", {
             method: "POST",
@@ -1023,12 +1040,14 @@ async function loadJobs(page = null) {
     const keyword = document.getElementById("filter-keyword").value.trim();
     const categoryId = document.getElementById("filter-category").value;
     const locationId = document.getElementById("filter-location") ? document.getElementById("filter-location").value.trim() : "";
+    const city = document.getElementById("filter-city") ? document.getElementById("filter-city").value.trim() : "";
     const shiftType = document.getElementById("filter-shift").value;
     const salaryMin = document.getElementById("filter-salary-min").value.trim();
 
     if (keyword) params.append("keyword", keyword);
     if (categoryId) params.append("category_id", categoryId);
     if (locationId) params.append("location_ids", locationId);
+    if (city) params.append("city", city);
     if (shiftType) params.append("shift_type", shiftType);
     if (salaryMin) params.append("salary_min", salaryMin);
 

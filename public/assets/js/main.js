@@ -29,6 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast("Vui lòng đăng nhập để tiếp tục thao tác.", "error");
         window.history.replaceState({}, document.title, window.location.pathname);
     }
+    if (urlParams.has("password_updated")) {
+        showToast("Mật khẩu đã được cập nhật. Vui lòng đăng nhập lại.", "success");
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
 });
 
 // Immediate execution if DOM elements exist to prevent visual flash
@@ -151,6 +155,10 @@ function updateNavbarAuthState(force = false) {
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                                         <span>Thông báo hệ thống</span>
                                     </a>
+                                    <button type="button" onclick="openPasswordSecurityModal()" class="profile-menu-item profile-menu-button">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                        <span>Đổi mật khẩu</span>
+                                    </button>
                                     <a href="javascript:void(0)" onclick="handleLogout()" class="profile-menu-item logout-item">
                                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                                         <span>Đăng xuất</span>

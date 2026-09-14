@@ -46,7 +46,7 @@ $editingJobId = $jobId ?? "";
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="btn-company-location-picker">Khu vực / Quận làm việc <span style="color:var(--danger)">*</span></label>
+                    <label class="form-label" for="btn-company-location-picker">Tỉnh/Thành phố và Phường/Xã làm việc <span style="color:var(--danger)">*</span></label>
                     <input type="hidden" id="job-location" name="location_id" required value="">
                     <button type="button" id="btn-company-location-picker" class="location-picker-trigger" aria-haspopup="dialog" style="min-height:42px;">
                         <span class="loc-trigger-content">
@@ -54,7 +54,7 @@ $editingJobId = $jobId ?? "";
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                 <circle cx="12" cy="10" r="3"></circle>
                             </svg>
-                            <span id="company-location-picker-label" class="location-picker-label">-- Chọn khu vực làm việc --</span>
+                            <span id="company-location-picker-label" class="location-picker-label">-- Chọn Tỉnh/Thành phố, Phường/Xã --</span>
                         </span>
                         <svg class="loc-chevron-down" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="m6 9 6 6 6-6"></path>
@@ -302,11 +302,15 @@ $editingJobId = $jobId ?? "";
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
                         <div class="form-group" style="margin:0;">
                             <label class="form-label" style="font-size:0.84rem;">Tỉnh / Thành phố *</label>
-                            <input type="text" id="manual-curr-province" class="form-control" placeholder="VD: TP. Hồ Chí Minh, Hà Nội...">
+                            <select id="manual-curr-province" class="form-control" data-vn-address-group="company-current" data-vn-address-level="province" data-vn-address-schema="current" data-vn-address-autoload>
+                                <option value="">Đang tải Tỉnh/Thành phố...</option>
+                            </select>
                         </div>
                         <div class="form-group" style="margin:0;">
                             <label class="form-label" style="font-size:0.84rem;">Phường / Xã *</label>
-                            <input type="text" id="manual-curr-ward" class="form-control" placeholder="VD: Phường Bến Nghé, Xã An Khánh...">
+                            <select id="manual-curr-ward" class="form-control" data-vn-address-group="company-current" data-vn-address-level="commune" disabled>
+                                <option value="">Chọn Tỉnh/Thành phố trước</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group" style="margin-bottom:0.75rem;">
@@ -320,15 +324,21 @@ $editingJobId = $jobId ?? "";
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;margin-bottom:0.75rem;">
                         <div class="form-group" style="margin:0;">
                             <label class="form-label" style="font-size:0.84rem;">Tỉnh / TP *</label>
-                            <input type="text" id="manual-leg-province" class="form-control" placeholder="VD: TP. HCM">
+                            <select id="manual-leg-province" class="form-control" data-vn-address-group="company-legacy" data-vn-address-level="province" data-vn-address-schema="legacy">
+                                <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                            </select>
                         </div>
                         <div class="form-group" style="margin:0;">
                             <label class="form-label" style="font-size:0.84rem;">Quận / Huyện *</label>
-                            <input type="text" id="manual-leg-district" class="form-control" placeholder="VD: Quận 1">
+                            <select id="manual-leg-district" class="form-control" data-vn-address-group="company-legacy" data-vn-address-level="district" disabled>
+                                <option value="">Chọn Tỉnh/Thành phố trước</option>
+                            </select>
                         </div>
                         <div class="form-group" style="margin:0;">
                             <label class="form-label" style="font-size:0.84rem;">Phường / Xã *</label>
-                            <input type="text" id="manual-leg-ward" class="form-control" placeholder="VD: Bến Nghé">
+                            <select id="manual-leg-ward" class="form-control" data-vn-address-group="company-legacy" data-vn-address-level="commune" disabled>
+                                <option value="">Chọn Quận/Huyện trước</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group" style="margin-bottom:0.75rem;">
@@ -583,7 +593,7 @@ function switchLocationMethod(method) {
     }
 }
 
-function switchManualMode(mode) {
+async function switchManualMode(mode) {
     const btnCurr = document.getElementById("subtab-mode-current");
     const btnLeg = document.getElementById("subtab-mode-legacy");
     const fieldsCurr = document.getElementById("fields-mode-current");
@@ -594,11 +604,13 @@ function switchManualMode(mode) {
         btnLeg.classList.remove("active");
         fieldsCurr.style.display = "block";
         fieldsLeg.style.display = "none";
+        await VietnamAddressPicker.initGroup("company-current");
     } else {
         btnLeg.classList.add("active");
         btnCurr.classList.remove("active");
         fieldsCurr.style.display = "none";
         fieldsLeg.style.display = "block";
+        await VietnamAddressPicker.initGroup("company-legacy");
     }
 }
 
@@ -716,17 +728,17 @@ async function resolveManualAddressModal() {
         ward = document.getElementById("manual-leg-ward").value.trim();
         detail = document.getElementById("manual-leg-detail").value.trim();
 
-        if (!province) { showToast("Vui lòng nhập Tỉnh/Thành phố.", "warning"); return; }
-        if (!district) { showToast("Vui lòng nhập Quận/Huyện cũ.", "warning"); return; }
-        if (!ward) { showToast("Vui lòng nhập Phường/Xã.", "warning"); return; }
+        if (!province) { showToast("Vui lòng chọn Tỉnh/Thành phố.", "warning"); return; }
+        if (!district) { showToast("Vui lòng chọn Quận/Huyện cũ.", "warning"); return; }
+        if (!ward) { showToast("Vui lòng chọn Phường/Xã.", "warning"); return; }
         if (!detail || detail.length < 3) { showToast("Vui lòng nhập địa chỉ chi tiết (số nhà, đường...).", "warning"); return; }
     } else {
         province = document.getElementById("manual-curr-province").value.trim();
         ward = document.getElementById("manual-curr-ward").value.trim();
         detail = document.getElementById("manual-curr-detail").value.trim();
 
-        if (!province) { showToast("Vui lòng nhập Tỉnh/Thành phố.", "warning"); return; }
-        if (!ward) { showToast("Vui lòng nhập Phường/Xã.", "warning"); return; }
+        if (!province) { showToast("Vui lòng chọn Tỉnh/Thành phố.", "warning"); return; }
+        if (!ward) { showToast("Vui lòng chọn Phường/Xã.", "warning"); return; }
         if (!detail || detail.length < 3) { showToast("Vui lòng nhập địa chỉ chi tiết (số nhà, đường...).", "warning"); return; }
     }
 
@@ -736,11 +748,15 @@ async function resolveManualAddressModal() {
     btn.innerHTML = `<span class="autocomplete-spinner" style="position:static;width:14px;height:14px;display:inline-block;margin-right:0.35rem;"></span> Đang xác thực...`;
 
     try {
+        const administrativeCodes = VietnamAddressPicker.getCodes(isLegacy ? "company-legacy" : "company-current");
         const payload = {
             source: "manual",
             administrative_mode: isLegacy ? "legacy" : "current",
             province: province,
+            province_code: administrativeCodes.province_code,
+            district_code: administrativeCodes.district_code,
             ward: ward,
+            commune_code: administrativeCodes.commune_code,
             address_detail: detail
         };
         if (isLegacy && district) {
@@ -778,12 +794,9 @@ function openAddLocationModal() {
     document.getElementById("loc-is-primary").checked = jobLocations.length === 0;
 
     // Reset inputs
-    document.getElementById("manual-curr-province").value = "";
-    document.getElementById("manual-curr-ward").value = "";
+    VietnamAddressPicker.reset("company-current");
     document.getElementById("manual-curr-detail").value = "";
-    document.getElementById("manual-leg-province").value = "";
-    document.getElementById("manual-leg-district").value = "";
-    document.getElementById("manual-leg-ward").value = "";
+    VietnamAddressPicker.reset("company-legacy");
     document.getElementById("manual-leg-detail").value = "";
 
     if (locAutocompleteInstance) locAutocompleteInstance.clear();
@@ -796,7 +809,7 @@ function openAddLocationModal() {
     document.getElementById("modal-location-form").style.display = "flex";
 }
 
-function openEditLocationModal(id) {
+async function openEditLocationModal(id) {
     const loc = jobLocations.find(l => (l.id || l.temp_id) === id);
     if (!loc) return;
 
@@ -818,15 +831,19 @@ function openEditLocationModal(id) {
 
     // Populate manual inputs for editing convenience
     if (loc.district_text_legacy) {
-        switchManualMode("legacy");
-        document.getElementById("manual-leg-province").value = loc.province || "";
-        document.getElementById("manual-leg-district").value = loc.district_text_legacy || "";
-        document.getElementById("manual-leg-ward").value = loc.commune || "";
+        await switchManualMode("legacy");
+        await VietnamAddressPicker.setValues("company-legacy", {
+            province: loc.province,
+            district: loc.district_text_legacy,
+            commune: loc.commune
+        });
         document.getElementById("manual-leg-detail").value = loc.address_text || "";
     } else {
-        switchManualMode("current");
-        document.getElementById("manual-curr-province").value = loc.province || "";
-        document.getElementById("manual-curr-ward").value = loc.commune || "";
+        await switchManualMode("current");
+        await VietnamAddressPicker.setValues("company-current", {
+            province: loc.province,
+            commune: loc.commune
+        });
         document.getElementById("manual-curr-detail").value = loc.address_text || "";
     }
 
@@ -1086,7 +1103,7 @@ async function handleSubmitJob(e) {
     const chosenLocId = document.getElementById("job-location").value.trim();
     if (!chosenLocId) {
         alertBox.className = "toast toast-error";
-        alertBox.innerText = "Vui lòng chọn Khu vực / Quận làm việc chính.";
+        alertBox.innerText = "Vui lòng chọn Tỉnh/Thành phố và Phường/Xã làm việc chính.";
         alertBox.style.display = "block";
         document.getElementById("btn-company-location-picker").scrollIntoView({ behavior: "smooth", block: "center" });
         return;

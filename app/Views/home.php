@@ -17,7 +17,7 @@
                         <span class="hero-gradient-text">Linh Hoạt Theo Lịch Học</span> 🎓
                     </h1>
                     <p class="hero-3d-subtitle" style="font-size: 1.05rem; margin-bottom: 1.5rem;">
-                        Kết nối sinh viên với hàng trăm việc làm bán thời gian uy tín: phục vụ, pha chế, thu ngân, gia sư và văn phòng tại Hà Nội &amp; TP. HCM. Tự động đề xuất việc làm phù hợp bằng AI.
+                        Kết nối sinh viên với hàng trăm việc làm bán thời gian uy tín trên toàn quốc: phục vụ, pha chế, thu ngân, gia sư và văn phòng. Tự động đề xuất việc làm phù hợp bằng AI.
                     </p>
                     <div class="hero-3d-actions">
                         <a href="/viec-lam" class="btn-hero btn-hero--primary">
@@ -66,15 +66,12 @@
                     </div>
 
                     <div class="form-group" style="margin:0;">
-                        <label class="form-label" for="home-location" style="font-size:0.84rem;font-weight:700;color:#1e293b;">Địa điểm</label>
-                        <select id="home-location" name="location_id" class="form-control" style="background:#f8fafc;border-color:#cbd5e1;">
-                            <option value="">Tất cả địa điểm</option>
-                            <option value="loc-001">Hà Nội - Cầu Giấy</option>
-                            <option value="loc-002">Hà Nội - Đống Đa</option>
-                            <option value="loc-003">Hà Nội - Hai Bà Trưng</option>
-                            <option value="loc-004">TP. HCM - Quận 1</option>
-                            <option value="loc-005">TP. HCM - Bình Thạnh</option>
-                        </select>
+                        <label class="form-label" for="home-location-picker" style="font-size:0.84rem;font-weight:700;color:#1e293b;">Tỉnh/Thành phố, Phường/Xã</label>
+                        <input type="hidden" id="home-location" name="location_id" value="">
+                        <button type="button" id="home-location-picker" class="location-picker-trigger" style="min-height:42px;background:#f8fafc;border-color:#cbd5e1;">
+                            <span id="home-location-label" class="location-picker-label">Tất cả địa điểm</span>
+                            <span aria-hidden="true">⌄</span>
+                        </button>
                     </div>
 
                     <div class="form-group" style="margin:0;">
@@ -188,6 +185,14 @@
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
     initHomeHeroTilt();
+
+    new LargeLocationPicker({
+        mode: "single",
+        title: "Chọn Tỉnh/Thành phố và Phường/Xã",
+        trigger: "#home-location-picker",
+        labelElement: "#home-location-label",
+        hiddenInput: "#home-location"
+    });
 
     const container = document.getElementById("home-jobs-container");
     if (!container) return;

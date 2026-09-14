@@ -137,6 +137,7 @@ class SystemMigrateController extends Controller
                 \JobMarket\Migrations\JobMatchingCriteriaMigration::class,
                 \JobMarket\Migrations\OnlineCvBuilderMigration::class,
                 \JobMarket\Migrations\JobLocationMigration::class,
+                \JobMarket\Migrations\PasswordSecurityMigration::class,
             ];
             foreach ($allMigrations as $m) {
                 if (class_exists($m)) {

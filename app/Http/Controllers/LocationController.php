@@ -29,6 +29,21 @@ class LocationController extends Controller
         );
     }
 
+    public function administrative(Request $request): Response
+    {
+        $schema = strtolower(trim((string)$request->get("schema", "current")));
+        if (!in_array($schema, ["current", "legacy"], true)) {
+            return Response::error("Kiểu dữ liệu địa chỉ không hợp lệ.", 422);
+        }
+
+        return Response::success(
+            $this->locationRepo->getAdministrativeHierarchy($schema),
+            $schema === "legacy"
+                ? "Danh sách Tỉnh/Thành phố, Quận/Huyện và Phường/Xã theo địa chỉ cũ."
+                : "Danh sách toàn quốc gồm Tỉnh/Thành phố và Phường/Xã hiện hành."
+        );
+    }
+
     public function show(Request $request, string $id)
     {
     }

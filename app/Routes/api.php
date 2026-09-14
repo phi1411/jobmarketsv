@@ -1,6 +1,7 @@
 <?php
 
 use JobMarket\Http\Controllers\AdminController;
+use JobMarket\Http\Controllers\AccountSecurityController;
 use JobMarket\Http\Controllers\ApplicationController;
 use JobMarket\Http\Controllers\AssistantController;
 use JobMarket\Http\Controllers\AuthenticationController;
@@ -195,8 +196,11 @@ return [
     ["DELETE", "/student/cv", [StudentCvController::class, "destroy"]],
     ["POST", "/student/cv/analyze", [CvProfileExtractionController::class, "analyze"]],
 
-    // Update the user's password
-    ["PUT", "/profile/password", [ProfileController::class, "passUpdate"]],
+    // Account password security flow
+    ["GET", "/profile/password/status", [AccountSecurityController::class, "status"]],
+    ["POST", "/profile/password/request-code", [AccountSecurityController::class, "requestCode"]],
+    ["POST", "/profile/password/verify-code", [AccountSecurityController::class, "verifyCode"]],
+    ["PUT", "/profile/password", [AccountSecurityController::class, "updatePassword"]],
 
     // Retrieve a list of all available skills
     ["GET", "/skills", [SkillController::class, "index"]],
@@ -255,6 +259,9 @@ return [
 
     // Retrieve locations grouped for the large province/area picker
     ["GET", "/locations/hierarchy", [LocationController::class, "hierarchy"]],
+
+    // Complete nationwide administrative units for structured address forms
+    ["GET", "/locations/administrative", [LocationController::class, "administrative"]],
 
     // Create a new location
     ["POST", "/locations", [LocationController::class, "store"]],

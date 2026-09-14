@@ -3232,6 +3232,7 @@ textarea[disabled],
 .profile-menu-item.logout-item {
     color: var(--danger);
 }
+.profile-menu-button{width:100%;border:0;background:transparent;font:inherit;text-align:left;cursor:pointer}
 .profile-menu-item.logout-item svg {
     color: var(--danger);
 }

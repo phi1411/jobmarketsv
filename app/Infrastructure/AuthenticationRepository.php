@@ -38,7 +38,8 @@ class AuthenticationRepository implements AuthenticationRepositoryInterface
         $this->db->beginTransaction();
         try {
             $stmt = $this->db->prepare(
-                "INSERT INTO users (id, name, email, password, role, token, token_expires_at) VALUES (?, ?, ?, ?, ?, ?, ?);"
+                "INSERT INTO users (id, name, email, password, password_set_at, role, token, token_expires_at)
+                 VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?);"
             );
 
             $stmt->execute([

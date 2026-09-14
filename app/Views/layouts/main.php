@@ -36,6 +36,7 @@
     <link rel="stylesheet" href="/assets/css/support_comm.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/support_comm.css') ? filemtime(BASE_PATH . '/public/assets/css/support_comm.css') : time() ?>">
     <link rel="stylesheet" href="/assets/css/cv_builder.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/cv_builder.css') ? filemtime(BASE_PATH . '/public/assets/css/cv_builder.css') : time() ?>">
     <link rel="stylesheet" href="/assets/css/location.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/location.css') ? filemtime(BASE_PATH . '/public/assets/css/location.css') : time() ?>">
+    <link rel="stylesheet" href="/assets/css/password_security.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/password_security.css') ? filemtime(BASE_PATH . '/public/assets/css/password_security.css') : time() ?>">
     <?php if ($isGoongMapPage): ?>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css">
     <script src="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js"></script>
@@ -43,6 +44,7 @@
     <script src="/assets/js/api.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/api.js') ? filemtime(BASE_PATH . '/public/assets/js/api.js') : time() ?>"></script>
     <script src="/assets/js/address_autocomplete.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/address_autocomplete.js') ? filemtime(BASE_PATH . '/public/assets/js/address_autocomplete.js') : time() ?>"></script>
     <script src="/assets/js/large_location_picker.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/large_location_picker.js') ? filemtime(BASE_PATH . '/public/assets/js/large_location_picker.js') : time() ?>"></script>
+    <script src="/assets/js/administrative_address_picker.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/administrative_address_picker.js') ? filemtime(BASE_PATH . '/public/assets/js/administrative_address_picker.js') : time() ?>"></script>
     <script src="/assets/js/theme.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/theme.js') ? filemtime(BASE_PATH . '/public/assets/js/theme.js') : time() ?>"></script>
 </head>
 <body>
@@ -142,7 +144,7 @@
                     <ul class="footer-links">
                         <li><a href="#" class="footer-link">Email: support@jobmarket.vn</a></li>
                         <li><a href="#" class="footer-link">Hotline: 1900-1234-56</a></li>
-                        <li><a href="#" class="footer-link">Hà Nội & TP. Hồ Chí Minh</a></li>
+                        <li><a href="/viec-lam" class="footer-link">Việc làm trên toàn quốc</a></li>
                     </ul>
                 </div>
             </div>
@@ -154,6 +156,7 @@
 
     <!-- Scripts -->
     <script src="/assets/js/main.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/main.js') ? filemtime(BASE_PATH . '/public/assets/js/main.js') : time() ?>"></script>
+    <script src="/assets/js/password_security.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/password_security.js') ? filemtime(BASE_PATH . '/public/assets/js/password_security.js') : time() ?>"></script>
     <?php if ($isChatbotPage): ?>
     <script>window.__CHATBOT_CONFIG__ = { enabled: <?= $isGlobalChatEnabled ? 'true' : 'false' ?>, companyEnabled: <?= $isCompanyChatEnabled ? 'true' : 'false' ?> };</script>
     <script src="/assets/js/assistant.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/assistant.js') ? filemtime(BASE_PATH . '/public/assets/js/assistant.js') : time() ?>"></script>

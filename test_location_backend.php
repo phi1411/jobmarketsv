@@ -87,7 +87,14 @@ $manualLocation = $locationService->resolveInputLocation([
     "ward" => "Bến Nghé",
     "address_detail" => "123 Nguyễn Huệ",
 ]);
-$assert($manualLocation["district_text_legacy"] === "Quận 1" && $manualLocation["commune"] === "Bến Nghé", "Structured manual location resolution failed.");
+$assert(
+    $manualLocation["district_text_legacy"] === "Quận 1"
+    && $manualLocation["commune"] === "Phường Bến Nghé"
+    && $manualLocation["province"] === "Thành phố Hồ Chí Minh"
+    && $manualLocation["province_code"] === "79"
+    && $manualLocation["commune_code"] === "26740",
+    "Structured manual location resolution failed."
+);
 
 $config = Config::env();
 $db = new PDO(

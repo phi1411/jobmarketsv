@@ -14,6 +14,8 @@ use JobMarket\Support\Pagination;
 
 class LocationFeatureService
 {
+    private static array $administrativeData = [];
+
     public function __construct(
         private ?MapsProviderInterface $maps = null,
         private ?JobLocationRepository $locations = null,
@@ -126,7 +128,7 @@ class LocationFeatureService
         if (!in_array($radius, [2, 5, 10, 20, 50], true)) {
             throw new ValidationException(["radius_km" => ["Bán kính cho phép: 2, 5, 10, 20 hoặc 50 km."]]);
         }
-        foreach (["work_mode", "work_type", "category_id", "shift_type", "location_id", "keyword", "salary_min", "salary_max"] as $field) {
+        foreach (["work_mode", "work_type", "category_id", "shift_type", "location_id", "city", "keyword", "salary_min", "salary_max"] as $field) {
             if (isset($data[$field]) && !is_scalar($data[$field])) {
                 throw new ValidationException([$field => ["Bộ lọc không hợp lệ."]]);
             }
@@ -145,6 +147,9 @@ class LocationFeatureService
         }
         if (isset($data["keyword"]) && strlen(trim((string)$data["keyword"])) > 150) {
             throw new ValidationException(["keyword" => ["Từ khóa tìm kiếm tối đa 150 ký tự."]]);
+        }
+        if (isset($data["city"]) && strlen(trim((string)$data["city"])) > 150) {
+            throw new ValidationException(["city" => ["Tỉnh/Thành phố tối đa 150 ký tự."]]);
         }
         foreach (["salary_min", "salary_max"] as $salaryField) {
             if (($data[$salaryField] ?? "") !== "" && (!is_numeric($data[$salaryField]) || (float)$data[$salaryField] < 0)) {
@@ -312,14 +317,26 @@ class LocationFeatureService
                 throw new ValidationException($errors);
             }
 
+            [$province, $district, $commune, $provinceCode, $communeCode] = $this->canonicalAdministrativeSelection(
+                $administrativeMode,
+                $province,
+                $district,
+                $commune,
+                $this->shortText($data["province_code"] ?? null, 30),
+                $this->shortText($data["district_code"] ?? null, 30),
+                $this->shortText($data["commune_code"] ?? ($data["ward_code"] ?? null), 30)
+            );
+
             $query = implode(", ", array_filter([$addressDetail, $commune, $district, $province]));
             $results = $this->maps->geocode($query);
             $location = $this->firstResolvedMapLocation($results, "Goong không tìm thấy tọa độ phù hợp với địa chỉ đã nhập.");
-            $location["address_text"] = $location["address_text"] ?: $query;
+            // Display the exact structured address the user selected. Providers may
+            // still return pre-reform ward names even when coordinates are correct.
+            $location["address_text"] = $query;
             $location["province"] = $province;
-            $location["province_code"] = $this->shortText($data["province_code"] ?? null, 30);
+            $location["province_code"] = $provinceCode;
             $location["commune"] = $commune;
-            $location["commune_code"] = $this->shortText($data["commune_code"] ?? ($data["ward_code"] ?? null), 30);
+            $location["commune_code"] = $communeCode;
             $location["district_text_legacy"] = $administrativeMode === "legacy" ? $district : null;
             $location["provider_place_id"] = $location["place_id"] ?: null;
             unset($location["place_id"], $location["name"]);
@@ -347,6 +364,100 @@ class LocationFeatureService
         $location["branch_name"] = $this->shortText($data["branch_name"] ?? null, 150);
         $location["is_primary"] = (bool)($data["is_primary"] ?? false);
         return $location;
+    }
+
+    /**
+     * Verify the submitted hierarchy against our server-side catalogue and return
+     * canonical names. This prevents a client from pairing a ward with another province.
+     */
+    private function canonicalAdministrativeSelection(
+        string $mode,
+        string $provinceName,
+        ?string $districtName,
+        string $communeName,
+        ?string $provinceCode,
+        ?string $districtCode,
+        ?string $communeCode
+    ): array {
+        $data = $this->administrativeData($mode);
+        $province = $this->findAdministrativeUnit($data["provinces"], $provinceName, $provinceCode);
+        if ($province === null) {
+            throw new ValidationException(["province" => ["Tỉnh/Thành phố không có trong danh mục hành chính."]]);
+        }
+
+        if ($mode === "legacy") {
+            $district = $this->findAdministrativeUnit($province["districts"] ?? [], (string)$districtName, $districtCode);
+            if ($district === null) {
+                throw new ValidationException(["district_text_legacy" => ["Quận/Huyện không thuộc Tỉnh/Thành phố đã chọn."]]);
+            }
+            $commune = $this->findAdministrativeUnit($district["wards"] ?? [], $communeName, $communeCode);
+            if ($commune === null) {
+                throw new ValidationException(["commune" => ["Phường/Xã không thuộc Quận/Huyện đã chọn."]]);
+            }
+            return [
+                (string)$province["name"],
+                (string)$district["name"],
+                (string)$commune["name"],
+                (string)$province["code"],
+                (string)$commune["code"],
+            ];
+        }
+
+        $commune = $this->findAdministrativeUnit($province["communes"] ?? [], $communeName, $communeCode);
+        if ($commune === null) {
+            throw new ValidationException(["commune" => ["Phường/Xã không thuộc Tỉnh/Thành phố đã chọn."]]);
+        }
+        return [
+            (string)$province["name"],
+            null,
+            (string)$commune["name"],
+            (string)$province["code"],
+            (string)$commune["code"],
+        ];
+    }
+
+    private function administrativeData(string $mode): array
+    {
+        if (isset(self::$administrativeData[$mode])) {
+            return self::$administrativeData[$mode];
+        }
+        $path = BASE_PATH . "/app/Data/vietnam_administrative_{$mode}.json";
+        if (!is_file($path)) {
+            throw new \RuntimeException("Dữ liệu đơn vị hành chính chưa được cài đặt.");
+        }
+        $decoded = json_decode((string)file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
+        if (!is_array($decoded) || !is_array($decoded["provinces"] ?? null)) {
+            throw new \RuntimeException("Dữ liệu đơn vị hành chính không hợp lệ.");
+        }
+        return self::$administrativeData[$mode] = $decoded;
+    }
+
+    private function findAdministrativeUnit(array $units, string $name, ?string $code): ?array
+    {
+        if ($code !== null) {
+            foreach ($units as $unit) {
+                if ((string)($unit["code"] ?? "") === $code) {
+                    return $unit;
+                }
+            }
+            return null;
+        }
+
+        $wanted = $this->normalizeAdministrativeName($name);
+        foreach ($units as $unit) {
+            if ($wanted !== "" && $this->normalizeAdministrativeName((string)($unit["name"] ?? "")) === $wanted) {
+                return $unit;
+            }
+        }
+        return null;
+    }
+
+    private function normalizeAdministrativeName(string $name): string
+    {
+        $name = trim($name);
+        $name = (string)preg_replace('/^(Tỉnh|Thành phố|TP\.?|Quận|Huyện|Thị xã|Phường|Xã|Thị trấn|Đặc khu)\s+/ui', '', $name);
+        $ascii = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $name);
+        return strtolower((string)preg_replace('/[^a-zA-Z0-9]+/', '', $ascii !== false ? $ascii : $name));
     }
 
     private function firstResolvedMapLocation(array $results, string $message): array
