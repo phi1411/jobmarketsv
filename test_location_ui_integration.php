@@ -49,7 +49,13 @@ runTest("Tệp location.css tồn tại và chứa đầy đủ các class giao 
         ".radius-chip",
         ".job-detail-map",
         ".commute-warning-banner",
-        ".preferred-loc-chip"
+        ".preferred-loc-chip",
+        ".location-picker-trigger",
+        ".llp-modal-backdrop",
+        ".llp-modal-dialog",
+        ".llp-col-provinces",
+        ".llp-col-districts",
+        ".llp-chip"
     ];
     foreach ($requiredClasses as $cls) {
         if (!str_contains($content, $cls)) {
@@ -70,11 +76,22 @@ runTest("Tệp address_autocomplete.js tồn tại và định nghĩa AddressAut
     if (!str_contains($content, "res.errors && res.errors.retry_after_seconds")) throw new Exception("Chưa đọc retry_after_seconds từ lỗi API chuẩn hóa");
 });
 
-runTest("main.php đã nhúng location.css và address_autocomplete.js", function () {
+runTest("Tệp large_location_picker.js tồn tại và định nghĩa LargeLocationPicker", function () {
+    $jsFile = BASE_PATH . "/public/assets/js/large_location_picker.js";
+    if (!file_exists($jsFile)) throw new Exception("Không tìm thấy public/assets/js/large_location_picker.js");
+    $content = file_get_contents($jsFile);
+    if (!str_contains($content, "class LargeLocationPicker")) throw new Exception("Thiếu class LargeLocationPicker");
+    if (!str_contains($content, "fetchHierarchy")) throw new Exception("Thiếu phương thức fetchHierarchy");
+    if (!str_contains($content, "maxSelect")) throw new Exception("Thiếu giới hạn maxSelect");
+    if (!str_contains($content, "selectProvince")) throw new Exception("Thiếu hỗ trợ chọn nhanh theo tỉnh thành");
+});
+
+runTest("main.php đã nhúng location.css, address_autocomplete.js và large_location_picker.js", function () {
     $mainFile = BASE_PATH . "/app/Views/layouts/main.php";
     $content = file_get_contents($mainFile);
     if (!str_contains($content, "location.css")) throw new Exception("main.php chưa nhúng location.css");
     if (!str_contains($content, "address_autocomplete.js")) throw new Exception("main.php chưa nhúng address_autocomplete.js");
+    if (!str_contains($content, "large_location_picker.js")) throw new Exception("main.php chưa nhúng large_location_picker.js");
     if (!str_contains($content, "@goongmaps/goong-js@1.0.9")) throw new Exception("main.php chưa nhúng Goong JS cho trang bản đồ");
 });
 
@@ -94,6 +111,8 @@ runTest("Company Job Form (job_form.php) có mục Địa điểm làm việc, m
     if (!str_contains($content, "await loadJobLocations(id)")) throw new Exception("Chưa tải địa điểm khi sửa tin");
     if (!str_contains($content, "persistDraftJobLocations")) throw new Exception("Chưa lưu địa điểm sau khi tạo tin mới");
     if (!str_contains($content, "Vui lòng chọn một địa chỉ trong danh sách gợi ý Goong")) throw new Exception("Chưa bắt buộc chọn địa chỉ đã chuẩn hóa");
+    if (!str_contains($content, 'id="btn-company-location-picker"')) throw new Exception("Thiếu nút trigger bộ chọn địa điểm lớn cho nhà tuyển dụng");
+    if (!str_contains($content, "new LargeLocationPicker")) throw new Exception("Chưa khởi tạo LargeLocationPicker trong job_form.php");
 });
 
 runTest("Job Listings (jobs/index.php) có nút Việc làm gần tôi, radius chips và định dạng khoảng cách", function () {
@@ -110,6 +129,9 @@ runTest("Job Listings (jobs/index.php) có nút Việc làm gần tôi, radius c
     foreach (["keyword", "shift_type", "salary_min", "location_id"] as $filter) {
         if (!str_contains($content, "payload.{$filter}")) throw new Exception("Nearby chưa gửi bộ lọc {$filter}");
     }
+    if (!str_contains($content, 'id="btn-open-location-picker"')) throw new Exception("Thiếu nút trigger bộ chọn địa điểm lớn trong jobs/index.php");
+    if (!str_contains($content, "new LargeLocationPicker")) throw new Exception("Chưa khởi tạo LargeLocationPicker trong jobs/index.php");
+    if (!str_contains($content, "location_ids")) throw new Exception("Chưa đồng bộ tham số location_ids");
 });
 
 runTest("Job Detail (jobs/show.php) hiển thị danh sách chi nhánh và kiểm tra commute check", function () {
@@ -124,6 +146,11 @@ runTest("Job Detail (jobs/show.php) hiển thị danh sách chi nhánh và kiể
     if (!str_contains($content, "runCommuteCheck")) throw new Exception("Thiếu hàm runCommuteCheck");
     if (!str_contains($content, "commute-check")) throw new Exception("Thiếu API call commute-check");
     if (!str_contains($content, "checkRealRouteDistance") || !str_contains($content, "runCommuteCheck(true")) throw new Exception("Thiếu tùy chọn xem quãng đường thực tế");
+    if (!str_contains($content, 'id="btn-commute-check"')) throw new Exception("Thiếu nút xin quyền GPS trong modal ứng tuyển");
+    if (!str_contains($content, "prepareCommuteCheck")) throw new Exception("Thiếu bước chuẩn bị kiểm tra khoảng cách");
+    if (!str_contains($content, "void prepareCommuteCheck()")) throw new Exception("Modal ứng tuyển chưa tự khởi động kiểm tra khoảng cách");
+    if (!str_contains($content, "window.isSecureContext")) throw new Exception("Chưa giải thích yêu cầu HTTPS cho GPS");
+    if (!str_contains($content, "lastCommuteIsFar")) throw new Exception("Chưa giữ trạng thái cảnh báo xa khi CV đang được kiểm tra");
 });
 
 runTest("Student Profile (student/profile.php) có mục Khu Vực Làm Việc Mong Muốn và tối đa 10 khu vực", function () {
@@ -145,6 +172,27 @@ runTest("Nearby backend nhận các bộ lọc đang hiển thị trên giao di�
         if (!str_contains($repo, '$filters["' . $filter . '"]')) {
             throw new Exception("Backend nearby chưa xử lý {$filter}");
         }
+    }
+    if (!str_contains($repo, '$filters["location_ids"]')) throw new Exception("Backend nearby chưa hỗ trợ chọn nhiều khu vực");
+});
+
+runTest("API location hierarchy sẵn sàng cho bộ chọn địa điểm lớn hai cột", function () {
+    $routes = file_get_contents(BASE_PATH . "/app/Routes/api.php");
+    $controller = file_get_contents(BASE_PATH . "/app/Http/Controllers/LocationController.php");
+    $repository = file_get_contents(BASE_PATH . "/app/Infrastructure/LocationRepository.php");
+    if (!str_contains($routes, '"/locations/hierarchy"')) throw new Exception("Thiếu route /locations/hierarchy");
+    if (!str_contains($controller, "function hierarchy")) throw new Exception("Thiếu action hierarchy");
+    foreach (["province_name", "location_ids", "areas", "area_name"] as $field) {
+        if (!str_contains($repository, '"' . $field . '"')) throw new Exception("Hierarchy thiếu trường {$field}");
+    }
+});
+
+runTest("API chuẩn hóa dùng chung hỗ trợ GPS và form địa chỉ cho sinh viên/doanh nghiệp", function () {
+    $routes = file_get_contents(BASE_PATH . "/app/Routes/api.php");
+    $service = file_get_contents(BASE_PATH . "/app/Domain/LocationFeatureService.php");
+    if (!str_contains($routes, '"/map/resolve-location"')) throw new Exception("Thiếu API resolve-location dùng chung");
+    foreach (["source", "gps", "manual", "administrative_mode", "address_detail"] as $contract) {
+        if (!str_contains($service, '"' . $contract . '"')) throw new Exception("Resolve-location thiếu contract {$contract}");
     }
 });
 

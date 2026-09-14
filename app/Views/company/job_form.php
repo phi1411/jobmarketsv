@@ -46,10 +46,20 @@ $editingJobId = $jobId ?? "";
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="job-location">Khu vực / Quận làm việc <span style="color:var(--danger)">*</span></label>
-                    <select id="job-location" class="form-control" required>
-                        <option value="">-- Chọn địa điểm --</option>
-                    </select>
+                    <label class="form-label" for="btn-company-location-picker">Khu vực / Quận làm việc <span style="color:var(--danger)">*</span></label>
+                    <input type="hidden" id="job-location" name="location_id" required value="">
+                    <button type="button" id="btn-company-location-picker" class="location-picker-trigger" aria-haspopup="dialog" style="min-height:42px;">
+                        <span class="loc-trigger-content">
+                            <svg class="loc-trigger-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span id="company-location-picker-label" class="location-picker-label">-- Chọn khu vực làm việc --</span>
+                        </span>
+                        <svg class="loc-chevron-down" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="m6 9 6 6 6-6"></path>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
@@ -276,6 +286,7 @@ const EDIT_JOB_ID = "<?= htmlspecialchars($editingJobId, ENT_QUOTES, 'UTF-8') ?>
 let companyVerificationStatus = "pending";
 let jobLocations = [];
 let locAutocompleteInstance = null;
+let companyLocationPicker = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
     // Auth UX Guard
@@ -292,6 +303,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         }, 800);
         return;
     }
+
+    companyLocationPicker = new LargeLocationPicker({
+        mode: 'single',
+        title: 'Chọn khu vực làm việc chính',
+        trigger: '#btn-company-location-picker',
+        labelElement: '#company-location-picker-label',
+        hiddenInput: '#job-location',
+        onApply: (selectedIds, selectedItems, displayText) => {
+            const locId = selectedIds[0] || "";
+            document.getElementById("job-location").value = locId;
+        }
+    });
 
     locAutocompleteInstance = new AddressAutocomplete("#loc-autocomplete-container", {
         id: "job-work-address",
@@ -346,16 +369,7 @@ async function loadCategories() {
 }
 
 async function loadLocations() {
-    const res = await apiRequest("/locations");
-    if (res && res.success && Array.isArray(res.data)) {
-        const sel = document.getElementById("job-location");
-        res.data.forEach(l => {
-            const opt = document.createElement("option");
-            opt.value = l.id;
-            opt.textContent = l.name;
-            sel.appendChild(opt);
-        });
-    }
+    await LargeLocationPicker.fetchHierarchy();
 }
 
 async function loadSkills() {
@@ -673,6 +687,9 @@ async function loadJobForEditing(id) {
         document.getElementById("job-title").value = j.title || "";
         document.getElementById("job-category").value = j.category_id || "";
         document.getElementById("job-location").value = j.location_id || "";
+        if (companyLocationPicker && j.location_id) {
+            companyLocationPicker.setSelected([j.location_id]);
+        }
         document.getElementById("job-work-type").value = j.work_type || "part_time";
         document.getElementById("job-work-mode").value = j.work_mode || "onsite";
         document.getElementById("job-salary-type").value = j.salary_type || "hourly";
@@ -739,6 +756,15 @@ async function handleSubmitJob(e) {
         .filter(Boolean)
         .forEach(skill => selectedSkills.push(skill));
     const uniqueSkills = Array.from(new Map(selectedSkills.map(skill => [skill.toLocaleLowerCase("vi"), skill])).values());
+
+    const chosenLocId = document.getElementById("job-location").value.trim();
+    if (!chosenLocId) {
+        alertBox.className = "toast toast-error";
+        alertBox.innerText = "Vui lòng chọn Khu vực / Quận làm việc chính.";
+        alertBox.style.display = "block";
+        document.getElementById("btn-company-location-picker").scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+    }
 
     const statusVal = document.getElementById("job-status").value;
     const workMode = document.getElementById("job-work-mode").value;

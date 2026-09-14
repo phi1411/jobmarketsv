@@ -40,8 +40,8 @@
                 <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="afternoon">☀️ Ca Chiều</button>
                 <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="evening">🌙 Ca Tối</button>
                 <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="flexible">⚡ Ca Linh Hoạt</button>
-                <button type="button" class="quick-pill-btn" data-pill-type="location" data-pill-val="loc-001">📍 Hà Nội</button>
-                <button type="button" class="quick-pill-btn" data-pill-type="location" data-pill-val="loc-004">📍 TP. HCM</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="location" data-pill-val="Hà Nội">📍 Hà Nội</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="location" data-pill-val="TP. HCM">📍 TP. HCM</button>
                 <button type="button" class="quick-pill-btn" data-pill-type="salary" data-pill-val="25000">💰 Lương > 25k/h</button>
             </div>
 
@@ -61,15 +61,21 @@
                     </div>
 
                     <div class="form-group" style="margin:0;">
-                        <label class="form-label" for="filter-location" style="font-size:0.84rem;font-weight:600;">Khu vực / Địa điểm</label>
-                        <select id="filter-location" name="location_id" class="form-control" style="font-size:0.875rem;">
-                            <option value="">Tất cả địa điểm</option>
-                            <option value="loc-001">Hà Nội - Cầu Giấy</option>
-                            <option value="loc-002">Hà Nội - Đống Đa</option>
-                            <option value="loc-003">Hà Nội - Hai Bà Trưng</option>
-                            <option value="loc-004">TP. HCM - Quận 1</option>
-                            <option value="loc-005">TP. HCM - Bình Thạnh</option>
-                        </select>
+                        <label class="form-label" for="btn-open-location-picker" style="font-size:0.84rem;font-weight:600;">Khu vực / Địa điểm</label>
+                        <button type="button" id="btn-open-location-picker" class="location-picker-trigger" aria-haspopup="dialog" title="Mở bộ chọn khu vực làm việc">
+                            <span class="loc-trigger-content">
+                                <svg class="loc-trigger-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <span id="location-picker-label" class="location-picker-label">Tất cả địa điểm</span>
+                            </span>
+                            <span id="location-picker-badge" class="location-picker-badge" style="display:none;">0</span>
+                            <svg class="loc-chevron-down" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m6 9 6 6 6-6"></path>
+                            </svg>
+                        </button>
+                        <input type="hidden" id="filter-location" name="location_ids" value="">
                     </div>
 
                     <div class="form-group" style="margin:0;">
@@ -152,6 +158,7 @@ let currentSort = "newest";
 let userCoords = null; // Ephemeral only - never saved to storage or cookies
 let isNearbyMode = false;
 let nearbyRadiusKm = 10;
+let locationPickerInstance = null;
 
 function formatDistance(km) {
     if (km === null || km === undefined) return "";
@@ -286,11 +293,34 @@ function exitNearbyMode() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    // 0. Khởi tạo bộ chọn địa điểm lớn 2 cột (Multi-select)
+    locationPickerInstance = new LargeLocationPicker({
+        mode: 'multi',
+        maxSelect: 20,
+        trigger: '#btn-open-location-picker',
+        labelElement: '#location-picker-label',
+        badgeElement: '#location-picker-badge',
+        hiddenInput: '#filter-location',
+        onApply: (selectedIds, selectedItems, displayText) => {
+            updateFilterBadge();
+            currentPage = 1;
+            loadJobs();
+        }
+    });
+
     // 1. Parse initial query params from URL
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("keyword")) document.getElementById("filter-keyword").value = urlParams.get("keyword");
     if (urlParams.has("category_id")) document.getElementById("filter-category").value = urlParams.get("category_id");
-    if (urlParams.has("location_id")) document.getElementById("filter-location").value = urlParams.get("location_id");
+    if (urlParams.has("location_ids")) {
+        const locIds = urlParams.get("location_ids");
+        document.getElementById("filter-location").value = locIds;
+        locationPickerInstance.setSelected(locIds);
+    } else if (urlParams.has("location_id")) {
+        const locId = urlParams.get("location_id");
+        document.getElementById("filter-location").value = locId;
+        locationPickerInstance.setSelected(locId);
+    }
     if (urlParams.has("shift_type")) document.getElementById("filter-shift").value = urlParams.get("shift_type");
     if (urlParams.has("salary_min")) document.getElementById("filter-salary-min").value = urlParams.get("salary_min");
     if (urlParams.has("sort_by")) {
@@ -325,10 +355,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("filter-shift").value = "";
                 document.getElementById("filter-location").value = "";
                 document.getElementById("filter-salary-min").value = "";
+                if (locationPickerInstance) locationPickerInstance.clear(false);
             } else if (pillType === "shift") {
                 document.getElementById("filter-shift").value = pillVal || "";
             } else if (pillType === "location") {
-                document.getElementById("filter-location").value = pillVal || "";
+                if (locationPickerInstance) {
+                    if (pillVal === "loc-001" || pillVal.includes("Hà Nội")) {
+                        locationPickerInstance.selectProvince("Hà Nội", false);
+                    } else if (pillVal === "loc-004" || pillVal.includes("TP. HCM")) {
+                        locationPickerInstance.selectProvince("TP. Hồ Chí Minh", false);
+                    } else {
+                        locationPickerInstance.setSelected(pillVal);
+                    }
+                }
             } else if (pillType === "salary") {
                 document.getElementById("filter-salary-min").value = pillVal || "";
             }
@@ -364,6 +403,7 @@ document.addEventListener("DOMContentLoaded", () => {
             currentSort = "newest";
         }
         document.getElementById("filter-form").reset();
+        if (locationPickerInstance) locationPickerInstance.clear(false);
         document.querySelectorAll(".quick-pill-btn").forEach(b => b.classList.remove("active"));
         const allBtn = document.querySelector('.quick-pill-btn[data-pill-type="all"]');
         if (allBtn) allBtn.classList.add("active");
@@ -439,8 +479,11 @@ async function loadJobs(page = null) {
         if (keyword) payload.keyword = keyword;
         const salaryMin = document.getElementById("filter-salary-min") ? document.getElementById("filter-salary-min").value.trim() : "";
         if (salaryMin) payload.salary_min = Number(salaryMin);
-        const locationId = document.getElementById("filter-location") ? document.getElementById("filter-location").value : "";
-        if (locationId) payload.location_id = locationId;
+        const locationId = document.getElementById("filter-location") ? document.getElementById("filter-location").value.trim() : "";
+        if (locationId) {
+            payload.location_id = locationId;
+            payload.location_ids = locationId.split(",").map(s => s.trim()).filter(Boolean);
+        }
 
         const res = await apiRequest("/jobs/nearby-search", {
             method: "POST",
@@ -547,13 +590,13 @@ async function loadJobs(page = null) {
     const params = new URLSearchParams();
     const keyword = document.getElementById("filter-keyword").value.trim();
     const categoryId = document.getElementById("filter-category").value;
-    const locationId = document.getElementById("filter-location").value;
+    const locationId = document.getElementById("filter-location") ? document.getElementById("filter-location").value.trim() : "";
     const shiftType = document.getElementById("filter-shift").value;
     const salaryMin = document.getElementById("filter-salary-min").value.trim();
 
     if (keyword) params.append("keyword", keyword);
     if (categoryId) params.append("category_id", categoryId);
-    if (locationId) params.append("location_id", locationId);
+    if (locationId) params.append("location_ids", locationId);
     if (shiftType) params.append("shift_type", shiftType);
     if (salaryMin) params.append("salary_min", salaryMin);
 

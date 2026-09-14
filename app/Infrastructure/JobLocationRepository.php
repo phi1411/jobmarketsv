@@ -5,6 +5,7 @@ namespace JobMarket\Infrastructure;
 use JobMarket\Facades\Config;
 use JobMarket\Support\Pagination;
 use JobMarket\Support\QueryHelper;
+use JobMarket\Support\LocationFilter;
 use PDO;
 
 class JobLocationRepository
@@ -169,7 +170,12 @@ class JobLocationRepository
             $where[] = "j.shift_type = ?";
             $whereParams[] = $filters["shift_type"];
         }
-        if (!empty($filters["location_id"])) {
+        $locationIds = LocationFilter::normalizeIds($filters["location_ids"] ?? null);
+        if ($locationIds !== []) {
+            $placeholders = implode(",", array_fill(0, count($locationIds), "?"));
+            $where[] = "j.location_id IN ({$placeholders})";
+            array_push($whereParams, ...$locationIds);
+        } elseif (!empty($filters["location_id"])) {
             $where[] = "j.location_id = ?";
             $whereParams[] = $filters["location_id"];
         }

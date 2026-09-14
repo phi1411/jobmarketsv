@@ -7,6 +7,7 @@ use JobMarket\Domain\Job\JobRepositoryInterface;
 use JobMarket\Facades\Config;
 use JobMarket\Support\Pagination;
 use JobMarket\Support\QueryHelper;
+use JobMarket\Support\LocationFilter;
 use PDO;
 
 class JobRepository implements JobRepositoryInterface
@@ -117,8 +118,13 @@ class JobRepository implements JobRepositoryInterface
             $params[] = $filters["category_id"];
         }
 
-        // Filter: Location ID
-        if (!empty($filters["location_id"])) {
+        // Filter: one or many broad locations selected from the hierarchy picker.
+        $locationIds = LocationFilter::normalizeIds($filters["location_ids"] ?? null);
+        if ($locationIds !== []) {
+            $placeholders = implode(",", array_fill(0, count($locationIds), "?"));
+            $sql .= " AND (j.location_id IN ({$placeholders}) OR j.location IN ({$placeholders}))";
+            array_push($params, ...$locationIds, ...$locationIds);
+        } elseif (!empty($filters["location_id"])) {
             $sql .= " AND (j.location_id = ? OR j.location = ?)";
             $params[] = $filters["location_id"];
             $params[] = $filters["location_id"];

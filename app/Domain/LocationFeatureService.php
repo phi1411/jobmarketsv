@@ -58,6 +58,17 @@ class LocationFeatureService
         return $this->maps->reverseGeocode($lat, $lng);
     }
 
+    /**
+     * Normalize either a browser GPS point or a structured manual address.
+     * The same contract is shared by student search/preferences and company job locations.
+     */
+    public function resolveInputLocation(array $data): array
+    {
+        $location = $this->resolveLocation($data);
+        unset($location["branch_name"], $location["is_primary"]);
+        return $location;
+    }
+
     public function getJobLocations(string $jobId, ?array $user = null): array
     {
         $job = $this->jobs->findById($jobId);
@@ -119,6 +130,12 @@ class LocationFeatureService
             if (isset($data[$field]) && !is_scalar($data[$field])) {
                 throw new ValidationException([$field => ["Bộ lọc không hợp lệ."]]);
             }
+        }
+        if (isset($data["location_ids"]) && !is_string($data["location_ids"]) && !is_array($data["location_ids"])) {
+            throw new ValidationException(["location_ids" => ["Danh sách khu vực không hợp lệ."]]);
+        }
+        if (is_array($data["location_ids"] ?? null) && count($data["location_ids"]) > 20) {
+            throw new ValidationException(["location_ids" => ["Chỉ được chọn tối đa 20 khu vực."]]);
         }
         if (!empty($data["shift_type"]) && !in_array((string)$data["shift_type"], ["morning", "afternoon", "evening", "night", "rotating", "weekend", "flexible"], true)) {
             throw new ValidationException(["shift_type" => ["Ca làm việc không hợp lệ."]]);
@@ -243,13 +260,68 @@ class LocationFeatureService
 
     private function resolveLocation(array $data): array
     {
+        $source = strtolower(trim((string)($data["source"] ?? "")));
         $placeId = trim((string)($data["place_id"] ?? ($data["provider_place_id"] ?? "")));
-        if ($placeId !== "" && (($data["provider"] ?? "goong") === "goong" || isset($data["place_id"]))) {
+        if ($source !== "" && !in_array($source, ["gps", "manual"], true)) {
+            throw new ValidationException(["source" => ["Nguồn địa chỉ phải là gps hoặc manual."]]);
+        }
+
+        if ($source === "gps") {
+            [$lat, $lng] = $this->requiredCoordinates($data);
+            $results = $this->maps->reverseGeocode($lat, $lng);
+            $location = $this->firstResolvedMapLocation($results, "Không xác định được địa chỉ tại vị trí GPS này.");
+            // Keep the browser coordinates as the exact search origin; the returned address is descriptive.
+            $location["latitude"] = $lat;
+            $location["longitude"] = $lng;
+            $location["provider_place_id"] = $location["place_id"] ?: null;
+            unset($location["place_id"], $location["name"]);
+            $location["geocode_status"] = "verified";
+        } elseif ($placeId !== "" && (($data["provider"] ?? "goong") === "goong" || isset($data["place_id"]))) {
             $location = $this->maps->placeDetail($placeId, isset($data["session_token"]) ? (string)$data["session_token"] : null);
             if ($location["latitude"] === null || $location["longitude"] === null) {
                 throw new ValidationException(["place_id" => ["Goong không trả về tọa độ cho địa điểm này."]]);
             }
             $location["provider_place_id"] = $location["place_id"];
+            unset($location["place_id"], $location["name"]);
+            $location["geocode_status"] = "verified";
+        } elseif ($source === "manual" && (!is_numeric($data["latitude"] ?? null) || !is_numeric($data["longitude"] ?? null))) {
+            $administrativeMode = strtolower(trim((string)($data["administrative_mode"] ?? "current")));
+            if (!in_array($administrativeMode, ["current", "legacy"], true)) {
+                throw new ValidationException(["administrative_mode" => ["Kiểu địa chỉ phải là current hoặc legacy."]]);
+            }
+
+            $province = $this->shortText($data["province"] ?? null, 150);
+            $district = $this->shortText($data["district_text_legacy"] ?? ($data["district"] ?? null), 150);
+            $commune = $this->shortText($data["commune"] ?? ($data["ward"] ?? null), 150);
+            $addressDetail = $this->shortText($data["address_detail"] ?? null, 250);
+
+            $errors = [];
+            if ($province === null) {
+                $errors["province"][] = "Vui lòng chọn Tỉnh/Thành phố.";
+            }
+            if ($administrativeMode === "legacy" && $district === null) {
+                $errors["district_text_legacy"][] = "Vui lòng chọn Quận/Huyện của địa chỉ cũ.";
+            }
+            if ($commune === null) {
+                $errors["commune"][] = "Vui lòng chọn Phường/Xã.";
+            }
+            if ($addressDetail === null || strlen($addressDetail) < 3) {
+                $errors["address_detail"][] = "Vui lòng nhập số nhà, tên đường hoặc địa chỉ chi tiết.";
+            }
+            if ($errors !== []) {
+                throw new ValidationException($errors);
+            }
+
+            $query = implode(", ", array_filter([$addressDetail, $commune, $district, $province]));
+            $results = $this->maps->geocode($query);
+            $location = $this->firstResolvedMapLocation($results, "Goong không tìm thấy tọa độ phù hợp với địa chỉ đã nhập.");
+            $location["address_text"] = $location["address_text"] ?: $query;
+            $location["province"] = $province;
+            $location["province_code"] = $this->shortText($data["province_code"] ?? null, 30);
+            $location["commune"] = $commune;
+            $location["commune_code"] = $this->shortText($data["commune_code"] ?? ($data["ward_code"] ?? null), 30);
+            $location["district_text_legacy"] = $administrativeMode === "legacy" ? $district : null;
+            $location["provider_place_id"] = $location["place_id"] ?: null;
             unset($location["place_id"], $location["name"]);
             $location["geocode_status"] = "verified";
         } else {
@@ -275,6 +347,16 @@ class LocationFeatureService
         $location["branch_name"] = $this->shortText($data["branch_name"] ?? null, 150);
         $location["is_primary"] = (bool)($data["is_primary"] ?? false);
         return $location;
+    }
+
+    private function firstResolvedMapLocation(array $results, string $message): array
+    {
+        foreach ($results as $result) {
+            if (is_array($result) && is_numeric($result["latitude"] ?? null) && is_numeric($result["longitude"] ?? null)) {
+                return $result;
+            }
+        }
+        throw new ValidationException(["address" => [$message]]);
     }
 
     private function assertJobOwner(string $jobId, array $user): array

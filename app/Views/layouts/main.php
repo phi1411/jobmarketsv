@@ -42,6 +42,7 @@
     <?php endif; ?>
     <script src="/assets/js/api.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/api.js') ? filemtime(BASE_PATH . '/public/assets/js/api.js') : time() ?>"></script>
     <script src="/assets/js/address_autocomplete.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/address_autocomplete.js') ? filemtime(BASE_PATH . '/public/assets/js/address_autocomplete.js') : time() ?>"></script>
+    <script src="/assets/js/large_location_picker.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/large_location_picker.js') ? filemtime(BASE_PATH . '/public/assets/js/large_location_picker.js') : time() ?>"></script>
     <script src="/assets/js/theme.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/theme.js') ? filemtime(BASE_PATH . '/public/assets/js/theme.js') : time() ?>"></script>
 </head>
 <body>

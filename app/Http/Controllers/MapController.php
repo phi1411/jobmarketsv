@@ -51,6 +51,17 @@ class MapController extends Controller
         return Response::success($this->service->reverseGeocode($request->all()), "Địa chỉ tại vị trí hiện tại.");
     }
 
+    public function resolveLocation(Request $request): Response
+    {
+        if (($limited = $this->limit($request, "resolve")) !== null) {
+            return $limited;
+        }
+        return Response::success(
+            $this->service->resolveInputLocation($request->all()),
+            "Địa chỉ đã được chuẩn hóa và xác thực tọa độ."
+        );
+    }
+
     private function limit(Request $request, string $action): ?Response
     {
         $user = $request->getUser();

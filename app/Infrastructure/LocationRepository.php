@@ -23,10 +23,42 @@ class LocationRepository implements LocationRepositoryInterface
     public function getAll(): array
     {
         $stmt = $this->db->prepare(
-            "SELECT * FROM locations"
+            "SELECT * FROM locations ORDER BY name ASC"
         );
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getHierarchy(): array
+    {
+        $groups = [];
+        foreach ($this->getAll() as $location) {
+            $name = trim((string)($location["name"] ?? ""));
+            $parts = preg_split('/\s+-\s+/u', $name, 2) ?: [];
+            $province = trim((string)($parts[0] ?? $name));
+            $area = trim((string)($parts[1] ?? "Toàn khu vực"));
+            if ($province === "") {
+                continue;
+            }
+
+            if (!isset($groups[$province])) {
+                $groups[$province] = [
+                    "province_name" => $province,
+                    "location_ids" => [],
+                    "areas" => [],
+                ];
+            }
+
+            $item = [
+                "id" => (string)$location["id"],
+                "name" => $name,
+                "area_name" => $area,
+            ];
+            $groups[$province]["location_ids"][] = $item["id"];
+            $groups[$province]["areas"][] = $item;
+        }
+
+        return array_values($groups);
     }
     public function create(Location $location): void
     {

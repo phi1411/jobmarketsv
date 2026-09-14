@@ -96,6 +96,7 @@ return [
     ["POST", "/map/places/detail", [MapController::class, "detail"]],
     ["POST", "/map/geocode", [MapController::class, "geocode"]],
     ["POST", "/map/reverse-geocode", [MapController::class, "reverseGeocode"]],
+    ["POST", "/map/resolve-location", [MapController::class, "resolveLocation"]],
 
     ["GET", "/student/preferred-locations", [JobLocationController::class, "preferences"]],
     ["PUT", "/student/preferred-locations", [JobLocationController::class, "savePreferences"]],
@@ -251,6 +252,9 @@ return [
 
     // Retrieve a list of all available locations
     ["GET", "/locations", [LocationController::class, "index"]],
+
+    // Retrieve locations grouped for the large province/area picker
+    ["GET", "/locations/hierarchy", [LocationController::class, "hierarchy"]],
 
     // Create a new location
     ["POST", "/locations", [LocationController::class, "store"]],

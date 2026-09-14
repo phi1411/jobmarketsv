@@ -221,8 +221,11 @@
             </div>
 
             <!-- Manual trigger button if coordinates weren't requested yet -->
-            <div id="commute-check-cta" style="display:none;margin-bottom:0.75rem;">
-                <button type="button" class="btn btn-outline btn-sm" onclick="triggerCommuteCheck()" style="font-size:0.82rem;padding:0.35rem 0.75rem;display:inline-flex;align-items:center;gap:0.35rem;">
+            <div id="commute-check-cta" style="display:none;margin-bottom:0.75rem;padding:0.7rem 0.85rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);">
+                <div id="commute-check-cta-message" style="font-size:0.82rem;color:var(--text-muted);line-height:1.45;margin-bottom:0.55rem;">
+                    Cho phép truy cập vị trí để kiểm tra khoảng cách đi làm.
+                </div>
+                <button type="button" id="btn-commute-check" class="btn btn-outline btn-sm" onclick="triggerCommuteCheck()" style="font-size:0.82rem;padding:0.35rem 0.75rem;display:inline-flex;align-items:center;gap:0.35rem;">
                     <span>📍</span> <span>Kiểm tra khoảng cách đi làm từ vị trí của bạn</span>
                 </button>
             </div>
@@ -277,6 +280,7 @@ const goongMaptilesKey = <?= json_encode($goongMaptilesKey ?? "", JSON_HEX_TAG |
 let currentJobData = null;
 let ephemeralCoords = null; // Stored in runtime memory only during session
 let jobDetailMap = null;
+let lastCommuteIsFar = false;
 
 document.addEventListener("DOMContentLoaded", async () => {
     if (!currentJobId) {
@@ -513,9 +517,96 @@ function renderGoongJobMap(locations) {
     });
 }
 
-function triggerCommuteCheck() {
+function resetCommuteCheckUi() {
+    const loading = document.getElementById("commute-loading");
+    const warningBox = document.getElementById("commute-warning-box");
+    const nearBox = document.getElementById("commute-near-box");
+    const cta = document.getElementById("commute-check-cta");
+    const submitBtn = document.getElementById("btn-submit-apply");
+
+    if (loading) loading.style.display = "none";
+    if (warningBox) warningBox.style.display = "none";
+    if (nearBox) nearBox.style.display = "none";
+    if (cta) cta.style.display = "none";
+    lastCommuteIsFar = false;
+    if (submitBtn) submitBtn.innerText = "Gửi Đơn Ứng Tuyển";
+}
+
+function showCommuteCheckPrompt(message, actionable = true) {
+    const cta = document.getElementById("commute-check-cta");
+    const messageEl = document.getElementById("commute-check-cta-message");
+    const button = document.getElementById("btn-commute-check");
+    const loading = document.getElementById("commute-loading");
+
+    if (loading) loading.style.display = "none";
+    if (messageEl) messageEl.innerText = message;
+    if (button) button.style.display = actionable ? "inline-flex" : "none";
+    if (cta) cta.style.display = "block";
+}
+
+function hasGeocodedWorkLocation() {
+    const locations = currentJobData && Array.isArray(currentJobData.work_locations)
+        ? currentJobData.work_locations
+        : [];
+
+    return locations.some((loc) => {
+        if (loc.latitude === null || loc.latitude === undefined || loc.latitude === ""
+            || loc.longitude === null || loc.longitude === undefined || loc.longitude === "") {
+            return false;
+        }
+        return Number.isFinite(Number(loc.latitude)) && Number.isFinite(Number(loc.longitude));
+    });
+}
+
+async function prepareCommuteCheck() {
+    resetCommuteCheckUi();
+
+    if (!hasGeocodedWorkLocation()) {
+        showCommuteCheckPrompt("Tin tuyển dụng này chưa có tọa độ địa điểm để kiểm tra khoảng cách.", false);
+        return;
+    }
+
+    if (ephemeralCoords) {
+        await runCommuteCheck(false);
+        return;
+    }
+
+    if (!window.isSecureContext) {
+        showCommuteCheckPrompt("Trình duyệt chỉ cho phép lấy GPS trên HTTPS. Hãy mở trang bằng địa chỉ bắt đầu bằng https:// rồi thử lại.", false);
+        return;
+    }
+
     if (!navigator.geolocation) {
-        showToast("Trình duyệt không hỗ trợ xác định vị trí.", "warning");
+        showCommuteCheckPrompt("Trình duyệt này không hỗ trợ xác định vị trí.", false);
+        return;
+    }
+
+    if (navigator.permissions && typeof navigator.permissions.query === "function") {
+        try {
+            const permission = await navigator.permissions.query({ name: "geolocation" });
+            if (permission.state === "granted") {
+                triggerCommuteCheck();
+                return;
+            }
+            if (permission.state === "denied") {
+                showCommuteCheckPrompt("Chrome đang chặn vị trí cho trang này. Bấm biểu tượng bên trái thanh địa chỉ, mở Cài đặt trang web, cho phép Vị trí rồi tải lại trang.", false);
+                return;
+            }
+        } catch (err) {
+            console.debug("Không đọc được trạng thái quyền vị trí:", err);
+        }
+    }
+
+    showCommuteCheckPrompt("Nhấn nút bên dưới và chọn Cho phép khi trình duyệt hỏi quyền vị trí. Tọa độ chỉ dùng cho lần kiểm tra này, không được lưu vào hồ sơ.");
+}
+
+function triggerCommuteCheck() {
+    if (!window.isSecureContext) {
+        showCommuteCheckPrompt("Trình duyệt chỉ cho phép lấy GPS trên HTTPS. Hãy mở trang bằng địa chỉ bắt đầu bằng https:// rồi thử lại.", false);
+        return;
+    }
+    if (!navigator.geolocation) {
+        showCommuteCheckPrompt("Trình duyệt này không hỗ trợ xác định vị trí.", false);
         return;
     }
     const cta = document.getElementById("commute-check-cta");
@@ -533,9 +624,17 @@ function triggerCommuteCheck() {
         },
         (err) => {
             if (loading) loading.style.display = "none";
-            if (cta) cta.style.display = "block";
             console.warn("Geolocation error:", err);
-            showToast("Không thể xác định vị trí để kiểm tra khoảng cách đi làm.", "info");
+            if (err && err.code === err.PERMISSION_DENIED) {
+                showCommuteCheckPrompt("Chrome đang chặn vị trí cho trang này. Bấm biểu tượng bên trái thanh địa chỉ, mở Cài đặt trang web, cho phép Vị trí rồi tải lại trang.", false);
+                showToast("Bạn chưa cấp quyền vị trí cho trang web.", "info");
+            } else if (err && err.code === err.TIMEOUT) {
+                showCommuteCheckPrompt("Không lấy được vị trí trong thời gian chờ. Bạn có thể thử lại.");
+                showToast("Yêu cầu vị trí đã hết thời gian chờ.", "info");
+            } else {
+                showCommuteCheckPrompt("Thiết bị chưa xác định được vị trí. Hãy kiểm tra dịch vụ Location của Windows rồi thử lại.");
+                showToast("Không thể xác định vị trí để kiểm tra khoảng cách đi làm.", "info");
+            }
         },
         { timeout: 8000, enableHighAccuracy: false }
     );
@@ -578,6 +677,7 @@ async function runCommuteCheck(useRoute = false, vehicle = 'bike') {
             const distVi = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 1 }).format(distKm);
 
             if (d.is_far) {
+                lastCommuteIsFar = true;
                 if (warningMsg) {
                     warningMsg.innerText = d.warning || `Công việc này cách khu vực của bạn khoảng ${distVi} km, vượt mức ${d.max_commute_km} km mong muốn. Bạn vẫn có thể ứng tuyển.`;
                 }
@@ -585,19 +685,25 @@ async function runCommuteCheck(useRoute = false, vehicle = 'bike') {
 
                 // Vẫn cho phép ứng tuyển và làm rõ nút submit
                 const submitBtn = document.getElementById("btn-submit-apply");
-                if (submitBtn && !submitBtn.disabled) {
+                if (submitBtn) {
                     submitBtn.innerText = "Vẫn Gửi Đơn Ứng Tuyển";
                 }
             } else {
+                lastCommuteIsFar = false;
                 if (nearText) {
                     nearText.innerText = `Khoảng cách đi làm: khoảng ${distVi} km ${useRoute ? '(theo đường bộ xe máy)' : '(đường chim bay)'} - Thuận tiện đi lại!`;
                 }
                 if (nearBox) nearBox.style.display = "block";
+                const submitBtn = document.getElementById("btn-submit-apply");
+                if (submitBtn) submitBtn.innerText = "Gửi Đơn Ứng Tuyển";
             }
+        } else {
+            showCommuteCheckPrompt((res && res.message) ? res.message : "Chưa thể kiểm tra khoảng cách lúc này. Bạn có thể thử lại.");
         }
     } catch (err) {
         if (loading) loading.style.display = "none";
         console.error("Commute check error:", err);
+        showCommuteCheckPrompt("Không kết nối được dịch vụ kiểm tra khoảng cách. Bạn vẫn có thể ứng tuyển hoặc thử lại.");
     }
 }
 
@@ -621,6 +727,7 @@ async function openApplyModal() {
     if (errBox) errBox.style.display = "none";
 
     modal.style.display = "flex";
+    void prepareCommuteCheck();
     await checkCvReadiness();
 }
 
@@ -657,6 +764,7 @@ async function checkCvReadiness() {
                     btnSubmit.disabled = false;
                     btnSubmit.style.opacity = "1";
                     btnSubmit.style.cursor = "pointer";
+                    btnSubmit.innerText = lastCommuteIsFar ? "Vẫn Gửi Đơn Ứng Tuyển" : "Gửi Đơn Ứng Tuyển";
                 }
             } else {
                 if (cvMissing) cvMissing.style.display = "block";

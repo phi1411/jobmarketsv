@@ -6,7 +6,9 @@ require __DIR__ . "/vendor/autoload.php";
 use FastRoute\RouteCollector;
 use JobMarket\Facades\Config;
 use JobMarket\Infrastructure\JobLocationRepository;
+use JobMarket\Infrastructure\LocationRepository;
 use JobMarket\Infrastructure\Maps\GoongMapsClient;
+use JobMarket\Support\LocationFilter;
 use JobMarket\Support\Pagination;
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -32,6 +34,20 @@ $fakeHttp = function (string $url): array {
             ], JSON_UNESCAPED_UNICODE),
         ];
     }
+    if (str_contains($url, "/Geocode")) {
+        return [
+            "status" => 200,
+            "body" => json_encode([
+                "status" => "OK",
+                "results" => [[
+                    "place_id" => "test-geocode",
+                    "formatted_address" => "123 Nguyễn Huệ, Bến Nghé, Hồ Chí Minh",
+                    "compound" => ["province" => "Hồ Chí Minh", "commune" => "Bến Nghé", "district" => "Quận 1"],
+                    "geometry" => ["location" => ["lat" => 10.7738, "lng" => 106.7036]],
+                ]],
+            ], JSON_UNESCAPED_UNICODE),
+        ];
+    }
     return [
         "status" => 200,
         "body" => json_encode([
@@ -53,6 +69,25 @@ $assert($suggestions[0]["commune"] === "Bến Nghé", "Commune normalization fai
 $detail = $client->placeDetail("test-place", "session-123");
 $assert($detail["latitude"] === 10.7738 && $detail["longitude"] === 106.7036, "Place coordinates failed.");
 $assert(JobLocationRepository::haversine(10.77, 106.70, 10.77, 106.70) === 0.0, "Haversine zero-distance failed.");
+$assert(LocationFilter::normalizeIds("loc-001,loc-002,loc-001") === ["loc-001", "loc-002"], "Multi-location normalization failed.");
+$assert(LocationFilter::normalizeIds(["loc-001", "bad id", ["nested"]]) === ["loc-001"], "Unsafe location IDs were not removed.");
+
+$locationService = new \JobMarket\Domain\LocationFeatureService($client);
+$gpsLocation = $locationService->resolveInputLocation([
+    "source" => "gps",
+    "latitude" => 10.7738,
+    "longitude" => 106.7036,
+]);
+$assert($gpsLocation["geocode_status"] === "verified" && $gpsLocation["latitude"] === 10.7738, "GPS location resolution failed.");
+$manualLocation = $locationService->resolveInputLocation([
+    "source" => "manual",
+    "administrative_mode" => "legacy",
+    "province" => "Hồ Chí Minh",
+    "district" => "Quận 1",
+    "ward" => "Bến Nghé",
+    "address_detail" => "123 Nguyễn Huệ",
+]);
+$assert($manualLocation["district_text_legacy"] === "Quận 1" && $manualLocation["commune"] === "Bến Nghé", "Structured manual location resolution failed.");
 
 $config = Config::env();
 $db = new PDO(
@@ -66,6 +101,10 @@ foreach (["job_locations", "student_preferred_locations"] as $table) {
     $stmt->execute([$table]);
     $assert((int)$stmt->fetchColumn() === 1, "Missing table {$table}.");
 }
+
+$locationHierarchy = (new LocationRepository())->getHierarchy();
+$assert($locationHierarchy !== [], "Location hierarchy is empty.");
+$assert(isset($locationHierarchy[0]["province_name"], $locationHierarchy[0]["location_ids"], $locationHierarchy[0]["areas"]), "Location hierarchy shape is invalid.");
 
 // Exercise the real nearby SQL without leaving test data behind.
 $jobRow = $db->query(

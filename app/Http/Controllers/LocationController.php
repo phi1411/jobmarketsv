@@ -21,6 +21,14 @@ class LocationController extends Controller
         return Response::success($locations, "Danh sách địa điểm.");
     }
 
+    public function hierarchy(Request $request): Response
+    {
+        return Response::success(
+            $this->locationRepo->getHierarchy(),
+            "Danh sách địa điểm theo tỉnh/thành và khu vực."
+        );
+    }
+
     public function show(Request $request, string $id)
     {
     }
