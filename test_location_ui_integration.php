@@ -47,6 +47,7 @@ runTest("Tệp location.css tồn tại và chứa đầy đủ các class giao 
         ".nearby-cta-btn",
         ".nearby-filter-bar",
         ".radius-chip",
+        ".job-detail-map",
         ".commute-warning-banner",
         ".preferred-loc-chip"
     ];
@@ -66,6 +67,7 @@ runTest("Tệp address_autocomplete.js tồn tại và định nghĩa AddressAut
     if (!str_contains($content, "role=\"listbox\"")) throw new Exception("Thiếu ARIA listbox");
     if (!str_contains($content, "session_token")) throw new Exception("Thiếu quản lý session_token");
     if (!str_contains($content, "retry_after_seconds")) throw new Exception("Thiếu xử lý 429 rate limit");
+    if (!str_contains($content, "res.errors && res.errors.retry_after_seconds")) throw new Exception("Chưa đọc retry_after_seconds từ lỗi API chuẩn hóa");
 });
 
 runTest("main.php đã nhúng location.css và address_autocomplete.js", function () {
@@ -73,6 +75,7 @@ runTest("main.php đã nhúng location.css và address_autocomplete.js", functio
     $content = file_get_contents($mainFile);
     if (!str_contains($content, "location.css")) throw new Exception("main.php chưa nhúng location.css");
     if (!str_contains($content, "address_autocomplete.js")) throw new Exception("main.php chưa nhúng address_autocomplete.js");
+    if (!str_contains($content, "@goongmaps/goong-js@1.0.9")) throw new Exception("main.php chưa nhúng Goong JS cho trang bản đồ");
 });
 
 // 2. Kiểm tra các View giao diện
@@ -87,13 +90,16 @@ runTest("Company Job Form (job_form.php) có mục Địa điểm làm việc, m
     if (!str_contains($content, "handleSaveLocation")) throw new Exception("Thiếu hàm handleSaveLocation");
     if (!str_contains($content, "handleDeleteLocation")) throw new Exception("Thiếu hàm handleDeleteLocation");
     if (!str_contains($content, "handleSetPrimaryLocation")) throw new Exception("Thiếu hàm handleSetPrimaryLocation");
-    if (!str_contains($content, "locAutocompleteInstance")) throw new Exception("Thiếu AddressAutocomplete instance");
+    if (!str_contains($content, 'new AddressAutocomplete("#loc-autocomplete-container"')) throw new Exception("Chưa khởi tạo AddressAutocomplete instance");
+    if (!str_contains($content, "await loadJobLocations(id)")) throw new Exception("Chưa tải địa điểm khi sửa tin");
+    if (!str_contains($content, "persistDraftJobLocations")) throw new Exception("Chưa lưu địa điểm sau khi tạo tin mới");
+    if (!str_contains($content, "Vui lòng chọn một địa chỉ trong danh sách gợi ý Goong")) throw new Exception("Chưa bắt buộc chọn địa chỉ đã chuẩn hóa");
 });
 
 runTest("Job Listings (jobs/index.php) có nút Việc làm gần tôi, radius chips và định dạng khoảng cách", function () {
     $file = BASE_PATH . "/app/Views/jobs/index.php";
     $content = file_get_contents($file);
-    if (!str_contains($content, "btn-nearby-jobs")) throw new Exception("Thiếu nút btn-nearby-jobs");
+    if (!str_contains($content, 'id="btn-nearby-jobs"')) throw new Exception("Thiếu nút btn-nearby-jobs trong DOM");
     if (!str_contains($content, "nearby-filter-bar")) throw new Exception("Thiếu nearby-filter-bar");
     if (!str_contains($content, "data-radius=\"10\"")) throw new Exception("Thiếu chip bán kính mặc định 10km");
     if (!str_contains($content, "toggleNearbyJobs")) throw new Exception("Thiếu hàm toggleNearbyJobs");
@@ -101,12 +107,18 @@ runTest("Job Listings (jobs/index.php) có nút Việc làm gần tôi, radius c
     if (!str_contains($content, "formatDistance")) throw new Exception("Thiếu hàm formatDistance");
     if (!str_contains($content, "Intl.NumberFormat('vi-VN'")) throw new Exception("Thiếu format tiếng Việt vi-VN");
     if (!str_contains($content, "Cách bạn")) throw new Exception("Thiếu nhãn Cách bạn");
+    foreach (["keyword", "shift_type", "salary_min", "location_id"] as $filter) {
+        if (!str_contains($content, "payload.{$filter}")) throw new Exception("Nearby chưa gửi bộ lọc {$filter}");
+    }
 });
 
 runTest("Job Detail (jobs/show.php) hiển thị danh sách chi nhánh và kiểm tra commute check", function () {
     $file = BASE_PATH . "/app/Views/jobs/show.php";
     $content = file_get_contents($file);
-    if (!str_contains($content, "detail-locations-card")) throw new Exception("Thiếu detail-locations-card");
+    if (!str_contains($content, 'id="detail-locations-card"')) throw new Exception("Thiếu detail-locations-card trong DOM");
+    if (!str_contains($content, "renderJobDetailLocations(job.work_locations")) throw new Exception("Chưa render work_locations sau khi tải job");
+    if (!str_contains($content, "new window.goongjs.Map")) throw new Exception("Chưa khởi tạo bản đồ Goong");
+    if (!str_contains($content, "new window.goongjs.Marker")) throw new Exception("Chưa tạo marker địa điểm");
     if (!str_contains($content, "apply-commute-section")) throw new Exception("Thiếu apply-commute-section");
     if (!str_contains($content, "commute-warning-box")) throw new Exception("Thiếu commute-warning-box");
     if (!str_contains($content, "runCommuteCheck")) throw new Exception("Thiếu hàm runCommuteCheck");
@@ -123,6 +135,17 @@ runTest("Student Profile (student/profile.php) có mục Khu Vực Làm Việc M
     if (!str_contains($content, "handleAddPreferredLocation")) throw new Exception("Thiếu hàm handleAddPreferredLocation");
     if (!str_contains($content, "savePreferredLocationsToServer")) throw new Exception("Thiếu hàm savePreferredLocationsToServer");
     if (!str_contains($content, "/student/preferred-locations")) throw new Exception("Thiếu API call preferred-locations");
+    if (!str_contains($content, "if (!selected)")) throw new Exception("Chưa bắt buộc chọn gợi ý Goong");
+    if (!str_contains($content, "throw new Error(res && res.message")) throw new Exception("Lỗi lưu khu vực vẫn đang bị bỏ qua");
+});
+
+runTest("Nearby backend nhận các bộ lọc đang hiển thị trên giao diện", function () {
+    $repo = file_get_contents(BASE_PATH . "/app/Infrastructure/JobLocationRepository.php");
+    foreach (["shift_type", "location_id", "salary_min", "keyword"] as $filter) {
+        if (!str_contains($repo, '$filters["' . $filter . '"]')) {
+            throw new Exception("Backend nearby chưa xử lý {$filter}");
+        }
+    }
 });
 
 // 3. Kiểm tra An toàn & Bảo mật
@@ -137,6 +160,26 @@ runTest("Tuyệt đối không chứa GOONG_REST_API_KEY trong public/ và app/V
                 $raw = file_get_contents($file->getPathname());
                 if (str_contains($raw, "GOONG_REST_API_KEY")) {
                     throw new Exception("Phát hiện GOONG_REST_API_KEY trong " . $file->getPathname());
+                }
+            }
+        }
+    }
+});
+
+runTest("Giá trị key thật không bị ghi cứng vào mã nguồn được Git theo dõi", function () {
+    $secretValues = array_filter([
+        $_ENV["GOONG_REST_API_KEY"] ?? null,
+        $_ENV["GOONG_MAPTILES_KEY"] ?? null,
+    ], fn($value) => is_string($value) && strlen($value) >= 20);
+    $scanDirs = [BASE_PATH . "/public", BASE_PATH . "/app"];
+    foreach ($scanDirs as $dir) {
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+        foreach ($iterator as $file) {
+            if (!$file->isFile()) continue;
+            $raw = file_get_contents($file->getPathname());
+            foreach ($secretValues as $secret) {
+                if (str_contains($raw, $secret)) {
+                    throw new Exception("Phát hiện giá trị key thật trong " . $file->getPathname());
                 }
             }
         }

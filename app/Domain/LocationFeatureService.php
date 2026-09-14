@@ -58,11 +58,19 @@ class LocationFeatureService
         return $this->maps->reverseGeocode($lat, $lng);
     }
 
-    public function getJobLocations(string $jobId, bool $publicOnly = true): array
+    public function getJobLocations(string $jobId, ?array $user = null): array
     {
         $job = $this->jobs->findById($jobId);
-        if ($job === [] || ($publicOnly && !$this->isPublicJob($job))) {
+        if ($job === []) {
             throw new NotFoundException("Không tìm thấy tin tuyển dụng.");
+        }
+        if (!$this->isPublicJob($job)) {
+            if (($user["role"] ?? "") !== "admin") {
+                if ($user === null) {
+                    throw new NotFoundException("Không tìm thấy tin tuyển dụng.");
+                }
+                $this->assertJobOwner($jobId, $user);
+            }
         }
         return $this->locations->listForJob($jobId);
     }
@@ -107,9 +115,23 @@ class LocationFeatureService
         if (!in_array($radius, [2, 5, 10, 20, 50], true)) {
             throw new ValidationException(["radius_km" => ["Bán kính cho phép: 2, 5, 10, 20 hoặc 50 km."]]);
         }
-        foreach (["work_mode", "work_type", "category_id"] as $field) {
+        foreach (["work_mode", "work_type", "category_id", "shift_type", "location_id", "keyword", "salary_min", "salary_max"] as $field) {
             if (isset($data[$field]) && !is_scalar($data[$field])) {
                 throw new ValidationException([$field => ["Bộ lọc không hợp lệ."]]);
+            }
+        }
+        if (!empty($data["shift_type"]) && !in_array((string)$data["shift_type"], ["morning", "afternoon", "evening", "night", "rotating", "weekend", "flexible"], true)) {
+            throw new ValidationException(["shift_type" => ["Ca làm việc không hợp lệ."]]);
+        }
+        if (!empty($data["work_mode"]) && !in_array((string)$data["work_mode"], ["onsite", "hybrid", "remote"], true)) {
+            throw new ValidationException(["work_mode" => ["Hình thức làm việc không hợp lệ."]]);
+        }
+        if (isset($data["keyword"]) && strlen(trim((string)$data["keyword"])) > 150) {
+            throw new ValidationException(["keyword" => ["Từ khóa tìm kiếm tối đa 150 ký tự."]]);
+        }
+        foreach (["salary_min", "salary_max"] as $salaryField) {
+            if (($data[$salaryField] ?? "") !== "" && (!is_numeric($data[$salaryField]) || (float)$data[$salaryField] < 0)) {
+                throw new ValidationException([$salaryField => ["Mức lương phải là số không âm."]]);
             }
         }
         $result = $this->locations->nearby($lat, $lng, $radius, $data, $pagination);

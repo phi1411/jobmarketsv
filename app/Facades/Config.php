@@ -150,6 +150,12 @@ class Config extends Facade
         return is_string($key) && trim($key) !== "" ? trim($key) : null;
     }
 
+    public static function goongMaptilesKey(): ?string
+    {
+        $key = self::getEnv("GOONG_MAPTILES_KEY");
+        return is_string($key) && trim($key) !== "" ? trim($key) : null;
+    }
+
     public static function goongApiBaseUrl(): string
     {
         return rtrim((string)self::getEnv("GOONG_API_BASE_URL", "https://rsapi.goong.io"), "/");

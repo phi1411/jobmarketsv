@@ -55,6 +55,16 @@
                     <h2 class="detail-card-title">Quyền Lợi Được Hưởng</h2>
                     <div id="job-benefits" style="white-space:pre-line;color:var(--text);line-height:1.7;"></div>
                 </div>
+
+                <div id="detail-locations-card" class="detail-card" style="display:none;">
+                    <div class="job-map-heading">
+                        <h2 class="detail-card-title" style="margin:0;">Địa Điểm Làm Việc</h2>
+                        <span id="detail-locs-count" class="badge-loc badge-loc-primary"></span>
+                    </div>
+                    <div id="job-detail-map" class="job-detail-map" role="region" aria-label="Bản đồ các địa điểm làm việc"></div>
+                    <div id="job-map-unavailable" class="job-map-unavailable" style="display:none;"></div>
+                    <div id="detail-locations-list" class="job-detail-location-list"></div>
+                </div>
             </div>
 
             <!-- Right Column: Meta & Employer Info -->
@@ -263,8 +273,10 @@
 
 <script>
 const currentJobId = <?= json_encode($jobId ?? "") ?>;
+const goongMaptilesKey = <?= json_encode($goongMaptilesKey ?? "", JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 let currentJobData = null;
 let ephemeralCoords = null; // Stored in runtime memory only during session
+let jobDetailMap = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
     if (!currentJobId) {
@@ -325,6 +337,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (job.company_description) {
             document.getElementById("comp-sidebar-desc").innerText = job.company_description;
         }
+        renderJobDetailLocations(job.work_locations || []);
     } else {
         document.getElementById("job-detail-loading").innerHTML = `
             <div class="empty-state" style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);margin-top:2rem;">
@@ -431,6 +444,73 @@ function renderJobDetailLocations(locations) {
             </div>
         `;
     }).join("");
+
+    renderGoongJobMap(locations);
+}
+
+function renderGoongJobMap(locations) {
+    const mapEl = document.getElementById("job-detail-map");
+    const unavailableEl = document.getElementById("job-map-unavailable");
+    const validLocations = locations.filter(loc => {
+        if (loc.latitude === null || loc.latitude === undefined || loc.latitude === ""
+            || loc.longitude === null || loc.longitude === undefined || loc.longitude === "") {
+            return false;
+        }
+        const lat = Number(loc.latitude);
+        const lng = Number(loc.longitude);
+        return Number.isFinite(lat) && Number.isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+    });
+
+    if (jobDetailMap && typeof jobDetailMap.remove === "function") {
+        jobDetailMap.remove();
+        jobDetailMap = null;
+    }
+
+    if (validLocations.length === 0) {
+        mapEl.style.display = "none";
+        unavailableEl.style.display = "block";
+        unavailableEl.innerText = "Bản đồ sẽ hiển thị sau khi nhà tuyển dụng xác thực tọa độ địa điểm.";
+        return;
+    }
+
+    if (!goongMaptilesKey || !window.goongjs) {
+        mapEl.style.display = "none";
+        unavailableEl.style.display = "block";
+        unavailableEl.innerText = "Không thể tải bản đồ lúc này. Bạn vẫn có thể mở từng địa điểm bằng liên kết bên dưới.";
+        return;
+    }
+
+    mapEl.style.display = "block";
+    unavailableEl.style.display = "none";
+    window.goongjs.accessToken = goongMaptilesKey;
+
+    const primary = validLocations.find(loc => loc.is_primary) || validLocations[0];
+    jobDetailMap = new window.goongjs.Map({
+        container: mapEl,
+        style: "https://tiles.goong.io/assets/goong_map_web.json",
+        center: [Number(primary.longitude), Number(primary.latitude)],
+        zoom: validLocations.length === 1 ? 15 : 11
+    });
+    jobDetailMap.addControl(new window.goongjs.NavigationControl(), "top-right");
+
+    const bounds = new window.goongjs.LngLatBounds();
+    validLocations.forEach((loc, idx) => {
+        const lngLat = [Number(loc.longitude), Number(loc.latitude)];
+        const branchName = loc.branch_name || `Cơ sở ${idx + 1}`;
+        const popupHtml = `<div class="job-map-popup"><strong>${escapeHtml(branchName)}</strong><br>${escapeHtml(loc.address_text || "")}</div>`;
+        new window.goongjs.Marker({ color: loc.is_primary ? "#2563eb" : "#10b981" })
+            .setLngLat(lngLat)
+            .setPopup(new window.goongjs.Popup({ offset: 22 }).setHTML(popupHtml))
+            .addTo(jobDetailMap);
+        bounds.extend(lngLat);
+    });
+
+    jobDetailMap.once("load", () => {
+        if (validLocations.length > 1) {
+            jobDetailMap.fitBounds(bounds, { padding: 52, maxZoom: 15, duration: 0 });
+        }
+        jobDetailMap.resize();
+    });
 }
 
 function triggerCommuteCheck() {

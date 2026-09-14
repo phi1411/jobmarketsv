@@ -19,7 +19,7 @@ class JobLocationController extends Controller
 
     public function index(Request $request, string $id): Response
     {
-        return Response::success($this->service->getJobLocations($id), "Các địa điểm làm việc của tin.");
+        return Response::success($this->service->getJobLocations($id, $request->getUser()), "Các địa điểm làm việc của tin.");
     }
 
     public function store(Request $request, string $id): Response

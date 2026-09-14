@@ -49,7 +49,10 @@ echo PHP_EOL;
 // TEST 2: Trang danh sách việc làm HTML (GET /viec-lam)
 echo "[TEST 2] Truy cập Trang danh sách việc làm Web (GET /viec-lam)" . PHP_EOL;
 $res2 = feReq("GET", "/viec-lam");
-if ($res2["status"] === 200 && str_contains($res2["body"], "Bộ Lọc Tìm Kiếm") && str_contains($res2["body"], "filter-form")) {
+if ($res2["status"] === 200
+    && str_contains($res2["body"], "Bộ lọc nâng cao")
+    && str_contains($res2["body"], "filter-form")
+    && str_contains($res2["body"], 'id="btn-nearby-jobs"')) {
     echo "  -> PASS: Trang danh sách việc làm trả về HTTP 200 OK kèm đầy đủ bộ lọc tìm kiếm." . PHP_EOL;
     $passCount++;
 } else {

@@ -2,6 +2,7 @@
 
 namespace JobMarket\Http\Controllers\Web;
 
+use JobMarket\Facades\Config;
 use JobMarket\Http\Controllers\Controller;
 use JobMarket\Http\Request;
 use JobMarket\Http\Response;
@@ -24,8 +25,9 @@ class JobController extends Controller
     {
         $html = View::renderWithLayout("jobs/show", [
             "title"       => "Chi Tiết Việc Làm Part-Time | JobMarketplace",
-            "currentPage" => "jobs",
-            "jobId"       => $id
+            "currentPage" => "job_detail",
+            "jobId"       => $id,
+            "goongMaptilesKey" => Config::goongMaptilesKey()
         ]);
 
         return Response::html($html);

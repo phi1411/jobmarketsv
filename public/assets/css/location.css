@@ -349,16 +349,18 @@
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
-    padding: 0.45rem 0.95rem;
+    padding: 0.65rem 1.15rem;
     font-size: 0.875rem;
     font-weight: 700;
-    border-radius: 8px;
+    border-radius: var(--radius, 8px);
     border: 1.5px solid #2563eb;
     background: #eff6ff;
     color: #1d4ed8;
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
+    font-family: inherit;
+    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.08);
 }
 
 .nearby-cta-btn:hover {
@@ -367,11 +369,12 @@
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
-.nearby-cta-btn.active {
-    background: #2563eb;
-    color: #ffffff;
-    border-color: #1d4ed8;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+.nearby-cta-btn.active,
+.quick-pill-nearby.active {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #1d4ed8 !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
 }
 
 .nearby-filter-bar {
@@ -462,6 +465,47 @@
     color: #475569;
     border: 1px solid #e2e8f0;
     font-weight: 600;
+}
+
+/* Embedded Goong map on job detail */
+.job-map-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.job-detail-map {
+    width: 100%;
+    height: 340px;
+    border: 1px solid var(--border, #cbd5e1);
+    border-radius: var(--radius, 8px);
+    overflow: hidden;
+    margin-bottom: 1rem;
+    background: #e2e8f0;
+}
+
+.job-map-unavailable {
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 0.84rem;
+    line-height: 1.45;
+}
+
+.job-detail-location-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.job-map-popup {
+    max-width: 250px;
+    color: #0f172a;
+    font: 13px/1.45 "Plus Jakarta Sans", sans-serif;
 }
 
 /* 4. Commute Check Warning Banner in Apply Modal */
@@ -560,5 +604,8 @@
     .nearby-filter-bar {
         flex-direction: column;
         align-items: flex-start;
+    }
+    .job-detail-map {
+        height: 270px;
     }
 }

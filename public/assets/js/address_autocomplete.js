@@ -215,7 +215,10 @@ class AddressAutocomplete {
                 this.results = res.data;
                 this.renderDropdown(this.results);
             } else if (res && res.status === 429) {
-                this.handleRateLimit(res.retry_after_seconds || 5);
+                const retrySeconds = Number(res.errors && res.errors.retry_after_seconds)
+                    || Number(res.retry_after_seconds)
+                    || 5;
+                this.handleRateLimit(retrySeconds);
             } else {
                 this.results = [];
                 this.renderEmpty("Không tìm thấy địa điểm phù hợp.");

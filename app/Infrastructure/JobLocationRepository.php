@@ -4,6 +4,7 @@ namespace JobMarket\Infrastructure;
 
 use JobMarket\Facades\Config;
 use JobMarket\Support\Pagination;
+use JobMarket\Support\QueryHelper;
 use PDO;
 
 class JobLocationRepository
@@ -163,6 +164,28 @@ class JobLocationRepository
             $where[] = "(j.category_id = ? OR j.category = ?)";
             $whereParams[] = $filters["category_id"];
             $whereParams[] = $filters["category_id"];
+        }
+        if (!empty($filters["shift_type"])) {
+            $where[] = "j.shift_type = ?";
+            $whereParams[] = $filters["shift_type"];
+        }
+        if (!empty($filters["location_id"])) {
+            $where[] = "j.location_id = ?";
+            $whereParams[] = $filters["location_id"];
+        }
+        if (!empty($filters["salary_min"]) && is_numeric($filters["salary_min"])) {
+            $where[] = "(j.salary_max >= ? OR j.salary_min >= ?)";
+            $whereParams[] = (int)$filters["salary_min"];
+            $whereParams[] = (int)$filters["salary_min"];
+        }
+        if (!empty($filters["salary_max"]) && is_numeric($filters["salary_max"])) {
+            $where[] = "j.salary_min <= ?";
+            $whereParams[] = (int)$filters["salary_max"];
+        }
+        if (!empty($filters["keyword"])) {
+            $keyword = "%" . QueryHelper::escapeLike((string)$filters["keyword"]) . "%";
+            $where[] = "(j.title LIKE ? OR j.description LIKE ? OR j.requirements LIKE ? OR j.benefits LIKE ?)";
+            array_push($whereParams, $keyword, $keyword, $keyword, $keyword);
         }
         $whereSql = implode(" AND ", $where);
         $subquery = "SELECT jl.job_id, MIN({$distanceSql}) AS distance_km

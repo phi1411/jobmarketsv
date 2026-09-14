@@ -643,7 +643,7 @@ function handleAddPreferredLocation() {
     const rawVal = prefLocAutocomplete.getValue();
     const radius = parseInt(document.getElementById("pref-radius-select").value, 10) || 10;
 
-    if (!selected && rawVal.length < 2) {
+    if (!selected) {
         showToast("Vui lòng chọn một địa điểm từ danh sách gợi ý.", "warning");
         return;
     }
@@ -661,13 +661,13 @@ function handleAddPreferredLocation() {
     }
 
     preferredLocations.push({
-        place_id: selected ? selected.place_id : null,
-        session_token: selected ? selected.session_token : null,
+        place_id: selected.place_id,
+        session_token: selected.session_token,
         preferred_radius_km: radius,
-        address_text: selected ? selected.description : rawVal,
-        commune: selected ? selected.commune : null,
-        province: selected ? selected.province : null,
-        district_text_legacy: selected ? selected.district_text_legacy : null
+        address_text: selected.description,
+        commune: selected.commune || null,
+        province: selected.province || null,
+        district_text_legacy: selected.district_text_legacy || null
     });
 
     prefLocAutocomplete.clear();
@@ -681,40 +681,38 @@ function handleRemovePreferredLocation(index) {
 }
 
 async function savePreferredLocationsToServer() {
-    try {
-        const payload = {
-            locations: preferredLocations.map(l => {
-                const item = {
-                    preferred_radius_km: l.preferred_radius_km || 10
-                };
-                if (l.place_id) {
-                    item.place_id = l.place_id;
-                    if (l.session_token) item.session_token = l.session_token;
-                } else if (l.provider_place_id) {
-                    item.place_id = l.provider_place_id;
-                }
-                if (l.address_text) item.address_text = l.address_text;
-                if (l.latitude !== undefined && l.latitude !== null) item.latitude = l.latitude;
-                if (l.longitude !== undefined && l.longitude !== null) item.longitude = l.longitude;
-                if (l.commune) item.commune = l.commune;
-                if (l.province) item.province = l.province;
-                return item;
-            })
-        };
+    const payload = {
+        locations: preferredLocations.map(l => {
+            const item = {
+                preferred_radius_km: l.preferred_radius_km || 10
+            };
+            if (l.place_id) {
+                item.place_id = l.place_id;
+                if (l.session_token) item.session_token = l.session_token;
+            } else if (l.provider_place_id) {
+                item.place_id = l.provider_place_id;
+            }
+            if (l.address_text) item.address_text = l.address_text;
+            if (l.latitude !== undefined && l.latitude !== null) item.latitude = l.latitude;
+            if (l.longitude !== undefined && l.longitude !== null) item.longitude = l.longitude;
+            if (l.commune) item.commune = l.commune;
+            if (l.province) item.province = l.province;
+            return item;
+        })
+    };
 
-        const res = await apiRequest("/student/preferred-locations", {
-            method: "PUT",
-            body: payload,
-            requireAuth: true
-        });
+    const res = await apiRequest("/student/preferred-locations", {
+        method: "PUT",
+        body: payload,
+        requireAuth: true
+    });
 
-        if (res && res.success && Array.isArray(res.data)) {
-            preferredLocations = res.data;
-            renderPreferredLocations();
-        }
-    } catch (err) {
-        console.error("Save preferred locations error:", err);
+    if (!res || !res.success || !Array.isArray(res.data)) {
+        throw new Error(res && res.message ? res.message : "Không thể lưu khu vực làm việc mong muốn.");
     }
+
+    preferredLocations = res.data;
+    renderPreferredLocations();
 }
 
 async function handleSaveProfile(e) {
@@ -778,8 +776,13 @@ async function handleSaveProfile(e) {
     btn.innerText = "Lưu Hồ Sơ Sinh Viên";
 
     if (res && res.success) {
-        await savePreferredLocationsToServer();
-        showToast("Lưu hồ sơ sinh viên thành công!", "success");
+        try {
+            await savePreferredLocationsToServer();
+            showToast("Lưu hồ sơ sinh viên và khu vực mong muốn thành công!", "success");
+        } catch (err) {
+            console.error("Save preferred locations error:", err);
+            showToast(`Hồ sơ đã lưu, nhưng khu vực mong muốn chưa lưu được: ${err.message}`, "warning");
+        }
         if (res.data && res.data.profile_completion_percent !== undefined) {
             const pct = res.data.profile_completion_percent;
             document.getElementById("profile-percent-badge").innerText = `${pct}%`;

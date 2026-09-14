@@ -28,6 +28,7 @@
         || str_starts_with($currentPage ?? '', 'student_')
         || (str_starts_with($currentPage ?? '', 'company_') && $isCompanyChatEnabled)
     );
+    $isGoongMapPage = ($currentPage ?? '') === 'job_detail' && !empty($goongMaptilesKey);
     ?>
     <?php if ($isChatbotPage): ?>
     <link rel="stylesheet" href="/assets/css/assistant.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/assistant.css') ? filemtime(BASE_PATH . '/public/assets/css/assistant.css') : time() ?>">
@@ -35,6 +36,10 @@
     <link rel="stylesheet" href="/assets/css/support_comm.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/support_comm.css') ? filemtime(BASE_PATH . '/public/assets/css/support_comm.css') : time() ?>">
     <link rel="stylesheet" href="/assets/css/cv_builder.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/cv_builder.css') ? filemtime(BASE_PATH . '/public/assets/css/cv_builder.css') : time() ?>">
     <link rel="stylesheet" href="/assets/css/location.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/location.css') ? filemtime(BASE_PATH . '/public/assets/css/location.css') : time() ?>">
+    <?php if ($isGoongMapPage): ?>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css">
+    <script src="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js"></script>
+    <?php endif; ?>
     <script src="/assets/js/api.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/api.js') ? filemtime(BASE_PATH . '/public/assets/js/api.js') : time() ?>"></script>
     <script src="/assets/js/address_autocomplete.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/address_autocomplete.js') ? filemtime(BASE_PATH . '/public/assets/js/address_autocomplete.js') : time() ?>"></script>
     <script src="/assets/js/theme.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/theme.js') ? filemtime(BASE_PATH . '/public/assets/js/theme.js') : time() ?>"></script>

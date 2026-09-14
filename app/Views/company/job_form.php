@@ -293,6 +293,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
+    locAutocompleteInstance = new AddressAutocomplete("#loc-autocomplete-container", {
+        id: "job-work-address",
+        label: "Địa chỉ chính xác",
+        placeholder: "Nhập và chọn một địa chỉ từ gợi ý Goong...",
+        required: true
+    });
+    renderJobLocations();
+
     // Set default deadline to +30 days
     if (!IS_EDIT_MODE) {
         const d = new Date();
@@ -456,7 +464,13 @@ function openEditLocationModal(id) {
     document.getElementById("loc-edit-id").value = id;
     document.getElementById("loc-branch-name").value = loc.branch_name || "";
     document.getElementById("loc-is-primary").checked = !!loc.is_primary;
-    locAutocompleteInstance.setValue(loc.address_text || "", loc.place_id ? loc : null);
+    const providerPlaceId = loc.provider_place_id || loc.place_id || null;
+    const draftSelectedPlace = loc.temp_id && providerPlaceId ? {
+        ...loc,
+        place_id: providerPlaceId,
+        description: loc.address_text || ""
+    } : null;
+    locAutocompleteInstance.setValue(loc.address_text || "", draftSelectedPlace);
 
     document.getElementById("modal-location-form").style.display = "flex";
 }
@@ -472,9 +486,11 @@ async function handleSaveLocation(e) {
     const isPrimary = document.getElementById("loc-is-primary").checked;
     const selected = locAutocompleteInstance.getSelected();
     const rawAddress = locAutocompleteInstance.getValue();
+    const currentLocation = editId ? jobLocations.find(l => (l.id || l.temp_id) === editId) : null;
+    const isUnchangedExistingAddress = !!currentLocation && rawAddress === (currentLocation.address_text || "");
 
-    if (!selected && rawAddress.length < 3) {
-        showToast("Vui lòng chọn hoặc nhập địa chỉ hợp lệ (ít nhất 3 ký tự).", "warning");
+    if (!selected && !isUnchangedExistingAddress) {
+        showToast("Vui lòng chọn một địa chỉ trong danh sách gợi ý Goong để xác thực tọa độ.", "warning");
         return;
     }
 
@@ -492,8 +508,6 @@ async function handleSaveLocation(e) {
                 if (selected) {
                     payload.place_id = selected.place_id;
                     payload.session_token = selected.session_token;
-                } else if (rawAddress) {
-                    payload.address_text = rawAddress;
                 }
 
                 const res = await apiRequest(`/company/jobs/${encodeURIComponent(EDIT_JOB_ID)}/locations/${encodeURIComponent(editId)}`, {
@@ -517,8 +531,6 @@ async function handleSaveLocation(e) {
                 if (selected) {
                     payload.place_id = selected.place_id;
                     payload.session_token = selected.session_token;
-                } else {
-                    payload.address_text = rawAddress;
                 }
 
                 const res = await apiRequest(`/company/jobs/${encodeURIComponent(EDIT_JOB_ID)}/locations`, {
@@ -550,13 +562,13 @@ async function handleSaveLocation(e) {
                     ...jobLocations[idx],
                     branch_name: branchName || null,
                     is_primary: isPrimary,
-                    address_text: selected ? selected.description : rawAddress,
-                    place_id: selected ? selected.place_id : (jobLocations[idx].place_id || null),
+                    address_text: selected ? selected.description : jobLocations[idx].address_text,
+                    place_id: selected ? selected.place_id : (jobLocations[idx].place_id || jobLocations[idx].provider_place_id || null),
                     session_token: selected ? selected.session_token : (jobLocations[idx].session_token || null),
                     commune: selected ? selected.commune : jobLocations[idx].commune,
                     province: selected ? selected.province : jobLocations[idx].province,
                     district_text_legacy: selected ? selected.district_text_legacy : jobLocations[idx].district_text_legacy,
-                    geocode_status: selected ? "verified" : "manual"
+                    geocode_status: selected ? "verified" : jobLocations[idx].geocode_status
                 };
             }
         } else {
@@ -567,13 +579,13 @@ async function handleSaveLocation(e) {
                 temp_id: "draft-" + Date.now() + "-" + Math.random().toString(36).substring(2, 6),
                 branch_name: branchName || null,
                 is_primary: isPrimary || jobLocations.length === 0,
-                address_text: selected ? selected.description : rawAddress,
-                place_id: selected ? selected.place_id : null,
-                session_token: selected ? selected.session_token : null,
-                commune: selected ? selected.commune : null,
-                province: selected ? selected.province : null,
-                district_text_legacy: selected ? selected.district_text_legacy : null,
-                geocode_status: selected ? "verified" : "manual"
+                address_text: selected.description,
+                place_id: selected.place_id,
+                session_token: selected.session_token,
+                commune: selected.commune || null,
+                province: selected.province || null,
+                district_text_legacy: selected.district_text_legacy || null,
+                geocode_status: "verified"
             });
         }
         closeLocationModal();
@@ -676,6 +688,7 @@ async function loadJobForEditing(id) {
         document.getElementById("job-req").value = j.requirements || "";
         document.getElementById("job-benefits").value = j.benefits || "";
         document.getElementById("job-status").value = j.status || "published";
+        await loadJobLocations(id);
 
         // Pre-check skills if available
         let skillIds = [];
@@ -728,6 +741,15 @@ async function handleSubmitJob(e) {
     const uniqueSkills = Array.from(new Map(selectedSkills.map(skill => [skill.toLocaleLowerCase("vi"), skill])).values());
 
     const statusVal = document.getElementById("job-status").value;
+    const workMode = document.getElementById("job-work-mode").value;
+
+    if (["onsite", "hybrid"].includes(workMode) && jobLocations.length === 0) {
+        alertBox.className = "toast toast-error";
+        alertBox.innerText = "Vui lòng thêm ít nhất một địa điểm làm việc đã chọn từ gợi ý Goong.";
+        alertBox.style.display = "block";
+        document.getElementById("section-job-locations").scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+    }
 
     // UX Pre-check for unverified company trying to publish
     if (statusVal === "published" && companyVerificationStatus !== "verified") {
@@ -743,7 +765,7 @@ async function handleSubmitJob(e) {
         category_id: document.getElementById("job-category").value || null,
         location_id: document.getElementById("job-location").value || null,
         work_type: document.getElementById("job-work-type").value,
-        work_mode: document.getElementById("job-work-mode").value,
+        work_mode: workMode,
         salary_type: document.getElementById("job-salary-type").value,
         salary_min: document.getElementById("job-salary-min").value ? parseInt(document.getElementById("job-salary-min").value) : null,
         salary_max: document.getElementById("job-salary-max").value ? parseInt(document.getElementById("job-salary-max").value) : null,
@@ -768,19 +790,68 @@ async function handleSubmitJob(e) {
 
     const res = await apiRequest(url, {
         method: method,
-        body: payload,
+        // Tin mới luôn được tạo ở trạng thái nháp trước. Chỉ công khai/chờ duyệt
+        // sau khi toàn bộ địa điểm đã được lưu thành công.
+        body: IS_EDIT_MODE ? payload : { ...payload, status: "draft" },
         requireAuth: true
     });
 
-    btn.disabled = false;
-    btn.innerText = IS_EDIT_MODE ? "Cập Nhật Tin Tuyển Dụng" : "Đăng Tin Tuyển Dụng";
-
     if (res && res.success) {
+        if (!IS_EDIT_MODE) {
+            const createdJobId = res.data && res.data.id ? String(res.data.id) : "";
+            if (!createdJobId) {
+                btn.disabled = false;
+                btn.innerText = "Đăng Tin Tuyển Dụng";
+                alertBox.className = "toast toast-error";
+                alertBox.innerText = "Tin đã được tạo nhưng máy chủ không trả về mã tin để lưu địa điểm. Vui lòng mở danh sách tin và bổ sung lại địa điểm.";
+                alertBox.style.display = "block";
+                return;
+            }
+
+            btn.innerText = "Đang lưu địa điểm...";
+            const locationErrors = await persistDraftJobLocations(createdJobId);
+            if (locationErrors.length > 0) {
+                btn.disabled = false;
+                btn.innerText = "Đăng Tin Tuyển Dụng";
+                alertBox.className = "toast toast-error";
+                alertBox.innerText = `Tin đã được lưu an toàn ở trạng thái nháp, nhưng ${locationErrors.length} địa điểm chưa lưu được. Hãy mở tin vừa tạo để bổ sung lại.`;
+                alertBox.style.display = "block";
+                setTimeout(() => {
+                    window.location.href = `/company/jobs/${encodeURIComponent(createdJobId)}/edit?location_error=1`;
+                }, 1400);
+                return;
+            }
+
+            if (statusVal !== "draft") {
+                btn.innerText = "Đang hoàn tất tin...";
+                const finalizeResult = await apiRequest(`/jobs/${encodeURIComponent(createdJobId)}`, {
+                    method: "PUT",
+                    body: payload,
+                    requireAuth: true
+                });
+                if (!finalizeResult || !finalizeResult.success) {
+                    btn.disabled = false;
+                    btn.innerText = "Đăng Tin Tuyển Dụng";
+                    alertBox.className = "toast toast-error";
+                    alertBox.innerText = "Tin và địa điểm đã được lưu ở trạng thái nháp, nhưng chưa thể chuyển sang trạng thái bạn chọn. Bạn có thể hoàn tất từ trang quản lý tin.";
+                    alertBox.style.display = "block";
+                    setTimeout(() => {
+                        window.location.href = `/company/jobs/${encodeURIComponent(createdJobId)}/edit?finalize_error=1`;
+                    }, 1400);
+                    return;
+                }
+            }
+        }
+
+        btn.disabled = false;
+        btn.innerText = IS_EDIT_MODE ? "Cập Nhật Tin Tuyển Dụng" : "Đăng Tin Tuyển Dụng";
         showToast(IS_EDIT_MODE ? "Cập nhật tin tuyển dụng thành công!" : "Đăng tin tuyển dụng thành công!", "success");
         setTimeout(() => {
             window.location.href = "/company/jobs";
         }, 600);
     } else {
+        btn.disabled = false;
+        btn.innerText = IS_EDIT_MODE ? "Cập Nhật Tin Tuyển Dụng" : "Đăng Tin Tuyển Dụng";
         let msg = (res && res.message) ? res.message : "Thao tác thất bại.";
         if (res && res.errors) {
             msg += "\n" + Object.values(res.errors).flat().map(escapeHtml).join(" | ");
@@ -790,5 +861,26 @@ async function handleSubmitJob(e) {
         alertBox.style.display = "block";
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+}
+
+async function persistDraftJobLocations(jobId) {
+    const errors = [];
+    for (const location of jobLocations) {
+        const payload = {
+            place_id: location.place_id || location.provider_place_id,
+            session_token: location.session_token || undefined,
+            branch_name: location.branch_name || null,
+            is_primary: !!location.is_primary
+        };
+        const result = await apiRequest(`/company/jobs/${encodeURIComponent(jobId)}/locations`, {
+            method: "POST",
+            body: payload,
+            requireAuth: true
+        });
+        if (!result || !result.success) {
+            errors.push(result && result.message ? result.message : "Không thể lưu địa điểm.");
+        }
+    }
+    return errors;
 }
 </script>

@@ -20,7 +20,7 @@ GOONG_TIMEOUT_SECONDS=8
 LOCATION_API_RATE_LIMIT=60
 ```
 
-`GOONG_MAPTILES_KEY` là key khác với REST key và chỉ cần khi UI nhúng bản đồ Goong.
+`GOONG_MAPTILES_KEY` là key khác với REST key. Trang chi tiết việc làm dùng key này để nhúng bản đồ Goong; không dùng REST key ở trình duyệt.
 
 ## API cho ô chọn địa chỉ
 
@@ -175,6 +175,13 @@ Tối đa 10 khu vực. Gửi mảng rỗng để xóa toàn bộ lựa chọn.
 ## Tương thích dữ liệu cũ
 
 Migration tạo một `job_locations` dạng `legacy_pending` cho job cũ có địa chỉ nhưng chưa có tọa độ. Những bản ghi đó vẫn hiển thị, nhưng chưa tham gia tìm kiếm theo bán kính cho tới khi công ty chọn lại địa chỉ qua Goong hoặc nhập tọa độ thủ công.
+
+Có thể chuẩn hóa dữ liệu cũ theo từng lô bằng lệnh sau. Chạy không có `--execute` để xem trước số lượng trước khi gọi API:
+
+```bash
+php backfill_job_locations.php --limit=25
+php backfill_job_locations.php --execute --limit=25
+```
 
 ## Nguồn kỹ thuật
 

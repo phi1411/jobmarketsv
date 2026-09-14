@@ -68,12 +68,14 @@ foreach (["job_locations", "student_preferred_locations"] as $table) {
 }
 
 // Exercise the real nearby SQL without leaving test data behind.
-$jobId = $db->query(
-    "SELECT id FROM jobs WHERE status = 'published' AND deleted_at IS NULL
+$jobRow = $db->query(
+    "SELECT id, title, shift_type, location_id, salary_min, salary_max FROM jobs WHERE status = 'published' AND deleted_at IS NULL
      AND (application_deadline IS NULL OR application_deadline >= CURDATE())
-     AND (deadline IS NULL OR deadline >= CURDATE()) LIMIT 1"
-)->fetchColumn();
-if (is_string($jobId) && $jobId !== "") {
+     AND (deadline IS NULL OR deadline >= CURDATE())
+     AND shift_type IS NOT NULL AND title IS NOT NULL LIMIT 1"
+)->fetch(PDO::FETCH_ASSOC);
+$jobId = is_array($jobRow) ? (string)$jobRow["id"] : "";
+if ($jobId !== "") {
     $testLocationId = "jl-test-" . bin2hex(random_bytes(8));
     $db->beginTransaction();
     try {
@@ -87,6 +89,24 @@ if (is_string($jobId) && $jobId !== "") {
         $nearby = $repository->nearby(10.7769, 106.7009, 2, [], new Pagination(1, 12));
         $found = array_filter($nearby["items"], fn(array $item): bool => $item["id"] === $jobId);
         $assert($found !== [], "Nearby query did not return the job at the same coordinates.");
+
+        $matchingFilters = [
+            "shift_type" => $jobRow["shift_type"],
+            "keyword" => $jobRow["title"],
+        ];
+        if (!empty($jobRow["location_id"])) {
+            $matchingFilters["location_id"] = $jobRow["location_id"];
+        }
+        if (is_numeric($jobRow["salary_min"]) && (float)$jobRow["salary_min"] > 0) {
+            $matchingFilters["salary_min"] = (float)$jobRow["salary_min"];
+        }
+        $filtered = $repository->nearby(10.7769, 106.7009, 2, $matchingFilters, new Pagination(1, 12));
+        $filteredFound = array_filter($filtered["items"], fn(array $item): bool => $item["id"] === $jobId);
+        $assert($filteredFound !== [], "Nearby query dropped a job matching all UI filters.");
+
+        $mismatch = $repository->nearby(10.7769, 106.7009, 2, ["shift_type" => "not-a-real-shift"], new Pagination(1, 12));
+        $mismatchFound = array_filter($mismatch["items"], fn(array $item): bool => $item["id"] === $jobId);
+        $assert($mismatchFound === [], "Nearby shift filter did not exclude a mismatched job.");
     } finally {
         $db->rollBack();
     }

@@ -15,6 +15,11 @@
                     <svg class="theme-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
 
+                <button type="button" id="btn-nearby-jobs" class="nearby-cta-btn" onclick="toggleNearbyJobs()" title="Tìm việc làm xung quanh vị trí hiện tại của bạn" aria-pressed="false">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <span>Việc làm gần tôi</span>
+                </button>
+
                 <button type="submit" class="btn btn-primary" style="padding:0.7rem 1.4rem;font-weight:700;">
                     <span>Tìm Kiếm</span>
                 </button>
@@ -28,6 +33,9 @@
             <div class="quick-filter-pills-row">
                 <span class="quick-pill-label">Gợi ý nhanh:</span>
                 <button type="button" class="quick-pill-btn active" data-pill-type="all">Tất cả</button>
+                <button type="button" class="quick-pill-btn quick-pill-nearby" onclick="toggleNearbyJobs()" style="background:#eff6ff;color:#1d4ed8;border:1.5px solid #93c5fd;font-weight:700;display:inline-flex;align-items:center;gap:0.35rem;">
+                    <span>📍 Việc làm gần tôi</span>
+                </button>
                 <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="morning">🌅 Ca Sáng</button>
                 <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="afternoon">☀️ Ca Chiều</button>
                 <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="evening">🌙 Ca Tối</button>
@@ -192,6 +200,8 @@ async function toggleNearbyJobs() {
             hideNearbyBanner();
 
             document.getElementById("btn-nearby-jobs").classList.add("active");
+            document.getElementById("btn-nearby-jobs").setAttribute("aria-pressed", "true");
+            document.querySelectorAll(".quick-pill-nearby").forEach(b => b.classList.add("active"));
             document.getElementById("nearby-filter-bar").style.display = "flex";
 
             // Thêm tùy chọn "Gần nhất" vào sort-select nếu chưa có
@@ -204,6 +214,8 @@ async function toggleNearbyJobs() {
                 sortSel.insertBefore(opt, sortSel.firstChild);
             }
             sortSel.value = "nearby_distance";
+            sortSel.disabled = true;
+            currentSort = "nearby_distance";
 
             loadJobs(1);
         },
@@ -252,15 +264,23 @@ function setNearbyRadius(km) {
 
 function exitNearbyMode() {
     isNearbyMode = false;
-    document.getElementById("btn-nearby-jobs").classList.remove("active");
-    document.getElementById("nearby-filter-bar").style.display = "none";
+    const btnNearby = document.getElementById("btn-nearby-jobs");
+    if (btnNearby) {
+        btnNearby.classList.remove("active");
+        btnNearby.setAttribute("aria-pressed", "false");
+    }
+    document.querySelectorAll(".quick-pill-nearby").forEach(b => b.classList.remove("active"));
+    const nearbyBar = document.getElementById("nearby-filter-bar");
+    if (nearbyBar) nearbyBar.style.display = "none";
     hideNearbyBanner();
 
     // Revert sort selection if it was "nearby_distance"
     const sortSel = document.getElementById("sort-select");
     const distOpt = sortSel.querySelector('option[value="nearby_distance"]');
     if (distOpt) distOpt.remove();
+    sortSel.disabled = false;
     sortSel.value = "newest";
+    currentSort = "newest";
 
     loadJobs(1);
 }
@@ -332,8 +352,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isNearbyMode) {
             isNearbyMode = false;
             document.getElementById("btn-nearby-jobs").classList.remove("active");
+            document.getElementById("btn-nearby-jobs").setAttribute("aria-pressed", "false");
+            document.querySelectorAll(".quick-pill-nearby").forEach(b => b.classList.remove("active"));
             document.getElementById("nearby-filter-bar").style.display = "none";
             hideNearbyBanner();
+            const sortSel = document.getElementById("sort-select");
+            const distOpt = sortSel.querySelector('option[value="nearby_distance"]');
+            if (distOpt) distOpt.remove();
+            sortSel.disabled = false;
+            sortSel.value = "newest";
+            currentSort = "newest";
         }
         document.getElementById("filter-form").reset();
         document.querySelectorAll(".quick-pill-btn").forEach(b => b.classList.remove("active"));
@@ -407,6 +435,12 @@ async function loadJobs(page = null) {
         if (catId) payload.category_id = catId;
         const shiftType = document.getElementById("filter-shift") ? document.getElementById("filter-shift").value : "";
         if (shiftType) payload.shift_type = shiftType;
+        const keyword = document.getElementById("filter-keyword") ? document.getElementById("filter-keyword").value.trim() : "";
+        if (keyword) payload.keyword = keyword;
+        const salaryMin = document.getElementById("filter-salary-min") ? document.getElementById("filter-salary-min").value.trim() : "";
+        if (salaryMin) payload.salary_min = Number(salaryMin);
+        const locationId = document.getElementById("filter-location") ? document.getElementById("filter-location").value : "";
+        if (locationId) payload.location_id = locationId;
 
         const res = await apiRequest("/jobs/nearby-search", {
             method: "POST",
@@ -554,12 +588,28 @@ async function loadJobs(page = null) {
         }
 
         // Render TopCV Cards safely in 3-column grid
-        container.innerHTML = jobs.map(job => `
+        container.innerHTML = jobs.map(job => {
+            let locDisplay = job.location_name || job.city || "Toàn quốc";
+            let extraLocationsBadge = "";
+            if (Array.isArray(job.work_locations) && job.work_locations.length > 0) {
+                const primaryLoc = job.work_locations.find(l => l.is_primary) || job.work_locations[0];
+                if (primaryLoc) {
+                    const parts = [primaryLoc.commune, primaryLoc.province].filter(Boolean);
+                    locDisplay = parts.length > 0 ? parts.join(", ") : (primaryLoc.address_text || locDisplay);
+                    if (primaryLoc.branch_name) {
+                        locDisplay = `${primaryLoc.branch_name} (${locDisplay})`;
+                    }
+                }
+                if (job.work_locations.length > 1) {
+                    extraLocationsBadge = `<span class="topcv-pill topcv-pill-extra-locs">+${job.work_locations.length - 1} địa điểm khác</span>`;
+                }
+            }
+            return `
             <div class="topcv-job-card" onclick="window.location.href='/viec-lam/${encodeURIComponent(job.id)}'">
                 <div>
                     <div class="topcv-card-top">
                         <div class="topcv-logo-wrapper">
-                            ${job.company_logo ? `<img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company_name)}" class="topcv-logo-img" onerror="this.outerHTML='<div class=\\'topcv-logo-fallback\\'>${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : 'J')}</div>'">` : `<div class="topcv-logo-fallback">${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : "J")}</div>`}
+                            ${job.company_logo ? `<img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company_name)}" class="topcv-logo-img" onerror="this.outerHTML='<div class=\\\'topcv-logo-fallback\\\'>${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : 'J')}</div>'">` : `<div class="topcv-logo-fallback">${escapeHtml(job.company_name ? job.company_name.substring(0, 1) : "J")}</div>`}
                         </div>
                         <div class="topcv-card-info">
                             <div class="topcv-job-title" title="${escapeHtml(job.title)}">
@@ -588,11 +638,13 @@ async function loadJobs(page = null) {
                     </span>
                     <span class="topcv-pill topcv-pill-location">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                        ${escapeHtml(job.location_name || job.city || "Toàn quốc")}
+                        ${escapeHtml(locDisplay)}
                     </span>
+                    ${extraLocationsBadge}
                 </div>
             </div>
-        `).join("");
+            `;
+        }).join("");
 
         // Render Pagination
         renderPagination(meta.page || 1, meta.total_pages || 1);
