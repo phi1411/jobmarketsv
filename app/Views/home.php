@@ -14,7 +14,7 @@
                     </div>
                     <h1 class="hero-3d-title" style="font-size: 2.35rem; line-height: 1.2; margin-bottom: 0.85rem;">
                         Tìm Việc Làm Part-Time Sinh Viên<br>
-                        <span class="hero-gradient-text">Linh Hoạt Theo Lịch Học</span> 🎓
+                        <span class="hero-gradient-text">Linh Hoạt Theo Lịch Học</span> <i class="ri-graduation-cap-line" style="color:var(--primary);"></i>
                     </h1>
                     <p class="hero-3d-subtitle" style="font-size: 1.05rem; margin-bottom: 1.5rem;">
                         Kết nối sinh viên với hàng trăm việc làm bán thời gian uy tín trên toàn quốc: phục vụ, pha chế, thu ngân, gia sư và văn phòng. Tự động đề xuất việc làm phù hợp bằng AI.
@@ -34,21 +34,21 @@
                 <div class="hero-3d-visual">
                     <!-- Floating 3D Animated Badges -->
                     <div class="floating-badge floating-badge--1">
-                        <span class="badge-icon">⚡</span>
+                        <span class="badge-icon" style="color:#eab308;"><i class="ri-flashlight-fill"></i></span>
                         <div class="badge-content">
                             <strong>AI Match 95%</strong>
                             <small>Độ chính xác ghép việc</small>
                         </div>
                     </div>
                     <div class="floating-badge floating-badge--2">
-                        <span class="badge-icon">💼</span>
+                        <span class="badge-icon" style="color:var(--primary);"><i class="ri-briefcase-4-fill"></i></span>
                         <div class="badge-content">
                             <strong>140+ Việc Part-time</strong>
                             <small>Đang tuyển mới hôm nay</small>
                         </div>
                     </div>
                     <div class="floating-badge floating-badge--3">
-                        <span class="badge-icon">⏰</span>
+                        <span class="badge-icon" style="color:#10b981;"><i class="ri-time-fill"></i></span>
                         <div class="badge-content">
                             <strong>Ca Linh Hoạt</strong>
                             <small>Đổi ca theo lịch học</small>
@@ -58,25 +58,25 @@
             </div>
 
             <!-- Integrated Search Card inside Hero -->
-            <div style="position:relative;z-index:2;background:rgba(255,255,255,0.96);backdrop-filter:blur(16px);border-radius:var(--radius-md);padding:1.25rem 1.5rem;box-shadow:0 12px 30px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.6);">
+            <div class="hero-search-card" style="position:relative;z-index:2;background:rgba(255,255,255,0.96);backdrop-filter:blur(16px);border-radius:var(--radius-md);padding:1.25rem 1.5rem;box-shadow:0 12px 30px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.6);">
                 <form action="/viec-lam" method="GET" class="search-grid" style="margin:0;">
                     <div class="form-group" style="margin:0;">
-                        <label class="form-label" for="home-keyword" style="font-size:0.84rem;font-weight:700;color:#1e293b;">Từ khóa tìm kiếm</label>
-                        <input type="text" id="home-keyword" name="keyword" class="form-control" placeholder="Tên công việc, vị trí, công ty..." style="background:#f8fafc;border-color:#cbd5e1;">
+                        <label class="form-label" for="home-keyword" style="font-size:0.84rem;font-weight:700;color:var(--dark);">Từ khóa tìm kiếm</label>
+                        <input type="text" id="home-keyword" name="keyword" class="form-control" placeholder="Tên công việc, vị trí, công ty..." style="background:var(--bg);border-color:var(--border);">
                     </div>
 
                     <div class="form-group" style="margin:0;">
-                        <label class="form-label" for="home-location-picker" style="font-size:0.84rem;font-weight:700;color:#1e293b;">Tỉnh/Thành phố, Phường/Xã</label>
+                        <label class="form-label" for="home-location-picker" style="font-size:0.84rem;font-weight:700;color:var(--dark);">Tỉnh/Thành phố, Phường/Xã</label>
                         <input type="hidden" id="home-location" name="location_id" value="">
-                        <button type="button" id="home-location-picker" class="location-picker-trigger" style="min-height:42px;background:#f8fafc;border-color:#cbd5e1;">
+                        <button type="button" id="home-location-picker" class="location-picker-trigger" style="min-height:42px;background:var(--bg);border-color:var(--border);">
                             <span id="home-location-label" class="location-picker-label">Tất cả địa điểm</span>
                             <span aria-hidden="true">⌄</span>
                         </button>
                     </div>
 
                     <div class="form-group" style="margin:0;">
-                        <label class="form-label" for="home-shift" style="font-size:0.84rem;font-weight:700;color:#1e293b;">Ca làm việc</label>
-                        <select id="home-shift" name="shift_type" class="form-control" style="background:#f8fafc;border-color:#cbd5e1;">
+                        <label class="form-label" for="home-shift" style="font-size:0.84rem;font-weight:700;color:var(--dark);">Ca làm việc</label>
+                        <select id="home-shift" name="shift_type" class="form-control" style="background:var(--bg);border-color:var(--border);">
                             <option value="">Tất cả các ca</option>
                             <option value="morning">Ca Sáng (08:00 - 12:00)</option>
                             <option value="afternoon">Ca Chiều (13:00 - 17:00)</option>
@@ -119,27 +119,27 @@
 
         <div class="category-grid">
             <a href="/viec-lam?category_id=cat-001" class="category-card">
-                <div class="category-icon">☕</div>
+                <div class="category-icon" style="color:#ea580c;"><i class="ri-cup-line"></i></div>
                 <div class="category-name">F&B - Phục Vụ & Pha Chế</div>
                 <div style="font-size:0.82rem;color:var(--text-muted);margin-top:0.25rem;">Quán café, trà sữa, nhà hàng</div>
             </a>
             <a href="/viec-lam?category_id=cat-002" class="category-card">
-                <div class="category-icon">🛍️</div>
+                <div class="category-icon" style="color:var(--primary);"><i class="ri-shopping-bag-3-line"></i></div>
                 <div class="category-name">Bán Lẻ & Thu Ngân</div>
                 <div style="font-size:0.82rem;color:var(--text-muted);margin-top:0.25rem;">Cửa hàng tiện lợi, siêu thị</div>
             </a>
             <a href="/viec-lam?category_id=cat-003" class="category-card">
-                <div class="category-icon">📚</div>
+                <div class="category-icon" style="color:#16a34a;"><i class="ri-book-open-line"></i></div>
                 <div class="category-name">Gia Sư & Trợ Giảng</div>
                 <div style="font-size:0.82rem;color:var(--text-muted);margin-top:0.25rem;">Dạy kèm, trung tâm ngoại ngữ</div>
             </a>
             <a href="/viec-lam?category_id=cat-004" class="category-card">
-                <div class="category-icon">💻</div>
+                <div class="category-icon" style="color:#7c3aed;"><i class="ri-computer-line"></i></div>
                 <div class="category-name">Hành Chính & Văn Phòng</div>
                 <div style="font-size:0.82rem;color:var(--text-muted);margin-top:0.25rem;">Nhập liệu, trực page, CSKH</div>
             </a>
             <a href="/viec-lam?category_id=cat-005" class="category-card">
-                <div class="category-icon">🎪</div>
+                <div class="category-icon" style="color:#db2777;"><i class="ri-sparkling-line"></i></div>
                 <div class="category-name">Sự Kiện & Tiếp Thị</div>
                 <div style="font-size:0.82rem;color:var(--text-muted);margin-top:0.25rem;">PG/PB, hỗ trợ sự kiện</div>
             </a>
@@ -148,7 +148,7 @@
 </section>
 
 <!-- Latest Jobs Section -->
-<section class="section" style="background-color:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+<section class="section" style="background-color:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
     <div class="container">
         <div class="section-header">
             <div>
@@ -243,7 +243,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
         container.innerHTML = `
             <div class="empty-state" style="grid-column:1/-1;">
-                <div class="empty-icon">🔍</div>
+                <div class="empty-icon"><i class="ri-search-line"></i></div>
                 <h3>Chưa có việc làm nào</h3>
                 <p>Hiện tại hệ thống đang cập nhật các vị trí việc làm mới. Vui lòng quay lại sau!</p>
             </div>

@@ -2,16 +2,16 @@
 
 <div class="container" style="margin-bottom:3rem;">
     <!-- Filter bar -->
-    <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+    <div style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
         <div style="display:flex;align-items:center;gap:0.75rem;">
             <label for="filter-app-status" style="font-size:0.9rem;font-weight:600;color:var(--dark);">Lọc theo trạng thái:</label>
             <select id="filter-app-status" class="form-control" style="width:auto;padding:0.4rem 0.8rem;font-size:0.88rem;" onchange="loadApplications()">
                 <option value="">Tất cả trạng thái</option>
-                <option value="pending">⏳ Chưa phản hồi</option>
-                <option value="interview">📅 Mời phỏng vấn</option>
-                <option value="accepted">🎉 Trúng tuyển</option>
-                <option value="rejected">❌ Từ chối</option>
-                <option value="withdrawn">↩️ Đã rút đơn</option>
+                <option value="pending">Chưa phản hồi</option>
+                <option value="interview">Mời phỏng vấn</option>
+                <option value="accepted">Trúng tuyển</option>
+                <option value="rejected">Từ chối</option>
+                <option value="withdrawn">Đã rút đơn</option>
             </select>
         </div>
         <div id="apps-count-text" style="font-size:0.88rem;color:var(--text-muted);font-weight:600;">
@@ -61,11 +61,11 @@
 
 <!-- Match Analysis Modal (CV-AI-P1-04) -->
 <div id="match-analysis-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;padding:1rem;" role="dialog" aria-modal="true" aria-labelledby="modal-match-title">
-    <div style="background:#fff;border-radius:var(--radius);max-width:680px;width:100%;padding:1.5rem;box-shadow:var(--shadow-lg);position:relative;max-height:90vh;overflow-y:auto;box-sizing:border-box;">
+    <div class="modal-card" style="background:var(--surface);border-radius:var(--radius);max-width:680px;width:100%;padding:1.5rem;box-shadow:var(--shadow-lg);position:relative;max-height:90vh;overflow-y:auto;box-sizing:border-box;">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
             <div>
                 <h3 id="modal-match-title" style="font-size:1.2rem;font-weight:700;color:var(--dark);margin:0;display:flex;align-items:center;gap:0.5rem;">
-                    <span>🤖</span> <span>Đánh Giá Mức Độ Phù Hợp (AI)</span>
+                    <i class="ri-robot-2-line" style="color:var(--primary);"></i> <span>Đánh Giá Mức Độ Phù Hợp (AI)</span>
                 </h3>
                 <div id="modal-match-subtitle" style="font-size:0.85rem;color:var(--text-muted);margin-top:0.25rem;"></div>
             </div>
@@ -114,7 +114,7 @@ function renderApplicationTimeline(history) {
     if (!events.length) return '';
     return `<div style="margin-top:1rem;padding:1rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);">
         <div style="font-size:.82rem;font-weight:800;color:var(--dark);margin-bottom:.75rem;">TIẾN TRÌNH ỨNG TUYỂN</div>
-        <div style="display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.25rem;">${events.map((event,index)=>`<div style="display:flex;align-items:center;min-width:max-content;"><div style="display:flex;align-items:center;gap:.4rem;padding:.45rem .65rem;background:#fff;border:1px solid ${index===events.length-1?'#93c5fd':'var(--border)'};border-radius:999px;font-size:.79rem;"><span style="width:8px;height:8px;border-radius:50%;background:${event.status==='rejected'?'#ef4444':event.status==='accepted'?'#10b981':'#3b82f6'}"></span><strong>${escapeHtml(labels[event.status]||event.status)}</strong><span style="color:var(--text-muted)">${formatDate(event.created_at)}</span></div>${index<events.length-1?'<span style="color:#94a3b8;margin:0 .25rem">→</span>':''}</div>`).join('')}</div>
+        <div style="display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.25rem;">${events.map((event,index)=>`<div style="display:flex;align-items:center;min-width:max-content;"><div style="display:flex;align-items:center;gap:.4rem;padding:.45rem .65rem;background:#fff;border:1px solid ${index===events.length-1?'var(--primary-border)':'var(--border)'};border-radius:999px;font-size:.79rem;"><span style="width:8px;height:8px;border-radius:50%;background:${event.status==='rejected'?'#ef4444':event.status==='accepted'?'#10b981':'var(--primary)'}"></span><strong>${escapeHtml(labels[event.status]||event.status)}</strong><span style="color:var(--text-muted)">${formatDate(event.created_at)}</span></div>${index<events.length-1?'<span style="color:#94a3b8;margin:0 .25rem">→</span>':''}</div>`).join('')}</div>
     </div>`;
 }
 
@@ -198,7 +198,7 @@ async function loadApplications(page = 1) {
                                 </div>
                             `)}
                             ${app.student_message ? `
-                                <div style="margin-top:1rem;padding:1rem;background:${app.status==='rejected'?'#fef2f2':app.status==='accepted'?'#f0fdf4':'#eff6ff'};border-left:4px solid ${app.status==='rejected'?'#ef4444':app.status==='accepted'?'#10b981':'#3b82f6'};border-radius:var(--radius-sm);line-height:1.55;">
+                                <div style="margin-top:1rem;padding:1rem;background:${app.status==='rejected'?'#fef2f2':app.status==='accepted'?'#f0fdf4':'var(--primary-light)'};border-left:4px solid ${app.status==='rejected'?'#ef4444':app.status==='accepted'?'#10b981':'var(--primary)'};border-radius:var(--radius-sm);line-height:1.55;">
                                     <strong>Thông báo từ nhà tuyển dụng:</strong><br>${escapeHtml(app.student_message)}
                                 </div>
                             ` : ''}
@@ -207,7 +207,7 @@ async function loadApplications(page = 1) {
                             <div style="margin-top:0.6rem;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
                                 <span style="font-size:0.8rem;color:var(--text-muted);font-weight:600;">Độ phù hợp (AI):</span>
                                 ${app.ai_match_consent ? `
-                                    <span class="badge btn-open-match-modal" style="background:#dbeafe;color:#1e40af;font-size:0.75rem;cursor:pointer;" data-app-id="${escapeHtml(app.id)}">
+                                    <span class="badge btn-open-match-modal" style="background:var(--primary-light);color:var(--primary-text);border:1px solid var(--primary-border);font-size:0.75rem;cursor:pointer;" data-app-id="${escapeHtml(app.id)}">
                                         🤖 Đã cấp quyền (Xem chi tiết)
                                     </span>
                                 ` : `
@@ -219,7 +219,7 @@ async function loadApplications(page = 1) {
                         </div>
 
                         <div class="row-actions student-app-actions">
-                            <button type="button" class="btn btn-outline btn-sm row-action-btn btn-open-match-modal" data-app-id="${escapeHtml(app.id)}" style="border-color:#93c5fd;color:#1d4ed8;background:#eff6ff;display:inline-flex;align-items:center;gap:0.35rem;">
+                            <button type="button" class="btn btn-outline btn-sm row-action-btn btn-open-match-modal" data-app-id="${escapeHtml(app.id)}" style="border-color:var(--primary-border);color:var(--primary-text);background:var(--primary-light);display:inline-flex;align-items:center;gap:0.35rem;">
                                 <span>🤖</span> <span>Độ phù hợp (AI)</span>
                             </button>
                             ${app.has_cv_snapshot ? `
@@ -575,7 +575,7 @@ function renderMatchModalProcessing(isTimeout = false) {
     }
     body.innerHTML = `
         <div aria-live="polite" style="text-align:center;padding:3rem 1rem;">
-            <div class="spinner" style="width:32px;height:32px;border:3px solid #bfdbfe;border-top-color:#2563eb;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem;"></div>
+            <div class="spinner" style="width:32px;height:32px;border:3px solid var(--primary-border);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem;"></div>
             <div style="font-size:1rem;color:var(--dark);font-weight:600;">Đang phân tích độ phù hợp với công việc...</div>
             <small style="color:var(--text-muted);display:block;margin-top:0.35rem;">Hệ thống đang đối chiếu dữ liệu hồ sơ và yêu cầu tuyển dụng.</small>
         </div>

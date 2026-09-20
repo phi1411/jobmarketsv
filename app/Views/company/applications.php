@@ -17,7 +17,7 @@
     .skill-filter-option input { width:16px;height:16px;accent-color:var(--primary); }
     .employer-filter-actions { display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border); }
     .active-filter-summary { display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.75rem; }
-    .active-filter-chip { padding:.3rem .55rem;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:.7rem;font-weight:700; }
+    .active-filter-chip { padding:.3rem .55rem;border-radius:999px;background:var(--primary-light);color:var(--primary-text);border:1px solid var(--primary-border);font-size:.7rem;font-weight:700; }
     .app-match-badge { display:inline-flex;align-items:center;gap:.35rem;padding:.32rem .58rem;border-radius:999px;font-size:.72rem;font-weight:800; }
     .app-match-badge.available { background:#dcfce7;color:#166534; }
     .app-match-badge.pending { background:#f1f5f9;color:#64748b; }
@@ -166,7 +166,7 @@
 
 <!-- Modal: Send Application Decision -->
 <div id="status-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
-    <div style="background:#fff;border-radius:var(--radius);max-width:540px;width:100%;padding:2rem;box-shadow:var(--shadow);">
+    <div class="modal-card" style="background:var(--surface);border-radius:var(--radius);max-width:540px;width:100%;padding:2rem;box-shadow:var(--shadow);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;border-bottom:1px solid var(--border);padding-bottom:0.75rem;">
             <h3 style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:0;">
                 Gửi Kết Quả Cho Sinh Viên
@@ -174,7 +174,7 @@
             <button type="button" onclick="closeStatusModal()" class="modal-close-btn" aria-label="Đóng hộp thoại">&times;</button>
         </div>
 
-        <div id="modal-app-info" style="font-size:0.88rem;color:var(--text);margin-bottom:1.25rem;background:#f8fafc;padding:0.75rem 1rem;border-radius:var(--radius);line-height:1.5;"></div>
+        <div id="modal-app-info" style="font-size:0.88rem;color:var(--text);margin-bottom:1.25rem;background:var(--bg);border:1px solid var(--border);padding:0.75rem 1rem;border-radius:var(--radius);line-height:1.5;"></div>
 
         <form onsubmit="handleSaveApplicationStatus(event)">
             <input type="hidden" id="modal-app-id">

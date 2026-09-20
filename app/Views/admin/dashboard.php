@@ -13,8 +13,8 @@
     </div>
 
     <!-- Error State -->
-    <div id="admin-dash-error" style="display:none;background:#fff;border-radius:var(--radius);padding:3rem 1.5rem;text-align:center;border:1px solid var(--danger);margin-bottom:2rem;">
-        <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
+    <div id="admin-dash-error" style="display:none;background:var(--surface);border-radius:var(--radius);padding:3rem 1.5rem;text-align:center;border:1px solid var(--danger);margin-bottom:2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;color:var(--danger);"><i class="ri-alert-line"></i></div>
         <h3 style="font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không Thể Tải Dữ Liệu Tổng Quan Quản Trị</h3>
         <p id="admin-dash-err-msg" style="color:var(--text-muted);margin-bottom:1.5rem;">Đã xảy ra lỗi khi kết nối với máy chủ API.</p>
         <button onclick="loadAdminDashboard()" class="btn btn-primary btn-sm">Thử Lại</button>
@@ -34,7 +34,7 @@
                     <div class="stat-card-label">Tổng Người Dùng</div>
                     <div id="stat-total-users" class="stat-card-value">0</div>
                     <div class="stat-card-subtext">
-                        SV: <strong id="stat-student-users" style="color:#1e40af;">0</strong> &bull;
+                        SV: <strong id="stat-student-users" style="color:var(--primary-text);">0</strong> &bull;
                         CT: <strong id="stat-company-users" style="color:#b45309;">0</strong> &bull;
                         Admin: <strong id="stat-admin-users" style="color:#991b1b;">0</strong>
                     </div>
@@ -106,7 +106,7 @@
                 <div style="display:flex;flex-direction:column;gap:0.75rem;">
                     <a href="/admin/companies?verification_status=pending" style="display:flex;justify-content:space-between;align-items:center;padding:0.9rem 1.15rem;background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius-sm);text-decoration:none;color:#92400e;transition:var(--transition);">
                         <div style="display:flex;align-items:center;gap:0.85rem;">
-                            <span style="font-size:1.35rem;">🏢</span>
+                            <span style="font-size:1.45rem;color:#b45309;"><i class="ri-building-4-line"></i></span>
                             <div>
                                 <div style="font-weight:700;font-size:0.92rem;color:#78350f;">Doanh nghiệp chờ xác thực</div>
                                 <div style="font-size:0.8rem;color:#b45309;">Xét duyệt tính hợp lệ trước khi cấp phép đăng tin công khai</div>
@@ -117,7 +117,7 @@
 
                     <a href="/admin/jobs?status=pending_approval" style="display:flex;justify-content:space-between;align-items:center;padding:0.9rem 1.15rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--radius-sm);text-decoration:none;color:#166534;transition:var(--transition);">
                         <div style="display:flex;align-items:center;gap:0.85rem;">
-                            <span style="font-size:1.35rem;">💼</span>
+                            <span style="font-size:1.45rem;color:#166534;"><i class="ri-briefcase-4-line"></i></span>
                             <div>
                                 <div style="font-weight:700;font-size:0.92rem;color:#14532d;">Tin tuyển dụng chờ kiểm duyệt</div>
                                 <div style="font-size:0.8rem;color:#15803d;">Duyệt nội dung mô tả, quyền lợi, lương an toàn cho sinh viên</div>
@@ -128,7 +128,7 @@
 
                     <a href="/admin/users" style="display:flex;justify-content:space-between;align-items:center;padding:0.9rem 1.15rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);text-decoration:none;color:var(--dark);transition:var(--transition);">
                         <div style="display:flex;align-items:center;gap:0.85rem;">
-                            <span style="font-size:1.35rem;">👥</span>
+                            <span style="font-size:1.45rem;color:var(--primary);"><i class="ri-user-settings-line"></i></span>
                             <div>
                                 <div style="font-weight:700;font-size:0.92rem;">Quản lý tài khoản người dùng</div>
                                 <div style="font-size:0.8rem;color:var(--text-muted);">Khóa hoặc kích hoạt tài khoản vi phạm chính sách</div>
@@ -139,7 +139,7 @@
 
                     <a href="/admin/audit-logs" style="display:flex;justify-content:space-between;align-items:center;padding:0.9rem 1.15rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);text-decoration:none;color:var(--dark);transition:var(--transition);">
                         <div style="display:flex;align-items:center;gap:0.85rem;">
-                            <span style="font-size:1.35rem;">📜</span>
+                            <span style="font-size:1.45rem;color:var(--text-muted);"><i class="ri-file-history-line"></i></span>
                             <div>
                                 <div style="font-weight:700;font-size:0.92rem;">Nhật ký thao tác quản trị</div>
                                 <div style="font-size:0.8rem;color:var(--text-muted);">Xem lịch sử kiểm duyệt của các quản trị viên</div>

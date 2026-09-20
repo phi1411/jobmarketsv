@@ -34,7 +34,7 @@
    2. TEMPLATE CATALOG (/mau-cv-sinh-vien)
    -------------------------------------------------------------------------- */
 .cv-templates-hero {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f766e 100%);
+    background: linear-gradient(135deg, #07251e 0%, #0a3d31 60%, #059669 100%);
     color: #ffffff;
     padding: 3.5rem 1rem 3rem;
     text-align: center;
@@ -109,16 +109,16 @@
 }
 
 .cv-filter-pill:hover {
-    color: var(--primary, #2563eb);
-    border-color: var(--primary-border, #bfdbfe);
-    background: var(--primary-light, #eff6ff);
+    color: var(--primary);
+    border-color: var(--primary-border);
+    background: var(--primary-light);
 }
 
 .cv-filter-pill.active {
-    background: var(--primary, #2563eb);
+    background: var(--primary);
     color: #ffffff;
-    border-color: var(--primary, #2563eb);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
 }
 
 .cv-template-grid {
@@ -195,7 +195,7 @@
 }
 
 .mockup-line-primary {
-    background: var(--primary, #2563eb);
+    background: var(--primary);
 }
 
 .mockup-line-accent {
@@ -303,9 +303,9 @@
     align-items: center;
     gap: 0.35rem;
     padding: 0.2rem 0.65rem;
-    background: #eff6ff;
-    color: #1d4ed8;
-    border: 1px solid #bfdbfe;
+    background: var(--primary-light);
+    color: var(--primary-text);
+    border: 1px solid var(--primary-border);
     border-radius: var(--radius-full, 9999px);
     font-weight: 700;
     font-size: 0.8rem;
@@ -533,9 +533,9 @@
 }
 
 .cv-autosave-status.saving {
-    background: #eff6ff;
-    color: #1d4ed8;
-    border-color: #bfdbfe;
+    background: var(--primary-light);
+    color: var(--primary-text);
+    border-color: var(--primary-border);
 }
 
 .cv-autosave-status.saved {
@@ -584,9 +584,9 @@
 }
 
 .cv-tab-btn.active {
-    background: var(--primary, #2563eb);
+    background: var(--primary);
     color: #ffffff;
-    border-color: var(--primary, #2563eb);
+    border-color: var(--primary);
 }
 
 /* Split Layout */
@@ -742,7 +742,7 @@
 
 .cv-section-btn:hover {
     background: #f1f5f9;
-    color: var(--primary, #2563eb);
+    color: var(--primary);
 }
 
 .cv-section-body {
@@ -802,7 +802,7 @@
 
 .cv-mini-btn:hover {
     background: #f1f5f9;
-    color: var(--primary, #2563eb);
+    color: var(--primary);
 }
 
 .cv-mini-btn.btn-delete:hover {
@@ -846,9 +846,9 @@
 .cv-input:focus,
 .cv-textarea:focus,
 .cv-select:focus {
-    border-color: var(--primary, #2563eb);
+    border-color: var(--primary);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    box-shadow: var(--focus-ring);
 }
 
 .cv-textarea {
@@ -864,7 +864,7 @@
     background: #f8fafc;
     border: 1px dashed #cbd5e1;
     border-radius: 8px;
-    color: var(--primary, #2563eb);
+    color: var(--primary);
     font-weight: 700;
     font-size: 0.88rem;
     cursor: pointer;
@@ -876,8 +876,8 @@
 }
 
 .cv-btn-add-item:hover {
-    background: #eff6ff;
-    border-color: var(--primary-border, #bfdbfe);
+    background: var(--primary-light);
+    border-color: var(--primary-border);
 }
 
 /* Style & Settings Panel */
@@ -1093,5 +1093,23 @@
     .cv-editor-top-actions .btn {
         padding: 0.35rem 0.6rem;
         font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .cv-preview-iframe-wrapper {
+        transform: scale(0.36);
+        transform-origin: top center;
+    }
+}
+
+@media (pointer: coarse) {
+    .cv-zoom-btn,
+    .cv-mini-btn {
+        min-width: 44px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 }

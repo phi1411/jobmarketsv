@@ -14,8 +14,8 @@
     </div>
 
     <!-- Error State -->
-    <div id="student-dash-error" style="display:none;background:#fff;border-radius:var(--radius);padding:2rem;border:1px solid var(--danger);text-align:center;">
-        <div style="font-size:2.5rem;color:var(--danger);margin-bottom:1rem;">⚠️</div>
+    <div id="student-dash-error" style="display:none;background:var(--surface);border-radius:var(--radius);padding:2rem;border:1px solid var(--danger);text-align:center;">
+        <div style="font-size:2.5rem;color:var(--danger);margin-bottom:1rem;"><i class="ri-alert-line"></i></div>
         <h3 style="font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không Thể Tải Bảng Tổng Quan</h3>
         <p id="student-dash-err-msg" style="color:var(--text-muted);margin-bottom:1rem;">Đã xảy ra lỗi khi kết nối với máy chủ.</p>
         <button onclick="loadDashboard()" class="btn btn-primary btn-sm">Thử Lại</button>
@@ -61,21 +61,21 @@
                     <div class="hero-3d-visual">
                         <!-- Floating 3D Animated Badges -->
                         <div class="floating-badge floating-badge--1">
-                            <span class="badge-icon">⚡</span>
+                            <span class="badge-icon"><i class="ri-flashlight-fill"></i></span>
                             <div class="badge-content">
                                 <strong>AI Match 95%</strong>
                                 <small>Độ tương thích hồ sơ</small>
                             </div>
                         </div>
                         <div class="floating-badge floating-badge--2">
-                            <span class="badge-icon">💼</span>
+                            <span class="badge-icon"><i class="ri-briefcase-4-fill"></i></span>
                             <div class="badge-content">
                                 <strong>140+ Việc Part-time</strong>
                                 <small>Đang tuyển mới hôm nay</small>
                             </div>
                         </div>
                         <div class="floating-badge floating-badge--3">
-                            <span class="badge-icon">⏰</span>
+                            <span class="badge-icon"><i class="ri-time-fill"></i></span>
                             <div class="badge-content">
                                 <strong>Ca Học Linh Hoạt</strong>
                                 <small>Tự do đăng ký ca làm</small>
@@ -135,7 +135,7 @@
 
 
         <!-- 2 Columns: Expiring Favorites & Recent Notifications -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1.5rem;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 280px), 1fr));gap:1.5rem;">
             <!-- Expiring Favorites -->
             <div class="surface-card">
                 <div class="section-header">

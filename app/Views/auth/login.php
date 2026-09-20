@@ -45,16 +45,16 @@
         <?php if (!empty($isDev)): ?>
         <!-- Quick Demo Email Fillers (Development / Local QA ONLY - No Passwords) -->
         <div class="demo-accounts">
-            <div class="demo-accounts-title">⚡ Gợi ý email mẫu phát triển (Nhập mật khẩu kiểm thử thủ công):</div>
+            <div class="demo-accounts-title"><i class="ri-flashlight-line"></i> Gợi ý email mẫu phát triển (Nhập mật khẩu kiểm thử thủ công):</div>
             <div class="demo-btn-group">
                 <button type="button" class="btn btn-outline btn-sm" onclick="fillEmail('sinhvien1@jobmarket.vn')">
-                    🎓 Sinh viên
+                    <i class="ri-user-line"></i> Sinh viên
                 </button>
                 <button type="button" class="btn btn-outline btn-sm" onclick="fillEmail('highlands@jobmarket.vn')">
-                    ☕ Doanh nghiệp
+                    <i class="ri-building-line"></i> Doanh nghiệp
                 </button>
                 <button type="button" class="btn btn-outline btn-sm" onclick="fillEmail('admin@jobmarket.vn')">
-                    🛡️ Quản trị viên
+                    <i class="ri-shield-user-line"></i> Quản trị viên
                 </button>
             </div>
             <small style="color:var(--text-muted);display:block;margin-top:0.4rem;">* Lưu ý: Mật khẩu không được lưu trong mã nguồn. Vui lòng tự nhập mật khẩu kiểm thử của bạn.</small>

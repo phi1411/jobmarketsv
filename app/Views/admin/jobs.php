@@ -2,7 +2,7 @@
 
 <div class="container" style="margin-bottom:3rem;">
     <!-- Filter Bar -->
-    <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+    <div style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
         <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
             <!-- Filter Moderation Status -->
             <div style="display:flex;align-items:center;gap:0.5rem;">
@@ -39,8 +39,8 @@
     </div>
 
     <!-- Error State -->
-    <div id="admin-jobs-error" style="display:none;background:#fff;border-radius:var(--radius);padding:3rem 1.5rem;text-align:center;border:1px solid var(--danger);margin-bottom:2rem;">
-        <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
+    <div id="admin-jobs-error" style="display:none;background:var(--surface);border-radius:var(--radius);padding:3rem 1.5rem;text-align:center;border:1px solid var(--danger);margin-bottom:2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;color:var(--danger);"><i class="ri-alert-line"></i></div>
         <h3 style="font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không Thể Tải Danh Sách Tin Tuyển Dụng</h3>
         <p id="admin-jobs-err-msg" style="color:var(--text-muted);margin-bottom:1.5rem;">Đã có lỗi xảy ra khi truy vấn dữ liệu việc làm.</p>
         <button onclick="loadAdminJobs(1)" class="btn btn-primary btn-sm">Thử Lại</button>
@@ -50,8 +50,8 @@
     <div id="admin-jobs-container" style="display:flex;flex-direction:column;gap:1.25rem;"></div>
 
     <!-- Empty State -->
-    <div id="admin-jobs-empty" style="display:none;background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:3.5rem 1.5rem;text-align:center;">
-        <div style="font-size:3rem;margin-bottom:1rem;">💼</div>
+    <div id="admin-jobs-empty" style="display:none;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:3.5rem 1.5rem;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:1rem;color:var(--text-muted);"><i class="ri-briefcase-4-line"></i></div>
         <h3 style="font-size:1.25rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không Tìm Thấy Tin Tuyển Dụng Nào</h3>
         <p style="color:var(--text-muted);max-width:450px;margin:0 auto 1.5rem;">
             Không có tin việc làm nào phù hợp với bộ lọc tìm kiếm hiện tại.
@@ -64,15 +64,15 @@
 
 <!-- Modal: Moderate Job -->
 <div id="mod-job-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
-    <div style="background:#fff;border-radius:var(--radius);max-width:540px;width:100%;padding:2rem;box-shadow:var(--shadow);">
+    <div class="modal-card" style="background:var(--surface);border-radius:var(--radius);max-width:540px;width:100%;padding:2rem;box-shadow:var(--shadow);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;border-bottom:1px solid var(--border);padding-bottom:0.75rem;">
             <h3 style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:0;">
-                💼 Kiểm Duyệt Tin Tuyển Dụng
+                <i class="ri-shield-check-line" style="color:var(--primary);"></i> Kiểm Duyệt Tin Tuyển Dụng
             </h3>
             <button type="button" onclick="closeModJobModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted);">&times;</button>
         </div>
 
-        <div id="modal-job-info" style="font-size:0.88rem;color:var(--text);margin-bottom:1.25rem;background:#f8fafc;padding:0.75rem 1rem;border-radius:var(--radius);line-height:1.5;"></div>
+        <div id="modal-job-info" style="font-size:0.88rem;color:var(--text);margin-bottom:1.25rem;background:var(--bg);padding:0.75rem 1rem;border-radius:var(--radius);line-height:1.5;"></div>
 
         <form onsubmit="handleSaveJobModeration(event)">
             <input type="hidden" id="modal-mod-job-id">

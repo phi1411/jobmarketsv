@@ -33,16 +33,16 @@
             <div class="quick-filter-pills-row">
                 <span class="quick-pill-label">Gợi ý nhanh:</span>
                 <button type="button" class="quick-pill-btn active" data-pill-type="all">Tất cả</button>
-                <button type="button" class="quick-pill-btn quick-pill-nearby" onclick="toggleNearbyJobs()" style="background:#eff6ff;color:#1d4ed8;border:1.5px solid #93c5fd;font-weight:700;display:inline-flex;align-items:center;gap:0.35rem;">
-                    <span>📍 Việc làm gần tôi</span>
+                <button type="button" class="quick-pill-btn quick-pill-nearby" onclick="toggleNearbyJobs()" style="background:var(--primary-light);color:var(--primary-text);border:1.5px solid var(--primary-border);font-weight:700;display:inline-flex;align-items:center;gap:0.35rem;">
+                    <i class="ri-map-pin-user-line"></i> <span>Việc làm gần tôi</span>
                 </button>
-                <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="morning">🌅 Ca Sáng</button>
-                <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="afternoon">☀️ Ca Chiều</button>
-                <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="evening">🌙 Ca Tối</button>
-                <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="flexible">⚡ Ca Linh Hoạt</button>
-                <button type="button" class="quick-pill-btn" data-pill-type="location" data-pill-val="Hà Nội">📍 Hà Nội</button>
-                <button type="button" class="quick-pill-btn" data-pill-type="location" data-pill-val="TP. HCM">📍 TP. HCM</button>
-                <button type="button" class="quick-pill-btn" data-pill-type="salary" data-pill-val="25000">💰 Lương > 25k/h</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="morning"><i class="ri-sun-cloudy-line"></i> Ca Sáng</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="afternoon"><i class="ri-sun-line"></i> Ca Chiều</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="evening"><i class="ri-moon-clear-line"></i> Ca Tối</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="shift" data-pill-val="flexible"><i class="ri-flashlight-line"></i> Ca Linh Hoạt</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="location" data-pill-val="Hà Nội"><i class="ri-map-pin-2-line"></i> Hà Nội</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="location" data-pill-val="TP. HCM"><i class="ri-map-pin-2-line"></i> TP. HCM</button>
+                <button type="button" class="quick-pill-btn" data-pill-type="salary" data-pill-val="25000"><i class="ri-money-dollar-circle-line"></i> Lương > 25k/h</button>
             </div>
 
             <!-- Collapsible Advanced Filter Panel -->
@@ -110,10 +110,10 @@
                 <button type="button" class="radius-chip" data-radius="20" onclick="setNearbyRadius(20)">20 km</button>
             </div>
 
-            <div id="nearby-origin-info" style="font-size:0.84rem;color:#1e293b;background:#eff6ff;padding:0.25rem 0.65rem;border-radius:4px;border:1px solid #bfdbfe;display:inline-flex;align-items:center;gap:0.4rem;">
+            <div id="nearby-origin-info" style="font-size:0.84rem;color:var(--text);background:var(--primary-light);padding:0.25rem 0.65rem;border-radius:4px;border:1px solid var(--primary-border);display:inline-flex;align-items:center;gap:0.4rem;">
                 <span style="color:#64748b;">Tâm tìm:</span>
                 <strong id="nearby-origin-label" style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Vị trí của bạn</strong>
-                <button type="button" onclick="openStudentNearbyModal()" style="background:none;border:none;color:#2563eb;cursor:pointer;font-size:0.75rem;font-weight:700;text-decoration:underline;">[Đổi]</button>
+                <button type="button" onclick="openStudentNearbyModal()" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:0.75rem;font-weight:700;text-decoration:underline;">[Đổi]</button>
             </div>
 
             <button type="button" id="btn-save-preferred-loc" class="btn btn-outline btn-sm" style="display:none;font-size:0.78rem;padding:0.25rem 0.65rem;border-color:#10b981;color:#059669;font-weight:700;" onclick="saveCurrentNearbyToPreferred()">
@@ -167,7 +167,7 @@
 
 <!-- Modal: Chọn Vị Trí Tìm Việc Gần Bạn Cho Sinh Viên -->
 <div id="modal-student-nearby" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:10000;align-items:center;justify-content:center;padding:1rem;" role="dialog" aria-modal="true" aria-labelledby="modal-student-nearby-title">
-    <div style="background:#fff;border-radius:var(--radius);max-width:580px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;box-shadow:var(--shadow);position:relative;">
+    <div class="modal-card" style="background:var(--surface);border-radius:var(--radius);max-width:580px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;box-shadow:var(--shadow);position:relative;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
             <h3 id="modal-student-nearby-title" style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:0;">Chọn Vị Trí Tìm Việc Làm Gần Bạn</h3>
             <button type="button" onclick="closeStudentNearbyModal()" class="modal-close-btn" aria-label="Đóng">&times;</button>
@@ -217,7 +217,7 @@
 
             <!-- Fields: Hiện hành -->
             <div id="fields-stu-mode-current">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
+                <div class="form-grid-address-2" style="margin-bottom:0.75rem;">
                     <div class="form-group" style="margin:0;">
                         <label class="form-label" style="font-size:0.84rem;">Tỉnh / Thành phố *</label>
                         <select id="stu-manual-curr-province" class="form-control" data-vn-address-group="student-current" data-vn-address-level="province" data-vn-address-schema="current" data-vn-address-autoload>
@@ -239,7 +239,7 @@
 
             <!-- Fields: Cũ -->
             <div id="fields-stu-mode-legacy" style="display:none;">
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;margin-bottom:0.75rem;">
+                <div class="form-grid-address-3" style="margin-bottom:0.75rem;">
                     <div class="form-group" style="margin:0;">
                         <label class="form-label" style="font-size:0.84rem;">Tỉnh / TP *</label>
                         <select id="stu-manual-leg-province" class="form-control" data-vn-address-group="student-legacy" data-vn-address-level="province" data-vn-address-schema="legacy">
@@ -266,8 +266,8 @@
             </div>
 
             <div style="display:flex;justify-content:flex-end;">
-                <button type="button" id="btn-stu-resolve-manual" class="btn btn-outline btn-sm" style="font-weight:600;" onclick="resolveStudentManualAddress()">
-                    🔍 Xác thực & Chuẩn hóa địa chỉ
+                <button type="button" id="btn-stu-resolve-manual" class="btn btn-outline btn-sm" style="font-weight:600;display:inline-flex;align-items:center;gap:0.35rem;" onclick="resolveStudentManualAddress()">
+                    <i class="ri-map-pin-user-line"></i> Xác thực & Chuẩn hóa địa chỉ
                 </button>
             </div>
         </div>

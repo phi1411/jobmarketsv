@@ -30,8 +30,8 @@
                 <!-- Role Filter Tabs -->
                 <div style="display:flex;gap:0.35rem;margin-top:0.65rem;overflow-x:auto;">
                     <button onclick="setFilter('all', this)" class="conv-filter-btn active" style="border:none;background:var(--primary);color:#fff;border-radius:20px;padding:0.25rem 0.65rem;font-size:0.75rem;font-weight:600;cursor:pointer;">Tất cả</button>
-                    <button onclick="setFilter('student', this)" class="conv-filter-btn" style="border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:20px;padding:0.25rem 0.65rem;font-size:0.75rem;font-weight:600;cursor:pointer;">🎓 Sinh viên</button>
-                    <button onclick="setFilter('company', this)" class="conv-filter-btn" style="border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:20px;padding:0.25rem 0.65rem;font-size:0.75rem;font-weight:600;cursor:pointer;">🏢 Doanh nghiệp</button>
+                    <button onclick="setFilter('student', this)" class="conv-filter-btn" style="border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:20px;padding:0.25rem 0.65rem;font-size:0.75rem;font-weight:600;cursor:pointer;"><i class="ri-user-line"></i> Sinh viên</button>
+                    <button onclick="setFilter('company', this)" class="conv-filter-btn" style="border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:20px;padding:0.25rem 0.65rem;font-size:0.75rem;font-weight:600;cursor:pointer;"><i class="ri-building-line"></i> Doanh nghiệp</button>
                     <button onclick="setFilter('unread', this)" class="conv-filter-btn" style="border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:20px;padding:0.25rem 0.65rem;font-size:0.75rem;font-weight:600;cursor:pointer;">🔴 Chưa đọc</button>
                 </div>
             </div>
@@ -131,7 +131,7 @@
     background: var(--surface-hover);
 }
 .conv-item.active {
-    background: rgba(37, 99, 235, 0.15);
+    background: var(--primary-light);
     border-left: 4px solid var(--primary);
 }
 .msg-bubble-user {
@@ -154,7 +154,7 @@
     max-width: 70%;
     font-size: 0.92rem;
     line-height: 1.45;
-    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
     word-break: break-word;
 }
 </style>
@@ -220,7 +220,7 @@ function setFilter(role, btn) {
         b.style.color = "#475569";
         b.style.border = "1px solid #e2e8f0";
     });
-    btn.style.background = "#2563eb";
+    btn.style.background = "var(--primary)";
     btn.style.color = "#fff";
     btn.style.border = "none";
     applyFiltersAndRender();
@@ -272,8 +272,8 @@ function renderConversationList() {
         const other = c.other_user || {};
         const isActive = (c.id === activeConversationId);
         const roleBadge = other.role === "company" 
-            ? `<span style="font-size:0.68rem;padding:0.15rem 0.45rem;border-radius:10px;background:#fef3c7;color:#92400e;font-weight:600;">🏢 Doanh nghiệp</span>`
-            : `<span style="font-size:0.68rem;padding:0.15rem 0.45rem;border-radius:10px;background:#e0e7ff;color:#3730a3;font-weight:600;">🎓 Sinh viên</span>`;
+            ? `<span style="font-size:0.68rem;padding:0.15rem 0.45rem;border-radius:10px;background:#fef3c7;color:#92400e;font-weight:600;"><i class="ri-building-line"></i> Doanh nghiệp</span>`
+            : `<span style="font-size:0.68rem;padding:0.15rem 0.45rem;border-radius:10px;background:#e0e7ff;color:#3730a3;font-weight:600;"><i class="ri-user-line"></i> Sinh viên</span>`;
         
         const initial = (other.name || "U").charAt(0).toUpperCase();
         const lastMsg = c.last_message ? escapeHtml(c.last_message.content) : "Bắt đầu cuộc trò chuyện...";
@@ -284,7 +284,7 @@ function renderConversationList() {
 
         html += `
             <div class="conv-item ${isActive ? 'active' : ''}" onclick="selectConversation('${escapeHtml(c.id)}')">
-                <div style="width:40px;height:40px;border-radius:50%;background:${other.role === 'company' ? '#d97706' : '#2563eb'};color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div style="width:40px;height:40px;border-radius:50%;background:${other.role === 'company' ? '#d97706' : 'var(--primary)'};color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     ${escapeHtml(initial)}
                 </div>
                 <div style="flex:1;min-width:0;">
@@ -338,15 +338,15 @@ async function selectConversation(conversationId) {
     document.getElementById("chat-header-name").innerText = activeOtherUser.name || "Người dùng";
     document.getElementById("chat-header-email").innerText = activeOtherUser.email || "";
     document.getElementById("chat-header-avatar").innerText = (activeOtherUser.name || "U").charAt(0).toUpperCase();
-    document.getElementById("chat-header-avatar").style.background = activeOtherUser.role === "company" ? "#d97706" : "#2563eb";
+    document.getElementById("chat-header-avatar").style.background = activeOtherUser.role === "company" ? "#d97706" : "var(--primary)";
 
     const roleSpan = document.getElementById("chat-header-role");
     if (activeOtherUser.role === "company") {
-        roleSpan.innerText = "🏢 Nhà tuyển dụng";
+        roleSpan.innerHTML = '<i class="ri-building-line"></i> Doanh nghiệp';
         roleSpan.style.background = "#fef3c7";
         roleSpan.style.color = "#92400e";
     } else {
-        roleSpan.innerText = "🎓 Sinh viên";
+        roleSpan.innerHTML = '<i class="ri-user-line"></i> Sinh viên';
         roleSpan.style.background = "#e0e7ff";
         roleSpan.style.color = "#3730a3";
     }

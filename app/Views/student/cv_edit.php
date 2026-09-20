@@ -32,7 +32,7 @@
             <span>📝</span> Nội Dung Chỉnh Sửa
         </button>
         <button type="button" id="tab-btn-preview" class="cv-tab-btn" role="tab" aria-selected="false" onclick="window.CvEditorApp.switchMobileTab('preview')">
-            <span>👁️</span> Xem Trước (A4)
+            <i class="ri-eye-line"></i> Xem Trước (A4)
         </button>
     </nav>
 
@@ -160,7 +160,7 @@
     <div class="cv-modal-card" style="max-width: 520px; border-top: 6px solid var(--danger, #ef4444);">
         <div class="cv-modal-header">
             <h3 id="modal-conflict-title" style="color: var(--danger, #ef4444); display: flex; align-items: center; gap: 0.5rem;">
-                <span>⚠️</span> Xung Đột Phiên Bản CV
+                <i class="ri-alert-line"></i> Xung Đột Phiên Bản CV
             </h3>
         </div>
         <div class="cv-modal-body">
@@ -201,7 +201,7 @@
                     <small style="color: var(--text-muted, #64748b);">Cho phép nhà tuyển dụng xem CV qua đường dẫn web</small>
                 </div>
                 <label style="display: flex; align-items: center; cursor: pointer;">
-                    <input type="checkbox" id="check-is-public" style="width: 20px; height: 20px; accent-color: var(--primary, #2563eb);" onchange="window.CvEditorApp.handleTogglePublic(this.checked)">
+                    <input type="checkbox" id="check-is-public" style="width: 20px; height: 20px; accent-color: var(--primary);" onchange="window.CvEditorApp.handleTogglePublic(this.checked)">
                 </label>
             </div>
 

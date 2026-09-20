@@ -23,7 +23,7 @@ class AuthMiddleware implements MiddlewareInterface
     public function __invoke(Request $request): Response
     {
         $path = $request->getPathInfo();
-        $method = $request->getMethod();
+        $method = $request->getMethod() === "HEAD" ? "GET" : $request->getMethod();
 
         // Always allow CORS Pre-flight OPTIONS request without token
         if ($method === "OPTIONS") {

@@ -11,7 +11,7 @@
                     <option value="published">🟢 Đang tuyển (Published)</option>
                     <option value="draft">📝 Bản nháp (Draft)</option>
                     <option value="pending_approval">⏳ Chờ duyệt (Pending Approval)</option>
-                    <option value="hidden">👁️ Tạm ẩn (Hidden)</option>
+                    <option value="hidden">Tạm ẩn (Hidden)</option>
                     <option value="closed">🔒 Đã đóng tuyển (Closed)</option>
                     <option value="expired">⌛ Đã hết hạn (Expired)</option>
                     <option value="rejected">❌ Bị từ chối (Rejected)</option>
@@ -174,7 +174,7 @@ async function loadCompanyJobs(page = 1) {
                             </div>
 
                             <div style="color:var(--text-muted);font-size:0.88rem;margin-bottom:0.75rem;">
-                                📍 ${escapeHtml(job.location_name || job.city || "Hà Nội")} &bull;
+                                <i class="ri-map-pin-2-line"></i> ${escapeHtml(job.location_name || job.city || "Hà Nội")} &bull;
                                 Ca: <strong>${shiftLabel}</strong> &bull;
                                 Lương: <strong>${currText}</strong> &bull;
                                 Hạn: ${dateText || "Chưa đặt"}

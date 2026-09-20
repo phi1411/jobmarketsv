@@ -14,10 +14,10 @@ class MailService
         $subject = "Mã xác nhận đổi mật khẩu JobMarketSV";
         $html = "<!doctype html><html><body style=\"margin:0;background:#f4f7fb;font-family:Arial,sans-serif;color:#14213d\">"
             . "<div style=\"max-width:560px;margin:24px auto;background:#fff;border:1px solid #e6eaf0;border-radius:16px;overflow:hidden\">"
-            . "<div style=\"padding:22px;background:#2563eb;color:#fff;font-size:21px;font-weight:700\">JobMarketSV</div>"
+            . "<div style=\"padding:22px;background:#059669;color:#fff;font-size:21px;font-weight:700\">JobMarketSV</div>"
             . "<div style=\"padding:28px\"><p>Chào " . $e($recipient["name"] ?? "bạn") . ",</p>"
             . "<p>Dùng mã sau để xác nhận yêu cầu đổi mật khẩu:</p>"
-            . "<div style=\"font-size:34px;letter-spacing:8px;font-weight:800;text-align:center;padding:18px;background:#eff6ff;border-radius:12px;color:#1d4ed8\">" . $e($code) . "</div>"
+            . "<div style=\"font-size:34px;letter-spacing:8px;font-weight:800;text-align:center;padding:18px;background:#ecfdf5;border-radius:12px;color:#065f46\">" . $e($code) . "</div>"
             . "<p>Mã có hiệu lực {$validMinutes} phút và chỉ sử dụng một lần.</p>"
             . "<p style=\"font-size:12px;color:#64748b\">Nếu bạn không yêu cầu thao tác này, hãy bỏ qua email và kiểm tra lại tài khoản.</p>"
             . "</div></div></body></html>";
@@ -177,7 +177,7 @@ class MailService
             "rejected" => "Nhà tuyển dụng đã phản hồi đơn ứng tuyển",
             default => "Đơn ứng tuyển có cập nhật mới",
         };
-        $accent = match ($status) { "accepted" => "#059669", "rejected" => "#dc2626", default => "#2563eb" };
+        $accent = match ($status) { "accepted" => "#059669", "rejected" => "#dc2626", default => "#059669" };
 
         return "<!doctype html><html><body style=\"margin:0;background:#f4f7fb;font-family:Arial,sans-serif;color:#14213d\">"
             . "<div style=\"max-width:620px;margin:24px auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e6eaf0\">"
@@ -202,12 +202,12 @@ class MailService
 
         return "<!doctype html><html><body style=\"margin:0;background:#f4f7fb;font-family:Arial,sans-serif;color:#14213d\">"
             . "<div style=\"max-width:620px;margin:24px auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e6eaf0\">"
-            . "<div style=\"padding:24px;background:#2563eb;color:#fff\"><strong style=\"font-size:22px\">JobMarketSV</strong><div style=\"margin-top:8px\">Có việc làm mới dành cho bạn</div></div>"
+            . "<div style=\"padding:24px;background:#059669;color:#fff\"><strong style=\"font-size:22px\">JobMarketSV</strong><div style=\"margin-top:8px\">Có việc làm mới dành cho bạn</div></div>"
             . "<div style=\"padding:28px\"><p>Chào " . $e($recipient["name"] ?? "bạn") . ",</p>"
             . "<p>Tin <strong>" . $e($job["title"] ?? "") . "</strong> tại <strong>" . $e($job["company_name"] ?? "Nhà tuyển dụng") . "</strong> phù hợp với bộ lọc <strong>" . $e($search["name"] ?? "Tìm kiếm đã lưu") . "</strong>.</p>"
-            . "<div style=\"margin:20px 0;padding:16px;border-radius:12px;background:#eff6ff;text-align:center\"><div style=\"font-size:13px;color:#475569\">Mức độ phù hợp</div><div style=\"font-size:36px;font-weight:800;color:#2563eb\">{$score}%</div></div>"
+            . "<div style=\"margin:20px 0;padding:16px;border-radius:12px;background:#ecfdf5;text-align:center\"><div style=\"font-size:13px;color:#475569\">Mức độ phù hợp</div><div style=\"font-size:36px;font-weight:800;color:#059669\">{$score}%</div></div>"
             . ($reasonItems !== "" ? "<p><strong>Điểm phù hợp nổi bật</strong></p><ul style=\"padding-left:20px;color:#475569\">{$reasonItems}</ul>" : "")
-            . "<p style=\"margin-top:26px\"><a href=\"" . $e($jobUrl) . "\" style=\"display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 20px;border-radius:9px;font-weight:700\">Xem việc làm</a></p>"
+            . "<p style=\"margin-top:26px\"><a href=\"" . $e($jobUrl) . "\" style=\"display:inline-block;background:#059669;color:#fff;text-decoration:none;padding:12px 20px;border-radius:9px;font-weight:700\">Xem việc làm</a></p>"
             . "<p style=\"margin-top:28px;font-size:12px;color:#64748b\">Bạn nhận email này vì đã bật thông báo cho bộ lọc tìm kiếm trên JobMarketSV. Bạn có thể tắt email tại trang Tìm kiếm đã lưu.</p>"
             . "</div></div></body></html>";
     }
@@ -223,12 +223,12 @@ class MailService
         }
         return "<!doctype html><html><body style=\"margin:0;background:#f4f7fb;font-family:Arial,sans-serif;color:#14213d\">"
             . "<div style=\"max-width:620px;margin:24px auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e6eaf0\">"
-            . "<div style=\"padding:24px;background:#2563eb;color:#fff\"><strong style=\"font-size:22px\">JobMarketSV</strong><div style=\"margin-top:8px\">Việc mới phù hợp với hồ sơ của bạn</div></div>"
+            . "<div style=\"padding:24px;background:#059669;color:#fff\"><strong style=\"font-size:22px\">JobMarketSV</strong><div style=\"margin-top:8px\">Việc mới phù hợp với hồ sơ của bạn</div></div>"
             . "<div style=\"padding:28px\"><p>Chào " . $e($recipient["name"] ?? "bạn") . ",</p>"
             . "<p><strong>" . $e($job["title"] ?? "") . "</strong> tại <strong>" . $e($job["company_name"] ?? "Nhà tuyển dụng") . "</strong> phù hợp với kỹ năng, khu vực và lịch rảnh bạn đã khai.</p>"
-            . "<div style=\"margin:20px 0;padding:16px;border-radius:12px;background:#eff6ff;text-align:center\"><div style=\"font-size:13px;color:#475569\">Mức độ phù hợp</div><div style=\"font-size:36px;font-weight:800;color:#2563eb\">{$score}%</div><div style=\"font-size:12px;color:#64748b\">Dữ liệu đối chiếu {$coverage}%</div></div>"
+            . "<div style=\"margin:20px 0;padding:16px;border-radius:12px;background:#ecfdf5;text-align:center\"><div style=\"font-size:13px;color:#475569\">Mức độ phù hợp</div><div style=\"font-size:36px;font-weight:800;color:#059669\">{$score}%</div><div style=\"font-size:12px;color:#64748b\">Dữ liệu đối chiếu {$coverage}%</div></div>"
             . ($reasonItems !== "" ? "<p><strong>Điểm phù hợp nổi bật</strong></p><ul style=\"padding-left:20px;color:#475569\">{$reasonItems}</ul>" : "")
-            . "<p style=\"margin-top:26px\"><a href=\"" . $e($jobUrl) . "\" style=\"display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 20px;border-radius:9px;font-weight:700\">Xem việc làm</a></p>"
+            . "<p style=\"margin-top:26px\"><a href=\"" . $e($jobUrl) . "\" style=\"display:inline-block;background:#059669;color:#fff;text-decoration:none;padding:12px 20px;border-radius:9px;font-weight:700\">Xem việc làm</a></p>"
             . "<p style=\"margin-top:28px;font-size:12px;color:#64748b\">Bạn nhận email vì đã bật Thông báo cá nhân hóa tại trang Gợi Ý Cho Bạn. Bạn có thể tắt bất cứ lúc nào.</p>"
             . "</div></div></body></html>";
     }

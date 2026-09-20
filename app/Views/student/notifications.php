@@ -108,7 +108,7 @@ async function loadNotifications() {
                                 </div>
                                 <div class="notification-item-meta">
                                     <span>${formatDate(n.created_at)}</span>
-                                    ${matchScore !== null ? `<span class="badge" style="background:#eff6ff;color:#1d4ed8;">Phù hợp ${matchScore}%</span>` : ''}
+                                    ${matchScore !== null ? `<span class="badge" style="background:var(--primary-light);color:var(--primary-text);border:1px solid var(--primary-border);">Phù hợp ${matchScore}%</span>` : ''}
                                 </div>
                             </div>
                         </div>

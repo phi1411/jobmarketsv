@@ -18,6 +18,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/vendor/remixicon/remixicon.css">
     <link rel="stylesheet" href="/assets/css/style.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/style.css') ? filemtime(BASE_PATH . '/public/assets/css/style.css') : time() ?>">
     <link rel="stylesheet" href="/assets/css/theme.css?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/css/theme.css') ? filemtime(BASE_PATH . '/public/assets/css/theme.css') : time() ?>">
     <?php
@@ -120,7 +121,7 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         <span>JobMarket<span style="color:var(--secondary)">SV</span></span>
                     </div>
-                    <p style="color:#94a3b8;font-size:0.9rem;line-height:1.6;">Nền tảng kết nối việc làm part-time hàng đầu cho sinh viên Việt Nam. Tìm kiếm việc làm theo ca, theo giờ, gần trường học, phù hợp lịch học.</p>
+                    <p style="color:#a7b8b2;font-size:0.9rem;line-height:1.6;">Nền tảng kết nối việc làm part-time hàng đầu cho sinh viên Việt Nam. Tìm kiếm việc làm theo ca, theo giờ, gần trường học, phù hợp lịch học.</p>
                 </div>
                 <div>
                     <h4 class="footer-title">Dành Cho Sinh Viên</h4>
@@ -156,6 +157,7 @@
 
     <!-- Scripts -->
     <script src="/assets/js/main.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/main.js') ? filemtime(BASE_PATH . '/public/assets/js/main.js') : time() ?>"></script>
+    <script src="/assets/js/custom_select.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/custom_select.js') ? filemtime(BASE_PATH . '/public/assets/js/custom_select.js') : time() ?>"></script>
     <script src="/assets/js/password_security.js?v=<?= defined('BASE_PATH') && file_exists(BASE_PATH . '/public/assets/js/password_security.js') ? filemtime(BASE_PATH . '/public/assets/js/password_security.js') : time() ?>"></script>
     <?php if ($isChatbotPage): ?>
     <script>window.__CHATBOT_CONFIG__ = { enabled: <?= $isGlobalChatEnabled ? 'true' : 'false' ?>, companyEnabled: <?= $isCompanyChatEnabled ? 'true' : 'false' ?> };</script>

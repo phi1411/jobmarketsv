@@ -54,7 +54,7 @@ require_once dirname(__DIR__) . "/student/nav.php";
     <div class="cv-modal-card" style="max-width: 460px;">
         <div class="cv-modal-header" style="border-bottom: 1px solid #fee2e2;">
             <h3 id="modal-delete-title" style="color: var(--danger, #ef4444); display: flex; align-items: center; gap: 0.5rem;">
-                <span>⚠️</span> Xác Nhận Xóa CV
+                <i class="ri-delete-bin-line"></i> Xác Nhận Xóa CV
             </h3>
             <button type="button" class="cv-modal-close-btn" onclick="closeDeleteModal()" aria-label="Đóng">&times;</button>
         </div>

@@ -22,8 +22,8 @@
                 <p style="font-size:0.8rem;color:var(--text-muted);margin:0.5rem 0 0;">
                     Hồ sơ trên 80% sẽ tăng 3 lần cơ hội được nhà tuyển dụng xem và phản hồi nhanh.
                 </p>
-                <div id="profile-completeness-suggestion" style="margin-top:0.6rem;font-size:0.82rem;color:#2563eb;display:flex;align-items:center;gap:0.4rem;">
-                    💡 <strong>Gợi ý:</strong> Thêm kinh nghiệm làm việc để tăng độ bao phủ dữ liệu đánh giá.
+                <div id="profile-completeness-suggestion" style="margin-top:0.6rem;font-size:0.82rem;color:var(--primary);display:flex;align-items:center;gap:0.4rem;">
+                    <i class="ri-lightbulb-line"></i> <strong>Gợi ý:</strong> Thêm kinh nghiệm làm việc để tăng độ bao phủ dữ liệu đánh giá.
                 </div>
             </div>
             <div>
@@ -220,7 +220,7 @@
                     </div>
 
                     <!-- State 4: Active CV State (File uploaded) -->
-                    <div id="cv-state-active" style="display:none;padding:1.25rem;background:#ffffff;border:1px solid #10b981;border-left:5px solid #10b981;border-radius:var(--radius);box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                    <div id="cv-state-active" style="display:none;padding:1.25rem;background:var(--surface);border:1px solid var(--secondary);border-left:5px solid var(--secondary);border-radius:var(--radius);box-shadow:0 1px 3px rgba(0,0,0,0.05);">
                         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
                             <div style="display:flex;align-items:center;gap:1rem;min-width:240px;">
                                 <div style="width:48px;height:56px;background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ef4444;flex-shrink:0;">
@@ -269,10 +269,10 @@
                     </div>
                     <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
                         <button type="button" class="btn btn-outline btn-sm" onclick="selectAllSchedule();" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;background:#f0fdf4;border-color:#86efac;color:#166534;font-weight:600;">
-                            <span>⚡</span> Rảnh cả tuần
+                            <i class="ri-flashlight-line"></i> Rảnh cả tuần
                         </button>
-                        <button type="button" class="btn btn-outline btn-sm" onclick="selectEveningsOnly();" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;background:#eff6ff;border-color:#93c5fd;color:#1e40af;font-weight:600;">
-                            <span>🌙</span> Rảnh tất cả ca tối
+                        <button type="button" class="btn btn-outline btn-sm" onclick="selectEveningsOnly();" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;background:var(--primary-light);border-color:var(--primary-border);color:var(--primary-text);font-weight:600;">
+                            <i class="ri-moon-line"></i> Rảnh tất cả ca tối
                         </button>
                         <button type="button" class="btn btn-outline btn-sm" onclick="clearAllSchedule();" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;color:#b91c1c;border-color:#fca5a5;background:#fef2f2;font-weight:600;">
                             <span>🧹</span> Xóa chọn tất cả
@@ -387,9 +387,9 @@ const DAYS = [
 ];
 
 const SHIFTS = [
-    { key: "morning", label: "🌅 Ca Sáng (08:00 - 12:00)" },
-    { key: "afternoon", label: "☀️ Ca Chiều (13:00 - 17:00)" },
-    { key: "evening", label: "🌙 Ca Tối (18:00 - 22:00)" }
+    { key: "morning", label: '<i class="ri-sun-cloudy-line"></i> Ca Sáng (08:00 - 12:00)' },
+    { key: "afternoon", label: '<i class="ri-sun-line"></i> Ca Chiều (13:00 - 17:00)' },
+    { key: "evening", label: '<i class="ri-moon-clear-line"></i> Ca Tối (18:00 - 22:00)' }
 ];
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -425,9 +425,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 function renderScheduleTable() {
     const tbody = document.getElementById("schedule-matrix-body");
     const dayRow = `
-        <tr style="background:#f8fafc;border-bottom:2px solid var(--border);">
+        <tr style="background:var(--surface-hover);border-bottom:2px solid var(--border);">
             <td style="padding:0.65rem 0.75rem;text-align:left;font-weight:700;color:var(--primary);font-size:0.84rem;">
-                ⚡ Rảnh cả ngày
+                <i class="ri-flashlight-line"></i> Rảnh cả ngày
             </td>
             ${DAYS.map(day => `
                 <td style="padding:0.65rem 0.75rem;">
@@ -442,10 +442,12 @@ function renderScheduleTable() {
 
     const shiftRows = SHIFTS.map(shift => `
         <tr style="border-bottom:1px solid var(--border);">
-            <td style="padding:0.75rem;text-align:left;font-weight:600;color:var(--dark);">${escapeHtml(shift.label)}</td>
+            <td style="padding:0.75rem;text-align:left;font-weight:600;color:var(--dark);">${shift.label}</td>
             ${DAYS.map(day => `
-                <td style="padding:0.75rem;">
-                    <input type="checkbox" class="schedule-check" data-day="${escapeHtml(day.key)}" data-shift="${escapeHtml(shift.key)}" onchange="syncAllDayCheckboxes()" style="width:18px;height:18px;cursor:pointer;accent-color:var(--primary);">
+                <td style="padding:0.25rem;">
+                    <label style="display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;cursor:pointer;margin:auto;" title="Chọn ${escapeHtml(day.label)}">
+                        <input type="checkbox" class="schedule-check" data-day="${escapeHtml(day.key)}" data-shift="${escapeHtml(shift.key)}" onchange="syncAllDayCheckboxes()" style="width:20px;height:20px;cursor:pointer;accent-color:var(--primary);">
+                    </label>
                 </td>
             `).join("")}
         </tr>
@@ -626,7 +628,7 @@ function renderPreferredLocations() {
 
         return `
             <span class="preferred-loc-chip" title="${escapeHtml(loc.address_text || '')}">
-                <span>📍 ${escapeHtml(displayName)} · <strong>${radius} km</strong></span>
+                <span><i class="ri-map-pin-2-line"></i> ${escapeHtml(displayName)} · <strong>${radius} km</strong></span>
                 <button type="button" class="remove-chip-btn" onclick="handleRemovePreferredLocation(${idx})" title="Xóa khu vực này" aria-label="Xóa">&times;</button>
             </span>
         `;
@@ -1030,19 +1032,19 @@ function updateProfileCompletenessSuggestion(prof) {
     );
 
     if (!hasSched) {
-        el.innerHTML = `⏰ <strong>Gợi ý:</strong> Cập nhật lịch rảnh hàng tuần để hệ thống đánh giá chính xác độ khớp thời gian làm việc.`;
+        el.innerHTML = `<i class="ri-time-line"></i> <strong>Gợi ý:</strong> Cập nhật lịch rảnh hàng tuần để hệ thống đánh giá chính xác độ khớp thời gian làm việc.`;
     } else if (!hasExp) {
-        el.innerHTML = `💼 <strong>Gợi ý:</strong> Thêm kinh nghiệm hoặc dự án thực tế để tăng độ đầy đủ dữ liệu khi đánh giá phù hợp.`;
+        el.innerHTML = `<i class="ri-briefcase-line"></i> <strong>Gợi ý:</strong> Thêm kinh nghiệm hoặc dự án thực tế để tăng độ đầy đủ dữ liệu khi đánh giá phù hợp.`;
     } else if (!hasSkills) {
-        el.innerHTML = `🛠️ <strong>Gợi ý:</strong> Chọn ít nhất 3 kỹ năng nổi bật để đối sánh chi tiết với yêu cầu công việc.`;
+        el.innerHTML = `<i class="ri-tools-line"></i> <strong>Gợi ý:</strong> Chọn ít nhất 3 kỹ năng nổi bật để đối sánh chi tiết với yêu cầu công việc.`;
     } else if (!hasEdu) {
-        el.innerHTML = `🎓 <strong>Gợi ý:</strong> Hoàn thiện thông tin trường và chuyên ngành học vấn.`;
+        el.innerHTML = `<i class="ri-graduation-cap-line"></i> <strong>Gợi ý:</strong> Hoàn thiện thông tin trường và chuyên ngành học vấn.`;
     } else if (!hasLoc) {
-        el.innerHTML = `📍 <strong>Gợi ý:</strong> Chọn khu vực bạn đang sinh sống để đánh giá khoảng cách làm việc.`;
+        el.innerHTML = `<i class="ri-map-pin-2-line"></i> <strong>Gợi ý:</strong> Chọn khu vực bạn đang sinh sống để đánh giá khoảng cách làm việc.`;
     } else if (!hasCert) {
-        el.innerHTML = `📜 <strong>Gợi ý:</strong> Bổ sung chứng chỉ ngoại ngữ hoặc kỹ năng tin học để làm nổi bật hồ sơ.`;
+        el.innerHTML = `<i class="ri-file-list-3-line"></i> <strong>Gợi ý:</strong> Bổ sung chứng chỉ ngoại ngữ hoặc kỹ năng tin học để làm nổi bật hồ sơ.`;
     } else {
-        el.innerHTML = `🎉 <strong>Tuyệt vời!</strong> Hồ sơ của bạn đã có đầy đủ thông tin để hỗ trợ đánh giá mức độ phù hợp toàn diện.`;
+        el.innerHTML = `<i class="ri-sparkling-line"></i> <strong>Tuyệt vời!</strong> Hồ sơ của bạn đã có đầy đủ thông tin để hỗ trợ đánh giá mức độ phù hợp toàn diện.`;
     }
 }
 
@@ -1297,18 +1299,18 @@ function renderCvAiResult(data) {
     const section = (id, title, content, checked = true) => `
         <label style="display:block;border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.75rem;cursor:pointer;background:#f8fafc;">
             <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;">
-                <input type="checkbox" id="${id}" ${checked ? "checked" : ""} style="width:18px;height:18px;accent-color:#2563eb;">
+                <input type="checkbox" id="${id}" ${checked ? "checked" : ""} style="width:18px;height:18px;accent-color:var(--primary);">
                 <strong style="color:var(--dark);">${escapeHtml(title)}</strong>
             </div>
             <div style="padding-left:1.65rem;color:var(--text-muted);font-size:.84rem;line-height:1.55;">${content}</div>
         </label>`;
 
     document.getElementById("cv-ai-result").innerHTML = `
-        <div style="margin-bottom:1rem;padding:.8rem 1rem;border-radius:10px;background:#eff6ff;color:#1e40af;font-size:.82rem;">
+        <div style="margin-bottom:1rem;padding:.8rem 1rem;border-radius:10px;background:var(--primary-light);color:var(--primary-text);border:1px solid var(--primary-border);font-size:.82rem;">
             Đã phân tích <strong>${escapeHtml(data.source_file || "CV PDF")}</strong>. Hãy bỏ chọn phần bạn không muốn thay đổi.
         </div>
         ${section("cv-ai-use-education", "Học vấn", educationBits.length ? educationBits.map(escapeHtml).join(" · ") : "Không tìm thấy thông tin học vấn", educationBits.length > 0)}
-        ${section("cv-ai-use-skills", `Kỹ năng (${skills.length})`, skills.length ? skills.map(s => `<span class="badge" style="margin:.15rem;background:#dbeafe;color:#1d4ed8;">${escapeHtml(s)}</span>`).join("") : "Không tìm thấy kỹ năng", skills.length > 0)}
+        ${section("cv-ai-use-skills", `Kỹ năng (${skills.length})`, skills.length ? skills.map(s => `<span class="badge" style="margin:.15rem;background:var(--primary-light);color:var(--primary-text);border:1px solid var(--primary-border);">${escapeHtml(s)}</span>`).join("") : "Không tìm thấy kỹ năng", skills.length > 0)}
         ${section("cv-ai-use-experience", `Kinh nghiệm (${experiences.length})`, experiences.length ? experiences.map(x => `<div>• <strong>${escapeHtml(x.title || "Kinh nghiệm")}</strong>${x.company ? ` tại ${escapeHtml(x.company)}` : ""}${x.duration ? ` · ${escapeHtml(x.duration)}` : ""}</div>`).join("") : "Không tìm thấy kinh nghiệm", experiences.length > 0)}
         ${section("cv-ai-use-certificates", `Chứng chỉ (${certificates.length})`, certificates.length ? certificates.map(x => `<div>• ${escapeHtml(x.name || "")}${x.year ? ` · ${escapeHtml(x.year)}` : ""}</div>`).join("") : "Không tìm thấy chứng chỉ", certificates.length > 0)}
         ${Array.isArray(data.unmatched_skills) && data.unmatched_skills.length ? `<div style="font-size:.78rem;color:#92400e;background:#fffbeb;padding:.7rem .85rem;border-radius:8px;">Một số kỹ năng chưa có trong danh mục để tự đánh dấu: ${data.unmatched_skills.map(escapeHtml).join(", ")}.</div>` : ""}

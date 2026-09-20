@@ -7,12 +7,12 @@
 /* 1. Dark Mode Variable Definitions */
 [data-theme="dark"] {
     /* Brand & Primary (slightly brighter for dark backgrounds) */
-    --primary: #3b82f6;
-    --primary-hover: #60a5fa;
-    --primary-light: #1e293b;
-    --primary-border: #1d4ed8;
-    --primary-text: #93c5fd;
-    --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    --primary: #10b981;
+    --primary-hover: #34d399;
+    --primary-light: #064e3b;
+    --primary-border: #059669;
+    --primary-text: #6ee7b7;
+    --primary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
 
     /* Secondary (Success accent) */
     --secondary: #10b981;
@@ -64,7 +64,7 @@
     --shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.5), 0 2px 6px -2px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 10px 25px -4px rgba(0, 0, 0, 0.6), 0 4px 10px -4px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 20px 35px -6px rgba(0, 0, 0, 0.7), 0 8px 16px -6px rgba(0, 0, 0, 0.5);
-    --shadow-primary: 0 8px 20px -4px rgba(37, 99, 235, 0.5);
+    --shadow-primary: 0 8px 20px -4px rgba(16, 185, 129, 0.4);
 }
 
 /* 2. Global Elements in Dark Mode */
@@ -79,8 +79,14 @@
 }
 
 [data-theme="dark"] .site-footer {
-    background-color: #080c14;
-    border-top: 1px solid var(--border);
+    background: linear-gradient(180deg, #051410 0%, #030e0b 100%);
+    border-top: 1px solid rgba(16, 185, 129, 0.18);
+}
+
+[data-theme="dark"] .cta-banner {
+    background: linear-gradient(135deg, #04241c 0%, #063d2f 60%, #042b21 100%);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.6);
 }
 
 /* 3. Portal Headers & Tabs */
@@ -117,13 +123,37 @@
 }
 
 /* 4. Overrides for Inline Backgrounds (#fff / #f8fafc) */
-[data-theme="dark"] [style*="background:#fff"],
-[data-theme="dark"] [style*="background: #fff"],
-[data-theme="dark"] [style*="background:#ffffff"],
-[data-theme="dark"] [style*="background: #ffffff"] {
-    background: var(--surface) !important;
+[data-theme="dark"] [style*="background:#fff;"],
+[data-theme="dark"] [style*="background: #fff;"],
+[data-theme="dark"] [style*="background:#ffffff;"],
+[data-theme="dark"] [style*="background: #ffffff;"],
+[data-theme="dark"] [style*="background-color:#fff;"],
+[data-theme="dark"] [style*="background-color: #fff;"],
+[data-theme="dark"] [style*="background-color:#ffffff;"],
+[data-theme="dark"] [style*="background-color: #ffffff;"] {
+    background-color: var(--surface) !important;
     color: var(--text) !important;
     border-color: var(--border) !important;
+}
+
+/* Pastel Alert Overrides in Dark Mode */
+[data-theme="dark"] [style*="background:#fffbeb"],
+[data-theme="dark"] [style*="background: #fffbeb"] {
+    background-color: var(--warning-light) !important;
+    border-color: var(--warning-border) !important;
+    color: var(--warning-text) !important;
+}
+[data-theme="dark"] [style*="background:#fff7ed"],
+[data-theme="dark"] [style*="background: #fff7ed"] {
+    background-color: rgba(234, 88, 12, 0.25) !important;
+    border-color: rgba(234, 88, 12, 0.4) !important;
+    color: #fed7aa !important;
+}
+[data-theme="dark"] [style*="background:#fff1f2"],
+[data-theme="dark"] [style*="background: #fff1f2"] {
+    background-color: var(--danger-light) !important;
+    border-color: var(--danger-border) !important;
+    color: var(--danger-text) !important;
 }
 
 [data-theme="dark"] [style*="background:#f8fafc"],
@@ -243,7 +273,7 @@
 }
 
 [data-theme="dark"] .conv-item.active {
-    background: rgba(37, 99, 235, 0.25) !important;
+    background: rgba(16, 185, 129, 0.2) !important;
     border-left: 4px solid var(--primary) !important;
 }
 
@@ -446,7 +476,7 @@
 }
 
 .theme-menu-item.active {
-    background: rgba(37, 99, 235, 0.1);
+    background: rgba(16, 185, 129, 0.12);
     color: var(--primary);
     font-weight: 700;
 }
@@ -471,4 +501,183 @@
     .theme-switcher-btn {
         padding: 0.4rem 0.5rem;
     }
+}
+
+/* 12. Complete Dark Mode Support for Location, CV Builder, Widgets & Notifications */
+[data-theme="dark"] .notification-item--unread {
+    background-color: var(--surface-hover) !important;
+    border-left-color: var(--primary) !important;
+}
+
+[data-theme="dark"] .btn-google {
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] .btn-google:hover {
+    background-color: var(--surface-hover) !important;
+}
+
+/* Hero Search Card on Home */
+[data-theme="dark"] .hero-search-card {
+    background: rgba(19, 27, 46, 0.95) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35) !important;
+}
+[data-theme="dark"] .hero-search-card label,
+[data-theme="dark"] .hero-search-card .form-label {
+    color: var(--text) !important;
+}
+
+/* Large Location Picker (LLP) in Dark Mode */
+[data-theme="dark"] .llp-modal-dialog,
+[data-theme="dark"] .llp-modal-header,
+[data-theme="dark"] .llp-modal-footer,
+[data-theme="dark"] .llp-col-districts,
+[data-theme="dark"] .llp-district-item {
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] .llp-selected-bar,
+[data-theme="dark"] .llp-col-provinces {
+    background-color: var(--bg) !important;
+    border-color: var(--border) !important;
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] .llp-single-selected-bar {
+    background-color: var(--bg) !important;
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] .llp-single-value {
+    color: var(--text) !important;
+}
+[data-theme="dark"] .autocomplete-dropdown {
+    background-color: var(--surface) !important;
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] .autocomplete-item:hover,
+[data-theme="dark"] .autocomplete-item.active {
+    background-color: var(--surface-hover) !important;
+}
+[data-theme="dark"] .autocomplete-item-desc {
+    color: var(--text) !important;
+}
+[data-theme="dark"] .autocomplete-item-chip {
+    background-color: var(--surface) !important;
+    color: var(--text-muted) !important;
+}
+[data-theme="dark"] .llp-province-item {
+    color: var(--text) !important;
+}
+[data-theme="dark"] .llp-province-item:hover {
+    background-color: var(--surface-hover) !important;
+}
+[data-theme="dark"] .llp-province-item.active {
+    background-color: var(--surface) !important;
+    color: var(--primary) !important;
+}
+[data-theme="dark"] .llp-modal-title-text,
+[data-theme="dark"] .llp-district-name,
+[data-theme="dark"] .llp-search-input {
+    color: var(--text) !important;
+    background-color: var(--surface) !important;
+}
+[data-theme="dark"] .llp-search-box {
+    background-color: var(--surface) !important;
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] .llp-search-box input {
+    color: var(--text) !important;
+    background: transparent !important;
+}
+[data-theme="dark"] .llp-chip {
+    background-color: var(--surface-hover) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+/* Location Selector & GPS panels */
+[data-theme="dark"] .loc-method-selector {
+    background-color: var(--bg) !important;
+}
+[data-theme="dark"] .loc-method-btn {
+    color: var(--text-muted) !important;
+}
+[data-theme="dark"] .loc-method-btn.active {
+    background-color: var(--surface) !important;
+    color: var(--primary) !important;
+}
+[data-theme="dark"] .loc-gps-box {
+    background-color: var(--surface) !important;
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] .commute-warning-banner {
+    background-color: var(--warning-light) !important;
+    border-color: var(--warning-border) !important;
+    color: var(--warning-text) !important;
+}
+[data-theme="dark"] .commute-warning-header,
+[data-theme="dark"] .commute-warning-text {
+    color: var(--warning-text) !important;
+}
+[data-theme="dark"] .loc-resolved-preview {
+    background-color: rgba(6, 78, 59, 0.3) !important;
+    border-color: var(--success-border) !important;
+}
+[data-theme="dark"] .loc-resolved-address {
+    color: var(--text) !important;
+}
+[data-theme="dark"] .loc-resolved-tag {
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+/* CV Builder Dark Mode */
+[data-theme="dark"] .cv-editor-form-col,
+[data-theme="dark"] .cv-input,
+[data-theme="dark"] .cv-textarea,
+[data-theme="dark"] .cv-select,
+[data-theme="dark"] .cv-section-btn,
+[data-theme="dark"] .cv-mini-btn,
+[data-theme="dark"] .cv-modal-card {
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] .cv-modal-header,
+[data-theme="dark"] .cv-modal-footer {
+    border-color: var(--border) !important;
+}
+[data-theme="dark"] .cv-modal-header h3 {
+    color: var(--text) !important;
+}
+[data-theme="dark"] .cv-form-label {
+    color: var(--text) !important;
+}
+[data-theme="dark"] .cv-btn-add-item {
+    background-color: var(--surface-hover) !important;
+    border-color: var(--border) !important;
+    color: var(--primary) !important;
+}
+
+/* Job Apply CV readiness in dark mode */
+[data-theme="dark"] #apply-cv-ready {
+    background-color: rgba(6, 78, 59, 0.35) !important;
+    border-color: var(--success-border) !important;
+}
+[data-theme="dark"] #apply-cv-ready strong,
+[data-theme="dark"] #apply-cv-ready div {
+    color: var(--success-text) !important;
+}
+[data-theme="dark"] #apply-cv-missing,
+[data-theme="dark"] #apply-cv-error {
+    background-color: rgba(69, 10, 10, 0.35) !important;
+    border-color: var(--danger-border) !important;
+}
+[data-theme="dark"] #apply-cv-missing strong,
+[data-theme="dark"] #apply-cv-missing div,
+[data-theme="dark"] #apply-cv-error div {
+    color: var(--danger-text) !important;
 }

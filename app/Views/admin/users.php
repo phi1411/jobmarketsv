@@ -2,7 +2,7 @@
 
 <div class="container" style="margin-bottom:3rem;">
     <!-- Filter Bar -->
-    <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+    <div style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
         <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
             <!-- Filter Role -->
             <div style="display:flex;align-items:center;gap:0.5rem;">
@@ -47,19 +47,19 @@
     </div>
 
     <!-- Error State -->
-    <div id="admin-users-error" style="display:none;background:#fff;border-radius:var(--radius);padding:3rem 1.5rem;text-align:center;border:1px solid var(--danger);margin-bottom:2rem;">
-        <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
+    <div id="admin-users-error" style="display:none;background:var(--surface);border-radius:var(--radius);padding:3rem 1.5rem;text-align:center;border:1px solid var(--danger);margin-bottom:2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;color:var(--danger);"><i class="ri-alert-line"></i></div>
         <h3 style="font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không Thể Tải Danh Sách Người Dùng</h3>
         <p id="admin-users-err-msg" style="color:var(--text-muted);margin-bottom:1.5rem;">Đã có lỗi xảy ra khi truy vấn dữ liệu từ API.</p>
         <button onclick="loadAdminUsers(1)" class="btn btn-primary btn-sm">Thử Lại</button>
     </div>
 
     <!-- Users Table Container -->
-    <div id="admin-users-table-card" style="display:none;background:#fff;border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;">
-        <div style="overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
+    <div id="admin-users-table-card" style="display:none;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;">
+        <div class="table-responsive">
+            <table class="data-table" style="width:100%;min-width:640px;border-collapse:collapse;text-align:left;font-size:0.88rem;">
                 <thead>
-                    <tr style="background:#f8fafc;border-bottom:1px solid var(--border);color:var(--dark);font-weight:700;">
+                    <tr style="background:var(--surface-hover);border-bottom:1px solid var(--border);color:var(--dark);font-weight:700;">
                         <th style="padding:1rem 1.25rem;">Họ Và Tên</th>
                         <th style="padding:1rem 1.25rem;">Email</th>
                         <th style="padding:1rem 1.25rem;">Vai Trò</th>
@@ -74,8 +74,8 @@
     </div>
 
     <!-- Empty State -->
-    <div id="admin-users-empty" style="display:none;background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:3.5rem 1.5rem;text-align:center;">
-        <div style="font-size:3rem;margin-bottom:1rem;">👥</div>
+    <div id="admin-users-empty" style="display:none;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:3.5rem 1.5rem;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:1rem;color:var(--text-muted);"><i class="ri-user-search-line"></i></div>
         <h3 style="font-size:1.25rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không Tìm Thấy Người Dùng Nào</h3>
         <p style="color:var(--text-muted);max-width:450px;margin:0 auto 1.5rem;">
             Không có tài khoản nào phù hợp với bộ lọc tìm kiếm hiện tại.
@@ -91,15 +91,15 @@
 
 <!-- Modal: Update User Status -->
 <div id="user-status-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
-    <div style="background:#fff;border-radius:var(--radius);max-width:460px;width:100%;padding:2rem;box-shadow:var(--shadow);">
+    <div class="modal-card" style="background:var(--surface);border-radius:var(--radius);max-width:460px;width:100%;padding:2rem;box-shadow:var(--shadow);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;border-bottom:1px solid var(--border);padding-bottom:0.75rem;">
             <h3 style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:0;">
-                ⚙️ Cập Nhật Trạng Thái Tài Khoản
+                <i class="ri-settings-4-line" style="color:var(--primary);"></i> Cập Nhật Trạng Thái Tài Khoản
             </h3>
             <button type="button" onclick="closeUserStatusModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted);">&times;</button>
         </div>
 
-        <div id="modal-user-summary" style="font-size:0.88rem;color:var(--text);margin-bottom:1.25rem;background:#f8fafc;padding:0.75rem 1rem;border-radius:var(--radius);line-height:1.5;"></div>
+        <div id="modal-user-summary" style="font-size:0.88rem;color:var(--text);margin-bottom:1.25rem;background:var(--bg);padding:0.75rem 1rem;border-radius:var(--radius);line-height:1.5;"></div>
 
         <form onsubmit="handleSaveUserStatus(event)">
             <input type="hidden" id="modal-user-id">
@@ -107,9 +107,9 @@
             <div class="form-group" style="margin-bottom:1.5rem;">
                 <label class="form-label" for="modal-user-status-select">Chọn trạng thái mới <span style="color:var(--danger)">*</span></label>
                 <select id="modal-user-status-select" class="form-control" required style="font-weight:600;">
-                    <option value="active">🟢 Đang hoạt động (Active)</option>
-                    <option value="suspended">🟡 Tạm khóa / Đình chỉ (Suspended)</option>
-                    <option value="banned">🔴 Cấm tài khoản vĩnh viễn (Banned)</option>
+                    <option value="active">Đang hoạt động (Active)</option>
+                    <option value="suspended">Tạm khóa tài khoản (Suspended)</option>
+                    <option value="banned">Cấm vĩnh viễn (Banned)</option>
                 </select>
                 <small style="color:var(--text-muted);font-size:0.78rem;margin-top:0.35rem;display:block;">
                     Lưu ý: Không thể vô hiệu hóa tài khoản Quản trị viên (Admin) đang hoạt động duy nhất của hệ thống.

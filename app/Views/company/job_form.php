@@ -192,7 +192,7 @@ $editingJobId = $jobId ?? "";
                 <div class="job-locations-header">
                     <div>
                         <h3 class="job-locations-title">
-                            <span>📍 Địa Điểm Làm Việc Cụ Thể</span>
+                            <span><i class="ri-map-pin-2-line"></i> Địa Điểm Làm Việc Cụ Thể</span>
                             <span id="locs-count-badge" class="job-locations-counter">0 / 20</span>
                         </h3>
                         <small style="color:var(--text-muted);font-size:0.83rem;">
@@ -209,7 +209,7 @@ $editingJobId = $jobId ?? "";
                 </div>
 
                 <div id="job-locations-empty" style="display:none;padding:1.5rem;text-align:center;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:var(--radius-sm);">
-                    <div style="font-size:1.5rem;margin-bottom:0.35rem;">📍</div>
+                    <div style="font-size:1.5rem;margin-bottom:0.35rem;"><i class="ri-map-pin-2-line"></i></div>
                     <div style="font-weight:600;color:var(--dark);font-size:0.92rem;">Chưa có địa điểm làm việc cụ thể</div>
                     <p style="font-size:0.82rem;color:var(--text-muted);margin:0.25rem auto 0.75rem;max-width:420px;">
                         Nhấn nút <strong>"Thêm địa điểm"</strong> ở trên để thêm cơ sở làm việc qua bản đồ Goong. Tin có địa điểm chính xác sẽ được ưu tiên hiển thị cho sinh viên ở gần.
@@ -246,7 +246,7 @@ $editingJobId = $jobId ?? "";
 
 <!-- Modal: Thêm / Sửa Địa Điểm Làm Việc -->
 <div id="modal-location-form" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:10000;align-items:center;justify-content:center;padding:1rem;" role="dialog" aria-modal="true" aria-labelledby="modal-loc-title">
-    <div style="background:#fff;border-radius:var(--radius);max-width:600px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;box-shadow:var(--shadow);position:relative;">
+    <div class="modal-card" style="background:var(--surface);border-radius:var(--radius);max-width:600px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;box-shadow:var(--shadow);position:relative;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
             <h3 id="modal-loc-title" style="font-size:1.15rem;font-weight:700;color:var(--dark);margin:0;">Thêm Địa Điểm Làm Việc</h3>
             <button type="button" onclick="closeLocationModal()" class="modal-close-btn" aria-label="Đóng">&times;</button>
@@ -299,7 +299,7 @@ $editingJobId = $jobId ?? "";
 
                 <!-- Fields: Địa chỉ hiện hành -->
                 <div id="fields-mode-current">
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
+                    <div class="form-grid-address-2" style="margin-bottom:0.75rem;">
                         <div class="form-group" style="margin:0;">
                             <label class="form-label" style="font-size:0.84rem;">Tỉnh / Thành phố *</label>
                             <select id="manual-curr-province" class="form-control" data-vn-address-group="company-current" data-vn-address-level="province" data-vn-address-schema="current" data-vn-address-autoload>
@@ -321,7 +321,7 @@ $editingJobId = $jobId ?? "";
 
                 <!-- Fields: Địa chỉ cũ -->
                 <div id="fields-mode-legacy" style="display:none;">
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;margin-bottom:0.75rem;">
+                    <div class="form-grid-address-3" style="margin-bottom:0.75rem;">
                         <div class="form-group" style="margin:0;">
                             <label class="form-label" style="font-size:0.84rem;">Tỉnh / TP *</label>
                             <select id="manual-leg-province" class="form-control" data-vn-address-group="company-legacy" data-vn-address-level="province" data-vn-address-schema="legacy">
@@ -349,7 +349,7 @@ $editingJobId = $jobId ?? "";
 
                 <div style="display:flex;justify-content:flex-end;">
                     <button type="button" id="btn-resolve-manual" class="btn btn-outline btn-sm" style="font-weight:600;" onclick="resolveManualAddressModal()">
-                        🔍 Xác thực & Chuẩn hóa địa chỉ
+                        <i class="ri-search-line"></i> Xác thực & Chuẩn hóa địa chỉ
                     </button>
                 </div>
             </div>
@@ -558,7 +558,7 @@ function renderJobLocations() {
                     </div>
                     <div class="location-card-address">${addressText}</div>
                     <div class="location-card-meta">
-                        ${subAddress ? `<span style="font-size:0.8rem;color:var(--text-muted);">📍 ${escapeHtml(subAddress)}</span>` : ''}
+                        ${subAddress ? `<span style="font-size:0.8rem;color:var(--text-muted);"><i class="ri-map-pin-2-line"></i> ${escapeHtml(subAddress)}</span>` : ''}
                         ${legacyDistrict ? `<span class="badge-loc" style="background:#e2e8f0;color:#475569;">${legacyDistrict}</span>` : ''}
                     </div>
                 </div>

@@ -1,9 +1,9 @@
 <?php include __DIR__ . "/nav.php"; ?>
 
 <div class="container" style="margin-bottom:3rem;">
-    <div class="surface-card" style="margin-bottom:1.5rem;padding:1.25rem 1.5rem;background:linear-gradient(135deg,#eff6ff 0%,#ffffff 70%);border-color:#bfdbfe;">
+    <div class="surface-card" style="margin-bottom:1.5rem;padding:1.25rem 1.5rem;background:linear-gradient(135deg,#ecfdf5 0%,#ffffff 70%);border-color:var(--primary-border);">
         <div style="display:flex;gap:1rem;align-items:flex-start;">
-            <div style="width:42px;height:42px;border-radius:12px;background:#2563eb;color:#fff;display:grid;place-items:center;flex:0 0 auto;">
+            <div style="width:42px;height:42px;border-radius:12px;background:var(--primary);color:#fff;display:grid;place-items:center;flex:0 0 auto;">
                 <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
             </div>
             <div>
@@ -50,7 +50,7 @@
 
 <!-- Modal Create Saved Search -->
 <div id="ss-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
-    <div style="background:#fff;border-radius:var(--radius);max-width:520px;width:100%;padding:2rem;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto;">
+    <div class="modal-card" style="background:var(--surface);border-radius:var(--radius);max-width:520px;width:100%;padding:2rem;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
             <h3 style="font-size:1.2rem;font-weight:700;color:var(--dark);margin:0;">Lưu Bộ Lọc Tìm Kiếm</h3>
             <button type="button" onclick="closeCreateModal()" class="modal-close-btn" aria-label="Đóng hộp thoại">&times;</button>
@@ -122,7 +122,7 @@
             </div>
 
             <label style="display:flex;align-items:center;gap:.65rem;margin-bottom:1.25rem;cursor:pointer;color:var(--dark);font-size:.9rem;">
-                <input type="checkbox" id="ss-email-enabled" checked style="width:18px;height:18px;accent-color:#2563eb;">
+                <input type="checkbox" id="ss-email-enabled" checked style="width:18px;height:18px;accent-color:var(--primary);">
                 Gửi thêm thông báo tới email tài khoản
             </label>
 
@@ -231,7 +231,7 @@ async function loadSavedSearches() {
                                 <span class="badge" style="background:${item.notification_enabled ? '#ecfdf5' : '#f1f5f9'};color:${item.notification_enabled ? '#047857' : '#64748b'};">
                                     ${item.notification_enabled ? `Đang báo từ ${parseInt(item.minimum_match_score || 65)}%` : 'Đã tắt thông báo'}
                                 </span>
-                                ${item.notification_enabled && item.email_enabled ? `<span class="badge" style="background:#eff6ff;color:#1d4ed8;">Email: ${getFrequencyLabel(item.frequency)}</span>` : ''}
+                                ${item.notification_enabled && item.email_enabled ? `<span class="badge" style="background:var(--primary-light);color:var(--primary-text);border:1px solid var(--primary-border);">Email: ${getFrequencyLabel(item.frequency)}</span>` : ''}
                                 <span style="font-size:0.75rem;color:var(--text-muted);margin-left:0.5rem;">Tạo ngày: ${formatDate(item.created_at)}</span>
                             </div>
                         </div>

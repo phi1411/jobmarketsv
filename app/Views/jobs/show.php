@@ -21,7 +21,7 @@
                     </div>
                 </div>
 
-                <div style="display:flex;gap:0.75rem;align-items:center;flex-shrink:0;">
+                <div class="detail-actions" style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
                     <button id="btn-report-job" class="btn btn-outline" onclick="openReportJobModal()" style="display:none;color:#b91c1c;border-color:#fecaca;">⚑ Báo cáo tin</button>
                     <button id="btn-favorite" class="btn btn-outline" onclick="handleToggleFavorite()">
                         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
@@ -127,13 +127,13 @@
 
 <!-- Apply Job Modal -->
 <div id="apply-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:9999;align-items:center;justify-content:center;padding:1rem;" role="dialog" aria-modal="true" aria-labelledby="apply-modal-title">
-    <div style="background:#fff;border-radius:var(--radius);max-width:550px;width:100%;padding:1.5rem;box-shadow:var(--shadow);position:relative;max-height:90vh;overflow-y:auto;box-sizing:border-box;">
+    <div class="modal-card" style="background:var(--surface);border-radius:var(--radius);max-width:550px;width:100%;padding:1.5rem;box-shadow:var(--shadow);position:relative;max-height:90vh;overflow-y:auto;box-sizing:border-box;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);">
             <h3 id="apply-modal-title" style="font-size:1.2rem;font-weight:700;color:var(--dark);margin:0;">Ứng Tuyển Việc Làm</h3>
             <button type="button" onclick="closeApplyModal()" class="modal-close-btn" aria-label="Đóng hộp thoại">&times;</button>
         </div>
 
-        <div id="apply-job-info" style="background:#f8fafc;border-radius:var(--radius-sm);padding:0.75rem 1rem;margin-bottom:1.25rem;border:1px solid var(--border);">
+        <div id="apply-job-info" style="background:var(--bg);border-radius:var(--radius-sm);padding:0.75rem 1rem;margin-bottom:1.25rem;border:1px solid var(--border);">
             <div id="apply-modal-job-title" style="font-weight:700;color:var(--dark);font-size:0.95rem;"></div>
             <div id="apply-modal-company" style="font-size:0.85rem;color:var(--text-muted);"></div>
         </div>
@@ -158,7 +158,7 @@
             <!-- Missing State (No active CV) -->
             <div id="apply-cv-missing" style="display:none;padding:0.85rem 1rem;background:#fef2f2;border:1px solid #fca5a5;border-left:4px solid #ef4444;border-radius:var(--radius-sm);">
                 <div style="font-size:0.9rem;font-weight:700;color:#991b1b;display:flex;align-items:center;gap:0.5rem;">
-                    <span>⚠️</span>
+                    <span><i class="ri-alert-line"></i></span>
                     <span>Bạn chưa có CV trong hồ sơ</span>
                 </div>
                 <div style="font-size:0.82rem;color:#b91c1c;margin:0.35rem 0 0.6rem;line-height:1.4;">
@@ -174,7 +174,7 @@
             <!-- Error State (API or network error) -->
             <div id="apply-cv-error" style="display:none;padding:0.85rem 1rem;background:#fff1f2;border:1px solid #fecdd3;border-left:4px solid #e11d48;border-radius:var(--radius-sm);">
                 <div style="font-size:0.9rem;font-weight:700;color:#9f1239;display:flex;align-items:center;gap:0.5rem;">
-                    <span>⚠️</span>
+                    <span><i class="ri-alert-line"></i></span>
                     <span>Không thể kiểm tra tệp CV</span>
                 </div>
                 <div id="apply-cv-error-msg" style="font-size:0.82rem;color:#be123c;margin:0.35rem 0 0.5rem;line-height:1.4;">
@@ -197,13 +197,13 @@
             <!-- Soft Commute Warning (is_far === true) -->
             <div id="commute-warning-box" class="commute-warning-banner" style="display:none;">
                 <div class="commute-warning-header">
-                    <span>⚠️</span>
+                    <span><i class="ri-alert-line"></i></span>
                     <span>Lưu ý về khoảng cách di chuyển</span>
                 </div>
                 <div id="commute-warning-message" class="commute-warning-text"></div>
                 <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
                     <button type="button" id="btn-route-distance" class="commute-action-link" onclick="checkRealRouteDistance()">
-                        🏍️ Xem quãng đường thực tế (Xe máy)
+                        <i class="ri-motorbike-line"></i> Xem quãng đường thực tế (Xe máy)
                     </button>
                     <span style="font-size:0.78rem;color:#92400e;">(Bạn vẫn có thể ứng tuyển)</span>
                 </div>
@@ -212,11 +212,11 @@
             <!-- Near Distance Info (is_far === false) -->
             <div id="commute-near-box" style="display:none;padding:0.65rem 0.9rem;background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #10b981;border-radius:var(--radius-sm);margin-bottom:0.75rem;">
                 <div style="font-size:0.85rem;color:#166534;font-weight:600;display:flex;align-items:center;gap:0.4rem;">
-                    <span>📍</span>
+                    <span><i class="ri-map-pin-2-line"></i></span>
                     <span id="commute-near-text"></span>
                 </div>
                 <button type="button" id="btn-route-distance-near" class="commute-action-link" style="margin-top:0.35rem;display:inline-block;color:#15803d;" onclick="checkRealRouteDistance()">
-                    🏍️ Xem quãng đường thực tế (Xe máy)
+                    <i class="ri-motorbike-line"></i> Xem quãng đường thực tế (Xe máy)
                 </button>
             </div>
 
@@ -226,7 +226,7 @@
                     Cho phép truy cập vị trí để kiểm tra khoảng cách đi làm.
                 </div>
                 <button type="button" id="btn-commute-check" class="btn btn-outline btn-sm" onclick="triggerCommuteCheck()" style="font-size:0.82rem;padding:0.35rem 0.75rem;display:inline-flex;align-items:center;gap:0.35rem;">
-                    <span>📍</span> <span>Kiểm tra khoảng cách đi làm từ vị trí của bạn</span>
+                    <span><i class="ri-map-pin-2-line"></i></span> <span>Kiểm tra khoảng cách đi làm từ vị trí của bạn</span>
                 </button>
             </div>
         </div>
@@ -318,10 +318,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             ? `${job.minimum_age}–${job.maximum_age} tuổi`
             : (job.minimum_age ? `Từ ${job.minimum_age} tuổi` : (job.maximum_age ? `Đến ${job.maximum_age} tuổi` : null));
         document.getElementById("job-badges-header").innerHTML = `
-            <span class="badge badge-salary" style="font-size:0.85rem;padding:0.35rem 0.75rem;">💰 ${formatCurrency(job.salary_min)} - ${formatCurrency(job.salary_max)}</span>
-            <span class="badge badge-shift" style="font-size:0.85rem;padding:0.35rem 0.75rem;">⏰ ${job.shift_type ? getShiftLabel(job.shift_type) : "Không yêu cầu ca cố định"}</span>
-            ${ageRequirement ? `<span class="badge" style="font-size:0.85rem;padding:0.35rem 0.75rem;background:#fdf2f8;color:#9d174d;">🎂 ${escapeHtml(ageRequirement)}</span>` : ""}
-            <span class="badge badge-location" style="font-size:0.85rem;padding:0.35rem 0.75rem;">📍 ${escapeHtml(job.location_name || job.city || "Hà Nội")}</span>
+            <span class="badge badge-salary" style="font-size:0.85rem;padding:0.35rem 0.75rem;"><i class="ri-money-dollar-circle-line"></i> ${formatCurrency(job.salary_min)} - ${formatCurrency(job.salary_max)}</span>
+            <span class="badge badge-shift" style="font-size:0.85rem;padding:0.35rem 0.75rem;"><i class="ri-time-line"></i> ${job.shift_type ? getShiftLabel(job.shift_type) : "Không yêu cầu ca cố định"}</span>
+            ${ageRequirement ? `<span class="badge" style="font-size:0.85rem;padding:0.35rem 0.75rem;background:#fdf2f8;color:#9d174d;"><i class="ri-cake-2-line"></i> ${escapeHtml(ageRequirement)}</span>` : ""}
+            <span class="badge badge-location" style="font-size:0.85rem;padding:0.35rem 0.75rem;"><i class="ri-map-pin-2-line"></i> ${escapeHtml(job.location_name || job.city || "Hà Nội")}</span>
         `;
 
         // Content
@@ -344,7 +344,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderJobDetailLocations(job.work_locations || []);
     } else {
         document.getElementById("job-detail-loading").innerHTML = `
-            <div class="empty-state" style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);margin-top:2rem;">
+            <div class="empty-state" style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);margin-top:2rem;">
                 <div class="empty-icon">❌</div>
                 <h2>Việc làm không tồn tại hoặc đã đóng</h2>
                 <p>Tin tuyển dụng này có thể đã hết hạn nộp hoặc đã được nhà tuyển dụng tạm đóng.</p>
@@ -436,13 +436,13 @@ function renderJobDetailLocations(locations) {
                     </div>
                     <div class="location-card-address">${addressText}</div>
                     <div class="location-card-meta">
-                        ${subAddress ? `<span style="font-size:0.8rem;color:var(--text-muted);">📍 ${escapeHtml(subAddress)}</span>` : ''}
+                        ${subAddress ? `<span style="font-size:0.8rem;color:var(--text-muted);"><i class="ri-map-pin-2-line"></i> ${escapeHtml(subAddress)}</span>` : ''}
                         ${legacyDistrict ? `<span class="badge-loc" style="background:#e2e8f0;color:#475569;">${legacyDistrict}</span>` : ''}
                     </div>
                 </div>
                 <div class="location-card-actions">
                     <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="btn-loc-action" style="text-decoration:none;" title="Mở trên bản đồ">
-                        🗺️ Xem trên bản đồ
+                        <i class="ri-map-2-line"></i> Xem trên bản đồ
                     </a>
                 </div>
             </div>
@@ -502,7 +502,7 @@ function renderGoongJobMap(locations) {
         const lngLat = [Number(loc.longitude), Number(loc.latitude)];
         const branchName = loc.branch_name || `Cơ sở ${idx + 1}`;
         const popupHtml = `<div class="job-map-popup"><strong>${escapeHtml(branchName)}</strong><br>${escapeHtml(loc.address_text || "")}</div>`;
-        new window.goongjs.Marker({ color: loc.is_primary ? "#2563eb" : "#10b981" })
+        new window.goongjs.Marker({ color: loc.is_primary ? "#059669" : "#10b981" })
             .setLngLat(lngLat)
             .setPopup(new window.goongjs.Popup({ offset: 22 }).setHTML(popupHtml))
             .addTo(jobDetailMap);
@@ -925,7 +925,7 @@ function showPostApplyNoConsentBanner() {
     banner.innerHTML = `
         <div style="background:#f8fafc;border:1px solid var(--border);border-left:4px solid #64748b;border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
             <div style="font-size:0.88rem;color:var(--text);">
-                ℹ️ <strong>Bạn chưa bật phân tích AI cho đơn ứng tuyển này.</strong> Bạn có thể theo dõi tiến độ xét duyệt hồ sơ trong mục <a href="/student/applications" style="font-weight:600;text-decoration:underline;">Ứng tuyển của tôi</a>.
+                <i class="ri-information-line"></i> <strong>Bạn chưa bật phân tích AI cho đơn ứng tuyển này.</strong> Bạn có thể theo dõi tiến độ xét duyệt hồ sơ trong mục <a href="/student/applications" style="font-weight:600;text-decoration:underline;">Ứng tuyển của tôi</a>.
             </div>
             <button type="button" class="btn btn-outline btn-sm" style="font-size:0.78rem;padding:0.25rem 0.5rem;" onclick="document.getElementById('apply-match-banner').style.display='none'">Đóng</button>
         </div>
@@ -941,11 +941,11 @@ async function triggerPostApplyMatchAnalysis(applicationId) {
     // Lightweight loading indicator without blocking UI
     banner.style.display = "block";
     banner.innerHTML = `
-        <div aria-live="polite" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:center;gap:0.75rem;">
-            <div class="spinner" style="width:20px;height:20px;border:3px solid #bfdbfe;border-top-color:#2563eb;border-radius:50%;animation:spin 1s linear infinite;"></div>
+        <div aria-live="polite" style="background:var(--primary-light);border:1px solid var(--primary-border);border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:center;gap:0.75rem;">
+            <div class="spinner" style="width:20px;height:20px;border:3px solid var(--primary-border);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;"></div>
             <div>
-                <strong style="color:#1e40af;font-size:0.95rem;">Đang phân tích độ phù hợp với công việc...</strong>
-                <div style="font-size:0.82rem;color:#3b82f6;margin-top:0.2rem;">Hệ thống AI đang đối chiếu an toàn hồ sơ của bạn với vị trí này.</div>
+                <strong style="color:var(--primary-text);font-size:0.95rem;">Đang phân tích độ phù hợp với công việc...</strong>
+                <div style="font-size:0.82rem;color:var(--primary);margin-top:0.2rem;">Hệ thống AI đang đối chiếu an toàn hồ sơ của bạn với vị trí này.</div>
             </div>
         </div>
     `;
@@ -978,7 +978,7 @@ async function pollPostApplyMatchAnalysis(applicationId) {
         const banner = document.getElementById("apply-match-banner");
         if (banner) {
             banner.innerHTML = `
-                <div style="background:#f8fafc;border:1px solid var(--border);border-left:4px solid #3b82f6;border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+                <div style="background:#f8fafc;border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
                     <div style="font-size:0.88rem;color:var(--text);">
                         ⏳ Phân tích độ phù hợp đang được xử lý trong nền. Bạn có thể theo dõi kết quả trong mục <a href="/student/applications" style="font-weight:600;text-decoration:underline;">Ứng tuyển của tôi</a>.
                     </div>
@@ -1048,7 +1048,7 @@ function renderPostApplyMatchResult(data) {
                 ${escapeHtml(summary)}
             </p>
             <div style="font-size:0.8rem;color:#64748b;background:#f8fafc;padding:0.6rem 0.85rem;border-radius:var(--radius-sm);border:1px solid #e2e8f0;margin-bottom:0.75rem;line-height:1.4;">
-                ⚠️ <em>Điểm phù hợp chỉ phản ánh mức độ khớp giữa dữ liệu hồ sơ hiện có và yêu cầu công việc. Đây không phải xác suất được tuyển và không thay thế quyết định của nhà tuyển dụng.</em>
+                <i class="ri-alert-line"></i> <em>Điểm phù hợp chỉ phản ánh mức độ khớp giữa dữ liệu hồ sơ hiện có và yêu cầu công việc. Đây không phải xác suất được tuyển và không thay thế quyết định của nhà tuyển dụng.</em>
             </div>
             <div style="text-align:right;">
                 <a href="/student/applications" class="btn btn-outline btn-sm" style="font-size:0.85rem;">
@@ -1065,7 +1065,7 @@ function renderPostApplyFallback() {
     banner.innerHTML = `
         <div style="background:#f8fafc;border:1px solid var(--border);border-left:4px solid #94a3b8;border-radius:var(--radius);padding:0.85rem 1.15rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
             <div style="font-size:0.88rem;color:var(--text);">
-                ℹ️ Phân tích độ phù hợp tạm thời không khả dụng, bạn có thể xem lại sau trong mục <a href="/student/applications" style="font-weight:600;text-decoration:underline;">Ứng tuyển của tôi</a>.
+                <i class="ri-information-line"></i> Phân tích độ phù hợp tạm thời không khả dụng, bạn có thể xem lại sau trong mục <a href="/student/applications" style="font-weight:600;text-decoration:underline;">Ứng tuyển của tôi</a>.
             </div>
             <button type="button" class="btn btn-outline btn-sm" style="font-size:0.78rem;padding:0.25rem 0.5rem;" onclick="document.getElementById('apply-match-banner').style.display='none'">Đóng</button>
         </div>
@@ -1098,7 +1098,7 @@ async function handleToggleFavorite() {
         const btn = document.getElementById("btn-favorite");
         btn.classList.remove("btn-outline");
         btn.classList.add("btn-secondary");
-        btn.innerHTML = `❤️ Đã lưu`;
+        btn.innerHTML = `<i class="ri-heart-fill"></i> Đã lưu`;
     } else {
         showToast(res && res.message ? res.message : "Không thể lưu việc làm.", "error");
     }

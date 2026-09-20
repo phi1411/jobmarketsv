@@ -1,7 +1,7 @@
 <?php
 
-define("LOADED", true);
-define("BASE_PATH", dirname(__DIR__));
+defined("LOADED") || define("LOADED", true);
+defined("BASE_PATH") || define("BASE_PATH", dirname(__DIR__));
 
 require_once dirname(__DIR__) . "/vendor/autoload.php";
 

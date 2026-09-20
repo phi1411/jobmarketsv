@@ -2,7 +2,7 @@
 
 <div class="container" style="margin-bottom:3rem;">
     <!-- Filter Bar -->
-    <div style="background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+    <div style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
         <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
             <!-- Filter Action -->
             <div style="display:flex;align-items:center;gap:0.5rem;">
@@ -41,19 +41,19 @@
     </div>
 
     <!-- Error State -->
-    <div id="admin-audit-error" style="display:none;background:#fff;border-radius:var(--radius);padding:3rem 1.5rem;text-align:center;border:1px solid var(--danger);margin-bottom:2rem;">
-        <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
+    <div id="admin-audit-error" style="display:none;background:var(--surface);border-radius:var(--radius);padding:3rem 1.5rem;text-align:center;border:1px solid var(--danger);margin-bottom:2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;color:var(--danger);"><i class="ri-alert-line"></i></div>
         <h3 style="font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không Thể Tải Nhật Ký Quản Trị</h3>
         <p id="admin-audit-err-msg" style="color:var(--text-muted);margin-bottom:1.5rem;">Đã có lỗi xảy ra khi truy vấn dữ liệu audit logs.</p>
         <button onclick="loadAdminAuditLogs(1)" class="btn btn-primary btn-sm">Thử Lại</button>
     </div>
 
     <!-- Audit Logs Table -->
-    <div id="admin-audit-table-card" style="display:none;background:#fff;border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;">
-        <div style="overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
+    <div id="admin-audit-table-card" style="display:none;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;">
+        <div class="table-responsive">
+            <table class="data-table" style="width:100%;min-width:640px;border-collapse:collapse;text-align:left;font-size:0.88rem;">
                 <thead>
-                    <tr style="background:#f8fafc;border-bottom:1px solid var(--border);color:var(--dark);font-weight:700;">
+                    <tr style="background:var(--surface-hover);border-bottom:1px solid var(--border);color:var(--dark);font-weight:700;">
                         <th style="padding:1rem 1.25rem;">Thời Gian</th>
                         <th style="padding:1rem 1.25rem;">Quản Trị Viên</th>
                         <th style="padding:1rem 1.25rem;">Hành Động</th>
@@ -67,8 +67,8 @@
     </div>
 
     <!-- Empty State -->
-    <div id="admin-audit-empty" style="display:none;background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:3.5rem 1.5rem;text-align:center;">
-        <div style="font-size:3rem;margin-bottom:1rem;">📜</div>
+    <div id="admin-audit-empty" style="display:none;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:3.5rem 1.5rem;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:1rem;color:var(--text-muted);"><i class="ri-file-list-3-line"></i></div>
         <h3 style="font-size:1.25rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không Có Nhật Ký Thao Tác Nào</h3>
         <p style="color:var(--text-muted);max-width:450px;margin:0 auto;">
             Chưa có thao tác quản trị nào được ghi nhận với bộ lọc này.
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function getActionBadge(action) {
     if (action === "moderate_job") {
-        return `<span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:700;font-size:0.78rem;">Kiểm duyệt việc làm</span>`;
+        return `<span class="badge" style="background:var(--primary-light);color:var(--primary-text);border:1px solid var(--primary-border);font-weight:700;font-size:0.78rem;">Kiểm duyệt việc làm</span>`;
     } else if (action === "verify_company") {
         return `<span class="badge" style="background:#fef3c7;color:#92400e;font-weight:700;font-size:0.78rem;">Xác thực công ty</span>`;
     } else if (action === "update_user_status") {

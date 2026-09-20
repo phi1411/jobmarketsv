@@ -4,12 +4,12 @@
         <p class="auth-subtitle">Tham gia nền tảng kết nối việc làm part-time hàng đầu</p>
 
         <!-- Role Selector Tabs -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.25rem;background:var(--bg);padding:0.35rem;border-radius:var(--radius-sm);border:1px solid var(--border);">
-            <button type="button" id="tab-student" class="btn btn-sm btn-primary" onclick="setRegisterRole('student')">
-                🎓 Sinh viên tìm việc
+        <div class="auth-role-tabs" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:0.5rem;margin-bottom:1.25rem;background:var(--bg);padding:0.35rem;border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <button type="button" id="tab-student" class="btn btn-sm btn-primary" onclick="setRegisterRole('student')" style="display:inline-flex;align-items:center;justify-content:center;gap:0.4rem;">
+                <i class="ri-user-line"></i> Sinh viên tìm việc
             </button>
-            <button type="button" id="tab-company" class="btn btn-sm btn-outline" onclick="setRegisterRole('company')">
-                🏢 Nhà tuyển dụng
+            <button type="button" id="tab-company" class="btn btn-sm btn-outline" onclick="setRegisterRole('company')" style="display:inline-flex;align-items:center;justify-content:center;gap:0.4rem;">
+                <i class="ri-building-line"></i> Nhà tuyển dụng
             </button>
         </div>
 

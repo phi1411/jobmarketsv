@@ -14,8 +14,8 @@
     </div>
 
     <!-- Error State -->
-    <div id="comp-dash-error" style="display:none;background:#fff;border-radius:var(--radius);padding:3rem 1.5rem;text-align:center;border:1px solid var(--danger);margin-bottom:2rem;">
-        <div style="font-size:3rem;margin-bottom:1rem;">⚠️</div>
+    <div id="comp-dash-error" style="display:none;background:var(--surface);border-radius:var(--radius);padding:3rem 1.5rem;text-align:center;border:1px solid var(--danger);margin-bottom:2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;color:var(--danger);"><i class="ri-alert-line"></i></div>
         <h2 style="font-size:1.4rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không Thể Tải Bảng Điều Khiển</h2>
         <p id="comp-dash-err-msg" style="color:var(--text-muted);max-width:500px;margin:0 auto 1.5rem;">Đã xảy ra lỗi khi lấy dữ liệu tổng quan nhà tuyển dụng.</p>
         <button onclick="loadCompanyDashboard()" class="btn btn-primary btn-sm">Thử Lại</button>
@@ -285,7 +285,7 @@ async function loadCompanyDashboard() {
             recentEmpty.style.display = "none";
 
             recentContainer.innerHTML = `
-                <table style="width:100%;border-collapse:collapse;font-size:0.9rem;text-align:left;">
+                <table style="width:100%;min-width:620px;border-collapse:collapse;font-size:0.9rem;text-align:left;">
                     <thead>
                         <tr style="border-bottom:2px solid var(--border);color:var(--text-muted);font-size:0.8rem;text-transform:uppercase;">
                             <th style="padding:0.75rem 0.5rem;">Ứng viên</th>

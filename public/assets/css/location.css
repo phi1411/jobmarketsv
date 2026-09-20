@@ -43,8 +43,8 @@
 }
 
 .autocomplete-input:focus {
-    border-color: var(--primary, #2563eb);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    border-color: var(--primary);
+    box-shadow: var(--focus-ring);
 }
 
 .autocomplete-input:disabled {
@@ -85,7 +85,7 @@
     width: 16px;
     height: 16px;
     border: 2px solid #e2e8f0;
-    border-top-color: var(--primary, #2563eb);
+    border-top-color: var(--primary);
     border-radius: 50%;
     animation: ac-spin 0.6s linear infinite;
     pointer-events: none;
@@ -207,7 +207,7 @@
     padding: 0.2rem 0.55rem;
     border-radius: 12px;
     background: #eff6ff;
-    color: var(--primary, #2563eb);
+    color: var(--primary);
     font-weight: 700;
 }
 
@@ -230,9 +230,9 @@
 }
 
 .location-card.is-primary {
-    border-color: #93c5fd;
-    background: #f0f7ff;
-    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.08);
+    border-color: var(--primary-border);
+    background: var(--primary-light);
+    box-shadow: 0 1px 3px rgba(5, 150, 105, 0.1);
 }
 
 .location-card-info {
@@ -277,9 +277,9 @@
 }
 
 .badge-loc-primary {
-    background: #dbeafe;
-    color: #1d4ed8;
-    border: 1px solid #bfdbfe;
+    background: var(--primary-light);
+    color: var(--primary-text);
+    border: 1px solid var(--primary-border);
 }
 
 .badge-loc-verified {
@@ -329,8 +329,8 @@
 
 .btn-set-primary {
     background: transparent;
-    border: 1px dashed #93c5fd;
-    color: var(--primary, #2563eb);
+    border: 1px dashed var(--primary-border);
+    color: var(--primary);
     padding: 0.35rem 0.65rem;
     font-size: 0.78rem;
     font-weight: 600;
@@ -339,7 +339,7 @@
 }
 
 .btn-set-primary:hover {
-    background: #eff6ff;
+    background: var(--primary-light);
     border-style: solid;
 }
 
@@ -352,28 +352,28 @@
     font-size: 0.875rem;
     font-weight: 700;
     border-radius: var(--radius, 8px);
-    border: 1.5px solid #2563eb;
-    background: #eff6ff;
-    color: #1d4ed8;
+    border: 1.5px solid var(--primary);
+    background: var(--primary-light);
+    color: var(--primary-text);
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
     font-family: inherit;
-    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.08);
+    box-shadow: 0 1px 2px rgba(5, 150, 105, 0.1);
 }
 
 .nearby-cta-btn:hover {
-    background: #2563eb;
+    background: var(--primary);
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
 }
 
 .nearby-cta-btn.active,
 .quick-pill-nearby.active {
-    background: #2563eb !important;
+    background: var(--primary) !important;
     color: #ffffff !important;
-    border-color: #1d4ed8 !important;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
+    border-color: var(--primary-hover) !important;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3) !important;
 }
 
 .nearby-filter-bar {
@@ -416,14 +416,14 @@
 }
 
 .radius-chip:hover {
-    border-color: var(--primary, #2563eb);
-    color: var(--primary, #2563eb);
+    border-color: var(--primary);
+    color: var(--primary);
 }
 
 .radius-chip.active {
-    background: var(--primary, #2563eb);
+    background: var(--primary);
     color: #ffffff;
-    border-color: var(--primary, #2563eb);
+    border-color: var(--primary);
 }
 
 .nearby-privacy-notice {
@@ -453,9 +453,9 @@
 
 /* Distance Badges on Job Cards */
 .topcv-pill-distance {
-    background: #eff6ff;
-    color: #1d4ed8;
-    border: 1px solid #bfdbfe;
+    background: var(--primary-light);
+    color: var(--primary-text);
+    border: 1px solid var(--primary-border);
     font-weight: 700;
 }
 
@@ -1222,6 +1222,18 @@
     .llp-district-list {
         grid-template-columns: 1fr;
     }
+    .llp-modal-footer {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+    .llp-footer-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .llp-footer-right .btn {
+        flex: 1;
+    }
 }
 
 /* ==========================================================================
@@ -1399,3 +1411,17 @@
     border-radius: 4px;
 }
 
+
+/* Touch targets for mobile */
+@media (pointer: coarse) {
+    .autocomplete-clear-btn,
+    .llp-btn-close,
+    .preferred-loc-chip .remove-chip-btn,
+    .llp-chip-remove {
+        min-width: 44px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}

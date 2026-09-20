@@ -19,7 +19,12 @@ class Kernel
         }
 
         // 1. If client requests HTML (browser navigation), check Web Routes first
-        if ($request->wantsHtml()) {
+        $isHead = $request->getMethod() === "HEAD";
+        $effectiveMethod = $isHead ? "GET" : $request->getMethod();
+        $accept = $request->server["HTTP_ACCEPT"] ?? "";
+        $prefersJson = str_contains($accept, "application/json") && !str_contains($accept, "text/html");
+
+        if ($request->wantsHtml() || (!$prefersJson && in_array($effectiveMethod, ["GET", "HEAD"]))) {
             $webDispatcher = \FastRoute\simpleDispatcher(function (RouteCollector $routeCollector) {
                 $webRoutes = include BASE_PATH . "/app/Routes/web.php";
                 foreach ($webRoutes as $route) {
@@ -28,10 +33,9 @@ class Kernel
             });
 
             $webRouteInfo = $webDispatcher->dispatch(
-                $request->getMethod(),
+                $effectiveMethod,
                 $request->getPathInfo()
             );
-
             if ($webRouteInfo[0] === Dispatcher::FOUND) {
                 $handler = $webRouteInfo[1];
                 $vars = $webRouteInfo[2];

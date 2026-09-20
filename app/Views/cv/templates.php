@@ -12,10 +12,10 @@
         <!-- Quick Filter Pills -->
         <div class="cv-filter-bar" id="cv-template-filters" role="tablist" aria-label="Bộ lọc mẫu CV">
             <button type="button" class="cv-filter-pill active" data-filter="all" role="tab" aria-selected="true">
-                <span>⚡ Tất Cả Mẫu</span>
+                <span><i class="ri-apps-line"></i> Tất Cả Mẫu</span>
             </button>
             <button type="button" class="cv-filter-pill" data-filter="student" role="tab" aria-selected="false">
-                <span>🎓 Sinh Viên</span>
+                <span><i class="ri-graduation-cap-line"></i> Sinh Viên</span>
             </button>
             <button type="button" class="cv-filter-pill" data-filter="ats" role="tab" aria-selected="false">
                 <span>🤖 Chuẩn ATS</span>
@@ -90,7 +90,7 @@
         <div class="cv-modal-footer">
             <button type="button" class="btn btn-outline btn-sm" onclick="closePreviewTemplateModal()">Đóng</button>
             <button type="button" id="btn-modal-use-template" class="btn btn-primary btn-sm">
-                ⚡ Dùng Mẫu Này
+                <i class="ri-file-edit-line"></i> Dùng Mẫu Này
             </button>
         </div>
     </div>

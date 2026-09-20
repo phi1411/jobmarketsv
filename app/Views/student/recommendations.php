@@ -40,7 +40,7 @@
     .match-score {
         width: 66px; height: 66px; flex: 0 0 66px; border-radius: 50%; display: grid;
         place-items: center; text-align: center; color: #fff; font-weight: 800; line-height: 1.05;
-        background: linear-gradient(145deg, #2563eb, #16a34a); box-shadow: 0 8px 20px rgba(37, 99, 235, .18);
+        background: linear-gradient(145deg, var(--primary), var(--secondary)); box-shadow: 0 8px 20px rgba(5, 150, 105, .25);
     }
     .match-score span { display: block; font-size: 1.08rem; }
     .match-score small { font-size: .58rem; font-weight: 700; opacity: .92; }
@@ -48,7 +48,7 @@
         display: inline-flex; align-items: center; width: fit-content; padding: .3rem .65rem;
         border-radius: 999px; background: #dcfce7; color: #166534; font-size: .76rem; font-weight: 800;
     }
-    .match-label.good { background: #dbeafe; color: #1d4ed8; }
+    .match-label.good { background: var(--primary-light); color: var(--primary-text); }
     .match-label.review { background: #fef3c7; color: #92400e; }
     .job-meta { display: flex; flex-wrap: wrap; gap: .45rem; }
     .match-reasons { margin: 0; padding: .8rem .9rem; list-style: none; border-radius: 10px; background: #f8fafc; }
@@ -58,18 +58,18 @@
     .match-consideration { color: #92400e; background: #fffbeb; border-radius: 8px; padding: .55rem .7rem; font-size: .78rem; line-height: 1.45; }
     .coverage-row { display: flex; justify-content: space-between; align-items: center; gap: .75rem; color: var(--text-muted); font-size: .73rem; }
     .coverage-track { height: 5px; flex: 1; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
-    .coverage-fill { height: 100%; border-radius: inherit; background: #60a5fa; }
+    .coverage-fill { height: 100%; border-radius: inherit; background: var(--primary); }
     .match-explanation-toggle {
         width: 100%; display: flex; align-items: center; justify-content: space-between; gap: .75rem;
-        padding: .7rem .8rem; border: 1px solid #bfdbfe; border-radius: 10px; background: #eff6ff;
-        color: #1d4ed8; font: inherit; font-size: .82rem; font-weight: 800; cursor: pointer;
+        padding: .7rem .8rem; border: 1px solid var(--primary-border); border-radius: 10px; background: var(--primary-light);
+        color: var(--primary-text); font: inherit; font-size: .82rem; font-weight: 800; cursor: pointer;
     }
-    .match-explanation-toggle:hover { background: #dbeafe; }
+    .match-explanation-toggle:hover { background: #d1fae5; }
     .match-explanation-toggle .toggle-icon { transition: transform .18s ease; }
     .match-explanation-toggle[aria-expanded="true"] .toggle-icon { transform: rotate(180deg); }
     .match-explanation[hidden] { display: none; }
     .match-explanation {
-        padding: .9rem; border: 1px solid #dbeafe; border-radius: 12px; background: #fff;
+        padding: .9rem; border: 1px solid var(--primary-border); border-radius: 12px; background: #fff;
         display: flex; flex-direction: column; gap: .9rem;
     }
     .match-explanation-title { margin: 0; color: var(--dark); font-size: .9rem; }
@@ -105,6 +105,44 @@
         .recommendation-grid { grid-template-columns: 1fr; }
         .skill-breakdown { grid-template-columns: 1fr; }
     }
+    [data-theme="dark"] .recommendation-hero {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+        border-color: var(--border);
+    }
+    [data-theme="dark"] .recommendation-hero p { color: var(--text-muted); }
+    [data-theme="dark"] .match-explanation {
+        background: var(--surface);
+        border-color: var(--border);
+    }
+    [data-theme="dark"] .match-explanation-toggle {
+        background: var(--surface-hover);
+        border-color: var(--border);
+        color: var(--primary-text);
+    }
+    [data-theme="dark"] .match-reasons {
+        background: var(--bg);
+    }
+    [data-theme="dark"] .match-consideration {
+        background: var(--warning-light);
+        color: var(--warning-text);
+    }
+    [data-theme="dark"] .improvement-box {
+        background: var(--warning-light);
+        border-color: var(--warning-border);
+    }
+    [data-theme="dark"] .improvement-box h5 { color: var(--warning-text); }
+    [data-theme="dark"] .improvement-list { color: var(--text); }
+    [data-theme="dark"] .skill-breakdown-box.missing {
+        background: var(--danger-light);
+        color: var(--danger-text);
+    }
+    [data-theme="dark"] .skill-breakdown-box.matched {
+        background: var(--success-light);
+        color: var(--success-text);
+    }
+    [data-theme="dark"] .score-note {
+        border-top-color: var(--border);
+    }
 </style>
 
 <div class="container" style="margin-bottom:3rem;">
@@ -120,7 +158,7 @@
 
     <section class="surface-card" style="padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;" aria-labelledby="personal-alert-title">
         <div style="display:flex;align-items:flex-start;gap:.8rem;flex:1;min-width:280px;">
-            <div style="width:38px;height:38px;border-radius:10px;background:#dbeafe;color:#2563eb;display:grid;place-items:center;flex:0 0 auto;">
+            <div style="width:38px;height:38px;border-radius:10px;background:var(--primary-light);color:var(--primary);display:grid;place-items:center;flex:0 0 auto;">
                 <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
             </div>
             <div>
@@ -130,10 +168,10 @@
         </div>
         <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
             <label style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--dark);cursor:pointer;">
-                <input type="checkbox" id="personal-alert-enabled" style="width:17px;height:17px;accent-color:#2563eb;"> Bật thông báo
+                <input type="checkbox" id="personal-alert-enabled" style="width:17px;height:17px;accent-color:var(--primary);"> Bật thông báo
             </label>
             <label style="display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--dark);cursor:pointer;">
-                <input type="checkbox" id="personal-alert-email" style="width:17px;height:17px;accent-color:#2563eb;"> Gửi email
+                <input type="checkbox" id="personal-alert-email" style="width:17px;height:17px;accent-color:var(--primary);"> Gửi email
             </label>
             <select id="personal-alert-score" class="form-control" style="width:auto;padding:.5rem .7rem;font-size:.8rem;" aria-label="Ngưỡng thông báo cá nhân hóa">
                 <option value="50">Từ 50%</option>
@@ -347,7 +385,7 @@ function renderRecommendationCard(job, index) {
             </div>
 
             <button type="button" class="match-explanation-toggle" aria-expanded="false" aria-controls="${explanationId}" onclick="toggleMatchExplanation('${explanationId}', this)">
-                <span>🔎 Vì sao phù hợp ${score}%?</span>
+                <span style="display:inline-flex;align-items:center;gap:0.35rem;"><i class="ri-sparkling-fill" style="color:var(--primary);"></i> Vì sao phù hợp ${score}%?</span>
                 <span class="toggle-icon" aria-hidden="true">⌄</span>
             </button>
             <div id="${explanationId}" class="match-explanation" hidden>
