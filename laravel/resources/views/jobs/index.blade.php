@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Việc Làm Part-Time | JobMarketSV Laravel')
+@section('title', 'Việc Làm Part-Time | JobMarketSV')
 
 @section('content')
     <form class="migration-filter" method="get" action="{{ route('jobs.index') }}">

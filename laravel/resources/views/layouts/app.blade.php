@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
-    <title>@yield('title', 'JobMarketSV Laravel')</title>
+    <title>@yield('title', 'JobMarketSV')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,11 +16,9 @@
     </style>
 </head>
 <body>
-    <div class="migration-banner">Bản Laravel thử nghiệm • Chỉ đọc database bản sao • Production không bị ảnh hưởng</div>
     <header class="migration-header">
         <div class="migration-shell migration-nav">
             <a class="migration-logo" href="{{ route('jobs.index') }}"><i class="ri-briefcase-4-line"></i> JobMarket<span>SV</span></a>
-            <span style="color:#64748b;font-size:.85rem">Laravel {{ app()->version() }}</span>
         </div>
     </header>
     <main class="migration-shell migration-page">@yield('content')</main>

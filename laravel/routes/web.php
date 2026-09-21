@@ -1,8 +1,20 @@
 <?php
 
-use App\Http\Controllers\JobBrowseController;
+use App\Http\Controllers\PlatformController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/viec-lam');
-Route::get('/viec-lam', [JobBrowseController::class, 'index'])->name('jobs.index');
-Route::get('/migration-status', [JobBrowseController::class, 'status'])->name('migration.status');
+/*
+|--------------------------------------------------------------------------
+| JobMarketSV application routes
+|--------------------------------------------------------------------------
+|
+| The existing domain layer is mounted behind Laravel so the complete
+| product remains available while modules are modernised independently.
+| This catch-all deliberately supports every HTTP verb used by the web and
+| JSON API routes of the application.
+|
+*/
+
+Route::any('/{path?}', PlatformController::class)
+    ->where('path', '.*')
+    ->name('platform');
