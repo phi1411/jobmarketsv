@@ -6,6 +6,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Legacy migration safety guard
+    |--------------------------------------------------------------------------
+    |
+    | Phase one only reads the existing JobMarketSV schema. Keep this enabled
+    | until all write paths have been migrated and reviewed explicitly.
+    |
+    */
+
+    'legacy_read_only' => (bool) env('LEGACY_DB_READ_ONLY', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Default Database Connection Name
     |--------------------------------------------------------------------------
     |
