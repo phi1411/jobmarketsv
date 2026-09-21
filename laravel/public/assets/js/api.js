@@ -267,7 +267,7 @@ async function viewApplicationCv(appId, btnElement = null) {
 
         const blob = await response.blob();
         const blobUrl = URL.createObjectURL(blob);
-        
+
         // Open safely in new tab or trigger click fallback
         const win = window.open(blobUrl, "_blank");
         if (!win || win.closed || typeof win.closed === "undefined") {
