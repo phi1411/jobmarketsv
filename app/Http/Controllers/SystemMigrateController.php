@@ -148,6 +148,15 @@ class SystemMigrateController extends Controller
                 }
             }
 
+            // Run database standardizer to ensure all companies and job_locations have full info and coordinates
+            if (file_exists($root . '/scripts/DbStandardizer.php')) {
+                require_once $root . '/scripts/DbStandardizer.php';
+                try {
+                    $standardizer = new \JobMarket\Scripts\DbStandardizer($pdo);
+                    $standardizer->run();
+                } catch (Throwable $ignore) {}
+            }
+
             $jobs = (int)$pdo->query("SELECT COUNT(*) FROM `jobs`")->fetchColumn();
             $comps = (int)$pdo->query("SELECT COUNT(*) FROM `companies`")->fetchColumn();
             $users = (int)$pdo->query("SELECT COUNT(*) FROM `users`")->fetchColumn();

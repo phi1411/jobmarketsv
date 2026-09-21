@@ -104,8 +104,25 @@
                 <div class="detail-card">
                     <h3 class="detail-card-title">Về Nhà Tuyển Dụng</h3>
                     <div id="company-info-box">
-                        <div id="comp-sidebar-name" style="font-weight:700;font-size:1.05rem;margin-bottom:0.5rem;color:var(--dark);">Công ty</div>
-                        <p id="comp-sidebar-desc" style="font-size:0.88rem;color:var(--text-muted);line-height:1.5;">Doanh nghiệp đối tác tuyển dụng sinh viên part-time trên hệ thống.</p>
+                        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;flex-wrap:wrap;">
+                            <div id="comp-sidebar-name" style="font-weight:700;font-size:1.05rem;color:var(--dark);">Công ty</div>
+                            <span id="comp-sidebar-verified" class="badge-loc badge-loc-verified" style="display:none;font-size:0.75rem;padding:0.2rem 0.5rem;">✓ Đã xác thực</span>
+                        </div>
+                        <p id="comp-sidebar-desc" style="font-size:0.88rem;color:var(--text-muted);line-height:1.6;margin-bottom:1rem;">Doanh nghiệp đối tác tuyển dụng sinh viên part-time trên hệ thống.</p>
+                        <div id="comp-sidebar-details" style="display:flex;flex-direction:column;gap:0.6rem;font-size:0.85rem;border-top:1px solid var(--border);padding-top:0.85rem;">
+                            <div id="comp-sidebar-address-row" style="display:none;align-items:flex-start;gap:0.5rem;color:var(--text);">
+                                <i class="ri-map-pin-line" style="color:var(--primary);margin-top:0.15rem;flex-shrink:0;"></i>
+                                <span id="comp-sidebar-address"></span>
+                            </div>
+                            <div id="comp-sidebar-phone-row" style="display:none;align-items:center;gap:0.5rem;color:var(--text);">
+                                <i class="ri-phone-line" style="color:var(--primary);flex-shrink:0;"></i>
+                                <span id="comp-sidebar-phone"></span>
+                            </div>
+                            <div id="comp-sidebar-website-row" style="display:none;align-items:center;gap:0.5rem;">
+                                <i class="ri-global-line" style="color:var(--primary);flex-shrink:0;"></i>
+                                <a id="comp-sidebar-website" href="#" target="_blank" rel="noopener noreferrer" style="color:var(--primary);text-decoration:none;font-weight:600;word-break:break-all;"></a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -338,8 +355,37 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Company Sidebar
         document.getElementById("comp-sidebar-name").innerText = job.company_name || "Nhà tuyển dụng";
+        if (job.verification_status === "verified") {
+            const verifiedBadge = document.getElementById("comp-sidebar-verified");
+            if (verifiedBadge) verifiedBadge.style.display = "inline-flex";
+        }
         if (job.company_description) {
             document.getElementById("comp-sidebar-desc").innerText = job.company_description;
+        }
+        if (job.company_address) {
+            const addrRow = document.getElementById("comp-sidebar-address-row");
+            const addrEl = document.getElementById("comp-sidebar-address");
+            if (addrRow && addrEl) {
+                addrEl.innerText = job.company_address;
+                addrRow.style.display = "flex";
+            }
+        }
+        if (job.contact_phone) {
+            const phoneRow = document.getElementById("comp-sidebar-phone-row");
+            const phoneEl = document.getElementById("comp-sidebar-phone");
+            if (phoneRow && phoneEl) {
+                phoneEl.innerText = `${job.contact_person ? job.contact_person + ' - ' : ''}${job.contact_phone}`;
+                phoneRow.style.display = "flex";
+            }
+        }
+        if (job.company_website) {
+            const webRow = document.getElementById("comp-sidebar-website-row");
+            const webEl = document.getElementById("comp-sidebar-website");
+            if (webRow && webEl) {
+                webEl.href = job.company_website;
+                webEl.innerText = job.company_website.replace(/^https?:\/\//i, "");
+                webRow.style.display = "flex";
+            }
         }
         renderJobDetailLocations(job.work_locations || []);
     } else {

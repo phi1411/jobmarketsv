@@ -11,7 +11,7 @@ if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
     exit(1);
 }
 
-$dirs = ['app', 'public', 'vendor'];
+$dirs = ['app', 'public', 'vendor', 'scripts'];
 // Environment files are intentionally excluded. Production secrets must remain
 // only in the hosting account and are never copied into the deployment archive.
 $files = ['.htaccess', 'migrate.php', 'dispatch_job_alerts.php', 'dispatch_deadline_reminders.php'];
