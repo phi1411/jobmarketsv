@@ -141,13 +141,18 @@ class SaveSearchService
             }
         }
 
-        // Validate location_id
+        // Validate location_id (supports single ID, administrative codes vn-current-*, or comma-separated list of IDs)
         if (isset($data["location_id"]) && !empty($data["location_id"])) {
-            $locId = trim((string)$data["location_id"]);
-            $stmt = $this->db->prepare("SELECT COUNT(*) FROM `locations` WHERE `id` = ?");
-            $stmt->execute([$locId]);
-            if (((int)$stmt->fetchColumn()) === 0) {
-                $errors["location_id"][] = "Địa điểm (location_id) không tồn tại trong hệ thống.";
+            $locIds = is_array($data["location_id"])
+                ? $data["location_id"]
+                : explode(",", (string)$data["location_id"]);
+            foreach ($locIds as $lid) {
+                $lid = trim((string)$lid);
+                if ($lid === "") continue;
+                if (!preg_match('/^[0-9a-zA-Z_-]{1,64}$/', $lid)) {
+                    $errors["location_id"][] = "Mã địa điểm không hợp lệ: " . $lid;
+                    break;
+                }
             }
         }
 
@@ -235,7 +240,13 @@ class SaveSearchService
             $search->setCategoryId(!empty($data["category_id"]) ? trim((string)$data["category_id"]) : null);
         }
         if (array_key_exists("location_id", $data)) {
-            $search->setLocationId(!empty($data["location_id"]) ? trim((string)$data["location_id"]) : null);
+            if (is_array($data["location_id"])) {
+                $locIds = array_values(array_filter(array_map('trim', $data["location_id"])));
+                $search->setLocationId(!empty($locIds) ? implode(",", $locIds) : null);
+            } else {
+                $trimmed = trim((string)$data["location_id"]);
+                $search->setLocationId($trimmed !== "" ? $trimmed : null);
+            }
         }
         if (array_key_exists("work_type", $data)) {
             $search->setWorkType(!empty($data["work_type"]) ? trim((string)$data["work_type"]) : null);

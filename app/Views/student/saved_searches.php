@@ -77,10 +77,23 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Khu vực / Quận</label>
-                    <select id="ss-location" class="form-control">
-                        <option value="">Tất cả địa điểm</option>
-                    </select>
+                    <label class="form-label" for="ss-btn-open-location-picker">Khu vực / Địa điểm</label>
+                    <button type="button" id="ss-btn-open-location-picker" class="location-picker-trigger" aria-haspopup="dialog" title="Mở bộ chọn khu vực làm việc" style="width:100%;height:42px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);padding:0 0.875rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-sizing:border-box;">
+                        <span class="loc-trigger-content" style="display:flex;align-items:center;gap:0.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                            <svg class="loc-trigger-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);flex-shrink:0;">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span id="ss-location-picker-label" class="location-picker-label" style="font-size:0.9rem;color:var(--dark);">Tất cả địa điểm</span>
+                        </span>
+                        <span style="display:flex;align-items:center;gap:0.4rem;">
+                            <span id="ss-location-picker-badge" class="location-picker-badge" style="display:none;background:var(--primary);color:#fff;border-radius:10px;padding:2px 7px;font-size:0.75rem;font-weight:600;">0</span>
+                            <svg class="loc-chevron-down" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);">
+                                <path d="m6 9 6 6 6-6"></path>
+                            </svg>
+                        </span>
+                    </button>
+                    <input type="hidden" id="ss-location" value="">
                 </div>
             </div>
 
@@ -137,6 +150,8 @@
 </div>
 
 <script>
+let ssLocationPicker = null;
+
 async function initStudentSavedSearchesPage() {
     if (!TokenStorage.isLoggedIn()) {
         showToast("Vui lòng đăng nhập để xem tìm kiếm đã lưu.", "error");
@@ -150,7 +165,19 @@ async function initStudentSavedSearchesPage() {
         return;
     }
 
-    await Promise.all([loadCategories(), loadLocations()]);
+    if (typeof LargeLocationPicker === 'function') {
+        ssLocationPicker = new LargeLocationPicker({
+            mode: 'multi',
+            maxSelect: 20,
+            title: 'Chọn địa điểm làm việc',
+            trigger: '#ss-btn-open-location-picker',
+            labelElement: '#ss-location-picker-label',
+            badgeElement: '#ss-location-picker-badge',
+            hiddenInput: '#ss-location'
+        });
+    }
+
+    await loadCategories();
     loadSavedSearches();
 }
 
@@ -168,19 +195,6 @@ async function loadCategories() {
             const opt = document.createElement("option");
             opt.value = c.id;
             opt.textContent = c.name;
-            sel.appendChild(opt);
-        });
-    }
-}
-
-async function loadLocations() {
-    const res = await apiRequest("/locations");
-    if (res && res.success && Array.isArray(res.data)) {
-        const sel = document.getElementById("ss-location");
-        res.data.forEach(l => {
-            const opt = document.createElement("option");
-            opt.value = l.id;
-            opt.textContent = l.name;
             sel.appendChild(opt);
         });
     }
@@ -212,11 +226,34 @@ async function loadSavedSearches() {
                 const params = new URLSearchParams();
                 if (item.keyword) params.append("keyword", item.keyword);
                 if (item.category_id) params.append("category_id", item.category_id);
-                if (item.location_id) params.append("location_id", item.location_id);
+                if (item.location_id) {
+                    if (item.location_id.includes(",")) {
+                        params.append("location_ids", item.location_id);
+                    } else {
+                        params.append("location_id", item.location_id);
+                    }
+                }
                 if (item.shift_type) params.append("shift_type", item.shift_type);
                 if (item.salary_min) params.append("salary_min", item.salary_min);
 
                 const searchUrl = `/viec-lam?${params.toString()}`;
+
+                let locBadge = "";
+                if (item.location_id) {
+                    let locLabel = item.location_name || "";
+                    if (!locLabel) {
+                        const ids = item.location_id.split(",").map(s => s.trim()).filter(Boolean);
+                        if (ids.length > 1) {
+                            locLabel = `${ids.length} khu vực`;
+                        } else if (ids.length === 1 && typeof LargeLocationPicker !== "undefined" && LargeLocationPicker.locationMap) {
+                            const found = LargeLocationPicker.locationMap.get(ids[0]);
+                            locLabel = found ? (found.area_name || found.name) : ids[0];
+                        } else {
+                            locLabel = item.location_id;
+                        }
+                    }
+                    locBadge = `<span class="badge" style="background:#f1f5f9;color:var(--text);display:inline-flex;align-items:center;gap:3px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>${escapeHtml(locLabel)}</span>`;
+                }
 
                 return `
                     <div class="data-card" style="margin:0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.25rem;">
@@ -226,6 +263,7 @@ async function loadSavedSearches() {
                             </h3>
                             <div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;">
                                 ${item.keyword ? `<span class="badge" style="background:#f1f5f9;color:var(--text);">"${escapeHtml(item.keyword)}"</span>` : ''}
+                                ${locBadge}
                                 ${item.shift_type ? `<span class="badge badge-shift">${getShiftLabel(item.shift_type)}</span>` : ''}
                                 ${item.salary_min ? `<span class="badge badge-salary">&ge; ${formatCurrency(item.salary_min)}/h</span>` : ''}
                                 <span class="badge" style="background:${item.notification_enabled ? '#ecfdf5' : '#f1f5f9'};color:${item.notification_enabled ? '#047857' : '#64748b'};">
@@ -268,6 +306,9 @@ function openCreateModal() {
     document.getElementById("ss-keyword").value = "";
     document.getElementById("ss-category").value = "";
     document.getElementById("ss-location").value = "";
+    if (ssLocationPicker) {
+        ssLocationPicker.setSelected([], true);
+    }
     document.getElementById("ss-shift").value = "";
     document.getElementById("ss-salary-min").value = "";
     document.getElementById("ss-min-score").value = "65";
