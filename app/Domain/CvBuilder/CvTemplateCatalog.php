@@ -17,6 +17,7 @@ class CvTemplateCatalog
                 'ats_friendly' => true,
                 'supports_photo' => false,
                 'default_accent_color' => '#0f766e',
+                'preview_image' => '/assets/images/cv-templates/student-simple.svg',
             ],
             [
                 'key' => 'student-modern',
@@ -26,6 +27,7 @@ class CvTemplateCatalog
                 'ats_friendly' => true,
                 'supports_photo' => false,
                 'default_accent_color' => '#2563eb',
+                'preview_image' => '/assets/images/cv-templates/student-modern.svg',
             ],
             [
                 'key' => 'ats-classic',
@@ -35,6 +37,7 @@ class CvTemplateCatalog
                 'ats_friendly' => true,
                 'supports_photo' => false,
                 'default_accent_color' => '#111827',
+                'preview_image' => '/assets/images/cv-templates/ats-classic.svg',
             ],
         ];
     }

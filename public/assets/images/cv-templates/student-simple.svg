@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="848" viewBox="0 0 600 848" role="img" aria-labelledby="title desc">
+  <title id="title">Mẫu CV Sinh viên tối giản</title>
+  <desc id="desc">CV một cột màu xanh ngọc, trình bày học vấn, dự án và kỹ năng.</desc>
+  <rect width="600" height="848" fill="#fff"/>
+  <rect width="600" height="154" fill="#0f766e"/>
+  <text x="48" y="64" fill="#fff" font-family="Arial,sans-serif" font-size="30" font-weight="700">NGUYỄN MINH AN</text>
+  <text x="48" y="98" fill="#ccfbf1" font-family="Arial,sans-serif" font-size="16">SINH VIÊN MARKETING • THỰC TẬP SINH</text>
+  <text x="48" y="128" fill="#fff" font-family="Arial,sans-serif" font-size="13">minhan@example.com  •  0900 000 000  •  TP. Hồ Chí Minh</text>
+
+  <text x="48" y="205" fill="#0f766e" font-family="Arial,sans-serif" font-size="17" font-weight="700">MỤC TIÊU NGHỀ NGHIỆP</text>
+  <rect x="48" y="219" width="504" height="3" rx="1.5" fill="#99f6e4"/>
+  <text x="48" y="250" fill="#334155" font-family="Arial,sans-serif" font-size="13">Sinh viên năng động, mong muốn phát triển kỹ năng nội dung và</text>
+  <text x="48" y="271" fill="#334155" font-family="Arial,sans-serif" font-size="13">truyền thông trong môi trường chuyên nghiệp, sáng tạo.</text>
+
+  <text x="48" y="323" fill="#0f766e" font-family="Arial,sans-serif" font-size="17" font-weight="700">HỌC VẤN</text>
+  <rect x="48" y="337" width="504" height="3" rx="1.5" fill="#99f6e4"/>
+  <text x="48" y="369" fill="#0f172a" font-family="Arial,sans-serif" font-size="14" font-weight="700">Đại học Công nghệ TP.HCM</text>
+  <text x="474" y="369" fill="#64748b" font-family="Arial,sans-serif" font-size="12">2023 – 2027</text>
+  <text x="48" y="392" fill="#475569" font-family="Arial,sans-serif" font-size="13">Chuyên ngành Marketing • GPA 3.4/4.0</text>
+
+  <text x="48" y="445" fill="#0f766e" font-family="Arial,sans-serif" font-size="17" font-weight="700">DỰ ÁN &amp; HOẠT ĐỘNG</text>
+  <rect x="48" y="459" width="504" height="3" rx="1.5" fill="#99f6e4"/>
+  <circle cx="55" cy="494" r="4" fill="#0f766e"/>
+  <text x="70" y="499" fill="#0f172a" font-family="Arial,sans-serif" font-size="14" font-weight="700">Truyền thông CLB Sinh viên</text>
+  <text x="70" y="523" fill="#475569" font-family="Arial,sans-serif" font-size="13">Lập kế hoạch nội dung, quản lý Fanpage và tăng 35% tương tác.</text>
+  <circle cx="55" cy="560" r="4" fill="#0f766e"/>
+  <text x="70" y="565" fill="#0f172a" font-family="Arial,sans-serif" font-size="14" font-weight="700">Dự án nghiên cứu hành vi khách hàng</text>
+  <text x="70" y="589" fill="#475569" font-family="Arial,sans-serif" font-size="13">Khảo sát 200 sinh viên và trình bày kết quả bằng Google Data Studio.</text>
+
+  <text x="48" y="646" fill="#0f766e" font-family="Arial,sans-serif" font-size="17" font-weight="700">KỸ NĂNG</text>
+  <rect x="48" y="660" width="504" height="3" rx="1.5" fill="#99f6e4"/>
+  <g font-family="Arial,sans-serif" font-size="12" fill="#115e59">
+    <rect x="48" y="686" width="112" height="31" rx="15" fill="#ccfbf1"/><text x="69" y="706">Canva</text>
+    <rect x="172" y="686" width="145" height="31" rx="15" fill="#ccfbf1"/><text x="193" y="706">Content Writing</text>
+    <rect x="329" y="686" width="114" height="31" rx="15" fill="#ccfbf1"/><text x="350" y="706">Làm việc nhóm</text>
+    <rect x="455" y="686" width="97" height="31" rx="15" fill="#ccfbf1"/><text x="476" y="706">Tin học</text>
+  </g>
+  <text x="48" y="777" fill="#94a3b8" font-family="Arial,sans-serif" font-size="11">Người tham chiếu được cung cấp khi có yêu cầu.</text>
+</svg>

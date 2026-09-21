@@ -79,7 +79,7 @@
 
 <!-- Modal: Xem Chi Tiết Mẫu -->
 <div id="modal-preview-template" class="cv-modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-preview-title">
-    <div class="cv-modal-card" style="max-width: 620px;">
+    <div class="cv-modal-card cv-template-preview-modal">
         <div class="cv-modal-header">
             <h3 id="modal-preview-title">Chi Tiết Mẫu CV</h3>
             <button type="button" class="cv-modal-close-btn" onclick="closePreviewTemplateModal()" aria-label="Đóng">&times;</button>

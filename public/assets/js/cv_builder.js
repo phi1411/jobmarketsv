@@ -79,6 +79,7 @@ window.CvTemplatesApp = {
             const desc = escapeHtml(t.description || '');
             const atsBadge = t.ats_friendly ? `<span class="cv-badge-ats">✓ Chuẩn ATS</span>` : '';
             const color = escapeHtml(t.default_accent_color || '#0f766e');
+            const previewImage = escapeHtml(t.preview_image || `/assets/images/cv-templates/${key}.svg`);
 
             const tagsHtml = (t.tags || []).map(tag => {
                 const label = tag === 'student' ? 'Sinh viên' : (tag === 'ats' ? 'ATS' : (tag === 'simple' ? 'Tối giản' : (tag === 'modern' ? 'Hiện đại' : tag)));
@@ -89,7 +90,8 @@ window.CvTemplatesApp = {
                 <article class="cv-template-card" data-key="${key}">
                     ${atsBadge}
                     <div class="cv-card-preview-thumb">
-                        <div class="mockup-sheet ${key}">
+                        <img class="cv-template-preview-image" src="${previewImage}" alt="Ảnh xem trước mẫu CV ${name}" loading="lazy" decoding="async" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+                        <div class="mockup-sheet ${key}" hidden aria-hidden="true">
                             <div class="mockup-header-bar" style="background:${color};">
                                 <div class="mockup-line" style="width:40%;background:#ffffff;"></div>
                             </div>
@@ -103,6 +105,10 @@ window.CvTemplatesApp = {
                             <div class="mockup-line" style="width:88%;"></div>
                             <div class="mockup-line" style="width:70%;"></div>
                         </div>
+                        <button type="button" class="cv-thumb-preview-button" onclick="window.CvTemplatesApp.openPreviewModal('${key}')" aria-label="Xem trước mẫu CV ${name}">
+                            <i class="ri-eye-line" aria-hidden="true"></i>
+                            <span>Xem trước</span>
+                        </button>
                     </div>
                     <div class="cv-card-body">
                         <div class="cv-card-tags">${tagsHtml}</div>
@@ -136,20 +142,15 @@ window.CvTemplatesApp = {
         const name = escapeHtml(t.name);
         const desc = escapeHtml(t.description || '');
         const color = escapeHtml(t.default_accent_color || '#0f766e');
+        const previewImage = escapeHtml(t.preview_image || `/assets/images/cv-templates/${escapeHtml(t.key)}.svg`);
         const atsText = t.ats_friendly ? 'Được định dạng chuẩn cấu trúc giúp hệ thống Applicant Tracking System (ATS) dễ dàng phân tích từ khóa và học vấn.' : 'Thiết kế trực quan cho nhà tuyển dụng xem trực tiếp.';
 
         body.innerHTML = `
-            <div style="display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1.25rem;">
-                <div style="width:160px;height:220px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px;box-shadow:0 4px 12px rgba(0,0,0,0.06);display:flex;flex-direction:column;gap:5px;flex-shrink:0;">
-                    <div style="height:24px;background:${color};border-radius:2px;"></div>
-                    <div style="height:5px;background:#cbd5e1;border-radius:2px;width:70%;"></div>
-                    <div style="height:5px;background:#e2e8f0;border-radius:2px;width:90%;"></div>
-                    <div style="height:5px;background:#e2e8f0;border-radius:2px;width:80%;"></div>
-                    <div style="height:5px;background:#cbd5e1;border-radius:2px;width:50%;margin-top:6px;"></div>
-                    <div style="height:5px;background:#e2e8f0;border-radius:2px;width:95%;"></div>
-                    <div style="height:5px;background:#e2e8f0;border-radius:2px;width:60%;"></div>
+            <div class="cv-modal-template-layout">
+                <div class="cv-modal-template-preview" style="--template-accent:${color};">
+                    <img src="${previewImage}" alt="Bản xem trước đầy đủ của mẫu CV ${name}">
                 </div>
-                <div style="flex:1;min-width:240px;">
+                <div class="cv-modal-template-info">
                     <h3 style="margin:0 0 0.5rem;color:var(--dark,#0f172a);">${name}</h3>
                     <p style="color:var(--text-muted,#64748b);font-size:0.9rem;line-height:1.5;margin-bottom:0.75rem;">${desc}</p>
                     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:0.75rem;font-size:0.85rem;color:#166534;margin-bottom:0.75rem;">
