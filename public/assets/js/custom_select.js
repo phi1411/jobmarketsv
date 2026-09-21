@@ -1,11 +1,11 @@
 /**
-+ * Custom Select Enhancement (JobMarketSV UI/UX)
-+ * Tự động chuyển đổi các thẻ <select> thành custom dropdown:
-+ * - Khung hiển thị bo góc mượt mà (border-radius: 12px)
-+ * - Hiệu ứng hover cho từng mục lựa chọn (hover background, subtle slide)
-+ * - Tích hợp biểu tượng Remix Icon checkmark khi active
-+ * - Đồng bộ 100% hai chiều với thẻ <select> gốc (change events, validation, form reset)
-+ */
+ * Custom Select Enhancement (JobMarketSV UI/UX)
+ * Tự động chuyển đổi các thẻ <select> thành custom dropdown:
+ * - Khung hiển thị bo góc mượt mà (border-radius: 12px)
+ * - Hiệu ứng hover cho từng mục lựa chọn (hover background, subtle slide)
+ * - Tích hợp biểu tượng Remix Icon checkmark khi active
+ * - Đồng bộ 100% hai chiều với thẻ <select> gốc (change events, validation, form reset)
+ */
 
 (function () {
     'use strict';
