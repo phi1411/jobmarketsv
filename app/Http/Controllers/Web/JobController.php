@@ -13,7 +13,7 @@ class JobController extends Controller
     public function index(Request $request): Response
     {
         $html = View::renderWithLayout("jobs/index", [
-            "title"       => "Danh Sách Việc Làm Part-Time Sinh Viên | JobMarketplace",
+            "title"       => "Danh Sách Việc Làm Part-Time Sinh Viên | JobMarketSV",
             "currentPage" => "jobs",
             "queryParams" => $request->getParams
         ]);
@@ -24,7 +24,7 @@ class JobController extends Controller
     public function show(Request $request, string $id): Response
     {
         $html = View::renderWithLayout("jobs/show", [
-            "title"       => "Chi Tiết Việc Làm Part-Time | JobMarketplace",
+            "title"       => "Chi Tiết Việc Làm Part-Time | JobMarketSV",
             "currentPage" => "job_detail",
             "jobId"       => $id,
             "goongMaptilesKey" => Config::goongMaptilesKey()

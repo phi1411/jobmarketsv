@@ -12,7 +12,7 @@ class AdminController extends Controller
     public function dashboard(Request $request): Response
     {
         $html = View::renderWithLayout("admin/dashboard", [
-            "title"       => "Tổng Quan Hệ Thống | JobMarketplace Quản Trị",
+            "title"       => "Tổng Quan Hệ Thống | JobMarketSV Quản Trị",
             "currentPage" => "admin_dashboard",
             "activeTab"   => "dashboard"
         ]);
@@ -23,7 +23,7 @@ class AdminController extends Controller
     public function users(Request $request): Response
     {
         $html = View::renderWithLayout("admin/users", [
-            "title"       => "Quản Lý Người Dùng | JobMarketplace Quản Trị",
+            "title"       => "Quản Lý Người Dùng | JobMarketSV Quản Trị",
             "currentPage" => "admin_users",
             "activeTab"   => "users"
         ]);
@@ -34,7 +34,7 @@ class AdminController extends Controller
     public function companies(Request $request): Response
     {
         $html = View::renderWithLayout("admin/companies", [
-            "title"       => "Kiểm Duyệt Doanh Nghiệp | JobMarketplace Quản Trị",
+            "title"       => "Kiểm Duyệt Doanh Nghiệp | JobMarketSV Quản Trị",
             "currentPage" => "admin_companies",
             "activeTab"   => "companies"
         ]);
@@ -45,7 +45,7 @@ class AdminController extends Controller
     public function jobs(Request $request): Response
     {
         $html = View::renderWithLayout("admin/jobs", [
-            "title"       => "Kiểm Duyệt Tin Tuyển Dụng | JobMarketplace Quản Trị",
+            "title"       => "Kiểm Duyệt Tin Tuyển Dụng | JobMarketSV Quản Trị",
             "currentPage" => "admin_jobs",
             "activeTab"   => "jobs"
         ]);
@@ -56,7 +56,7 @@ class AdminController extends Controller
     public function auditLogs(Request $request): Response
     {
         $html = View::renderWithLayout("admin/audit_logs", [
-            "title"       => "Nhật Ký Thao Tác Quản Trị | JobMarketplace Quản Trị",
+            "title"       => "Nhật Ký Thao Tác Quản Trị | JobMarketSV Quản Trị",
             "currentPage" => "admin_audit_logs",
             "activeTab"   => "audit_logs"
         ]);
@@ -67,7 +67,7 @@ class AdminController extends Controller
     public function jobReports(Request $request): Response
     {
         $html = View::renderWithLayout("admin/job_reports", [
-            "title"       => "Báo Cáo Tin Tuyển Dụng | JobMarketplace Quản Trị",
+            "title"       => "Báo Cáo Tin Tuyển Dụng | JobMarketSV Quản Trị",
             "currentPage" => "admin_job_reports",
             "activeTab"   => "job_reports"
         ]);
@@ -78,7 +78,7 @@ class AdminController extends Controller
     public function support(Request $request): Response
     {
         $html = View::renderWithLayout("admin/support", [
-            "title"       => "Hỗ Trợ Trực Tuyến | JobMarketplace Quản Trị",
+            "title"       => "Hỗ Trợ Trực Tuyến | JobMarketSV Quản Trị",
             "currentPage" => "admin_support",
             "activeTab"   => "support"
         ]);

@@ -15,7 +15,7 @@ class AuthController extends Controller
         $isDev = in_array($appEnv, ["development", "local", "dev", "test"]);
 
         $html = View::renderWithLayout("auth/login", [
-            "title"       => "Đăng Nhập | JobMarketplace",
+            "title"       => "Đăng Nhập | JobMarketSV",
             "currentPage" => "login",
             "isDev"       => $isDev
         ]);
@@ -26,7 +26,7 @@ class AuthController extends Controller
     public function showRegister(Request $request): Response
     {
         $html = View::renderWithLayout("auth/register", [
-            "title"       => "Đăng Ký Tài Khoản | JobMarketplace",
+            "title"       => "Đăng Ký Tài Khoản | JobMarketSV",
             "currentPage" => "register"
         ]);
 

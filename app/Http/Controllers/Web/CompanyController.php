@@ -12,7 +12,7 @@ class CompanyController extends Controller
     public function dashboard(Request $request): Response
     {
         $html = View::renderWithLayout("company/dashboard", [
-            "title"       => "Tổng Quan Nhà Tuyển Dụng | JobMarketplace",
+            "title"       => "Tổng Quan Nhà Tuyển Dụng | JobMarketSV",
             "currentPage" => "company_dashboard",
             "activeTab"   => "dashboard"
         ]);
@@ -23,7 +23,7 @@ class CompanyController extends Controller
     public function profile(Request $request): Response
     {
         $html = View::renderWithLayout("company/profile", [
-            "title"       => "Hồ Sơ Doanh Nghiệp | JobMarketplace",
+            "title"       => "Hồ Sơ Doanh Nghiệp | JobMarketSV",
             "currentPage" => "company_profile",
             "activeTab"   => "profile"
         ]);
@@ -34,7 +34,7 @@ class CompanyController extends Controller
     public function jobs(Request $request): Response
     {
         $html = View::renderWithLayout("company/jobs", [
-            "title"       => "Quản Lý Tin Tuyển Dụng | JobMarketplace",
+            "title"       => "Quản Lý Tin Tuyển Dụng | JobMarketSV",
             "currentPage" => "company_jobs",
             "activeTab"   => "jobs"
         ]);
@@ -45,7 +45,7 @@ class CompanyController extends Controller
     public function createJob(Request $request): Response
     {
         $html = View::renderWithLayout("company/job_form", [
-            "title"       => "Đăng Tin Tuyển Dụng Mới | JobMarketplace",
+            "title"       => "Đăng Tin Tuyển Dụng Mới | JobMarketSV",
             "currentPage" => "company_jobs_create",
             "activeTab"   => "jobs",
             "isEdit"      => false,
@@ -58,7 +58,7 @@ class CompanyController extends Controller
     public function editJob(Request $request, string $id): Response
     {
         $html = View::renderWithLayout("company/job_form", [
-            "title"       => "Chỉnh Sửa Tin Tuyển Dụng | JobMarketplace",
+            "title"       => "Chỉnh Sửa Tin Tuyển Dụng | JobMarketSV",
             "currentPage" => "company_jobs_edit",
             "activeTab"   => "jobs",
             "isEdit"      => true,
@@ -71,7 +71,7 @@ class CompanyController extends Controller
     public function applications(Request $request): Response
     {
         $html = View::renderWithLayout("company/applications", [
-            "title"       => "Hồ Sơ Ứng Tuyển Nhận Được | JobMarketplace",
+            "title"       => "Hồ Sơ Ứng Tuyển Nhận Được | JobMarketSV",
             "currentPage" => "company_applications",
             "activeTab"   => "applications"
         ]);
@@ -82,7 +82,7 @@ class CompanyController extends Controller
     public function notifications(Request $request): Response
     {
         $html = View::renderWithLayout("company/notifications", [
-            "title"       => "Thông Báo Doanh Nghiệp | JobMarketplace",
+            "title"       => "Thông Báo Doanh Nghiệp | JobMarketSV",
             "currentPage" => "company_notifications",
             "activeTab"   => "notifications"
         ]);

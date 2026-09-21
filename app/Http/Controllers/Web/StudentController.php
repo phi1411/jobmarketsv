@@ -12,7 +12,7 @@ class StudentController extends Controller
     public function dashboard(Request $request): Response
     {
         $html = View::renderWithLayout("student/dashboard", [
-            "title"       => "Tổng Quan Sinh Viên | JobMarketplace",
+            "title"       => "Tổng Quan Sinh Viên | JobMarketSV",
             "currentPage" => "student_dashboard",
             "activeTab"   => "dashboard"
         ]);
@@ -23,7 +23,7 @@ class StudentController extends Controller
     public function profile(Request $request): Response
     {
         $html = View::renderWithLayout("student/profile", [
-            "title"       => "Hồ Sơ Cá Nhân | JobMarketplace",
+            "title"       => "Hồ Sơ Cá Nhân | JobMarketSV",
             "currentPage" => "student_profile",
             "activeTab"   => "profile"
         ]);
@@ -34,7 +34,7 @@ class StudentController extends Controller
     public function cvs(Request $request): Response
     {
         $html = View::renderWithLayout("student/cv_list", [
-            "title"       => "Quản Lý CV Online | JobMarketplace",
+            "title"       => "Quản Lý CV Online | JobMarketSV",
             "currentPage" => "student_cvs",
             "activeTab"   => "cvs"
         ]);
@@ -45,7 +45,7 @@ class StudentController extends Controller
     public function editCv(Request $request, string $id): Response
     {
         $html = View::renderWithLayout("student/cv_edit", [
-            "title"       => "Chỉnh Sửa CV Online | JobMarketplace",
+            "title"       => "Chỉnh Sửa CV Online | JobMarketSV",
             "currentPage" => "student_cv_edit",
             "activeTab"   => "cvs",
             "cvId"        => $id
@@ -57,7 +57,7 @@ class StudentController extends Controller
     public function applications(Request $request): Response
     {
         $html = View::renderWithLayout("student/applications", [
-            "title"       => "Việc Đã Ứng Tuyển | JobMarketplace",
+            "title"       => "Việc Đã Ứng Tuyển | JobMarketSV",
             "currentPage" => "student_applications",
             "activeTab"   => "applications"
         ]);
@@ -68,7 +68,7 @@ class StudentController extends Controller
     public function favorites(Request $request): Response
     {
         $html = View::renderWithLayout("student/favorites", [
-            "title"       => "Việc Làm Yêu Thích | JobMarketplace",
+            "title"       => "Việc Làm Yêu Thích | JobMarketSV",
             "currentPage" => "student_favorites",
             "activeTab"   => "favorites"
         ]);
@@ -79,7 +79,7 @@ class StudentController extends Controller
     public function savedSearches(Request $request): Response
     {
         $html = View::renderWithLayout("student/saved_searches", [
-            "title"       => "Bộ Lọc Đã Lưu | JobMarketplace",
+            "title"       => "Bộ Lọc Đã Lưu | JobMarketSV",
             "currentPage" => "student_saved_searches",
             "activeTab"   => "saved_searches"
         ]);
@@ -90,7 +90,7 @@ class StudentController extends Controller
     public function notifications(Request $request): Response
     {
         $html = View::renderWithLayout("student/notifications", [
-            "title"       => "Thông Báo Của Tôi | JobMarketplace",
+            "title"       => "Thông Báo Của Tôi | JobMarketSV",
             "currentPage" => "student_notifications",
             "activeTab"   => "notifications"
         ]);
@@ -101,7 +101,7 @@ class StudentController extends Controller
     public function recommendations(Request $request): Response
     {
         $html = View::renderWithLayout("student/recommendations", [
-            "title"       => "Việc Làm Dành Cho Bạn | JobMarketplace",
+            "title"       => "Việc Làm Dành Cho Bạn | JobMarketSV",
             "currentPage" => "student_recommendations",
             "activeTab"   => "recommendations"
         ]);

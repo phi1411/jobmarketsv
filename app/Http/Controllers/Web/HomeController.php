@@ -12,7 +12,7 @@ class HomeController extends Controller
     public function index(Request $request): Response
     {
         $html = View::renderWithLayout("home", [
-            "title"       => "Tìm Việc Làm Part-Time Sinh Viên | JobMarketplace",
+            "title"       => "Tìm Việc Làm Part-Time Sinh Viên | JobMarketSV",
             "currentPage" => "home"
         ]);
 

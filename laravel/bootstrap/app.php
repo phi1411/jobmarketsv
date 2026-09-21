@@ -21,7 +21,7 @@ $application = Application::configure(basePath: dirname(__DIR__))
 
 // Some shared hosts remove environment files outside the document root. A
 // server-only PHP config beside the application is supported as a fallback.
-$runtimeConfigPath = dirname(__DIR__).'/staging.runtime.php';
+$runtimeConfigPath = dirname(__DIR__).'/runtime.php';
 if (! is_file(dirname(__DIR__).'/.env') && is_file($runtimeConfigPath)) {
     $runtimeConfig = require $runtimeConfigPath;
 

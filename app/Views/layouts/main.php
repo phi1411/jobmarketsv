@@ -150,7 +150,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 JobMarketplace Platform. Phát triển với kiến trúc Clean Architecture / DDD trên nền tảng PHP & MySQL thuần.</p>
+                <p>&copy; 2026 JobMarketSV. Nền tảng việc làm part-time dành cho sinh viên Việt Nam.</p>
             </div>
         </div>
     </footer>

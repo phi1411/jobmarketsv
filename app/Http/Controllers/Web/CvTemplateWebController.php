@@ -12,7 +12,7 @@ class CvTemplateWebController extends Controller
     public function index(Request $request): Response
     {
         $html = View::renderWithLayout("cv/templates", [
-            "title"       => "Mẫu CV Sinh Viên Chuẩn ATS & Part-Time | JobMarketplace",
+            "title"       => "Mẫu CV Sinh Viên Chuẩn ATS & Part-Time | JobMarketSV",
             "currentPage" => "cv_templates"
         ]);
 
