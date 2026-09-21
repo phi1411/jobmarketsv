@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="848" viewBox="0 0 600 848" role="img" aria-labelledby="title desc">
+  <title id="title">Mẫu CV ATS cổ điển</title>
+  <desc id="desc">CV đen trắng một cột, rõ ràng và tối ưu cho hệ thống ATS.</desc>
+  <rect width="600" height="848" fill="#fff"/>
+  <text x="300" y="62" text-anchor="middle" fill="#111827" font-family="Georgia,serif" font-size="31" font-weight="700">TRẦN GIA HUY</text>
+  <text x="300" y="92" text-anchor="middle" fill="#374151" font-family="Arial,sans-serif" font-size="14">NHÂN VIÊN BÁN HÀNG BÁN THỜI GIAN</text>
+  <text x="300" y="120" text-anchor="middle" fill="#4b5563" font-family="Arial,sans-serif" font-size="12">giahuy@example.com  |  0900 000 000  |  Hà Nội</text>
+  <rect x="45" y="140" width="510" height="2" fill="#111827"/>
+
+  <text x="45" y="183" fill="#111827" font-family="Arial,sans-serif" font-size="16" font-weight="700">TÓM TẮT NĂNG LỰC</text>
+  <rect x="45" y="194" width="510" height="1" fill="#9ca3af"/>
+  <text x="45" y="222" fill="#374151" font-family="Arial,sans-serif" font-size="13">Sinh viên có kỹ năng giao tiếp tốt, chủ động và có thể làm việc theo ca.</text>
+  <text x="45" y="243" fill="#374151" font-family="Arial,sans-serif" font-size="13">Mong muốn phát triển kinh nghiệm chăm sóc khách hàng và bán hàng.</text>
+
+  <text x="45" y="295" fill="#111827" font-family="Arial,sans-serif" font-size="16" font-weight="700">KINH NGHIỆM</text>
+  <rect x="45" y="306" width="510" height="1" fill="#9ca3af"/>
+  <text x="45" y="338" fill="#111827" font-family="Arial,sans-serif" font-size="14" font-weight="700">Cộng tác viên sự kiện • CLB Sinh viên</text>
+  <text x="463" y="338" fill="#4b5563" font-family="Arial,sans-serif" font-size="12">2024 – 2025</text>
+  <text x="58" y="367" fill="#374151" font-family="Arial,sans-serif" font-size="13">• Đón tiếp và hướng dẫn hơn 300 người tham dự.</text>
+  <text x="58" y="390" fill="#374151" font-family="Arial,sans-serif" font-size="13">• Phối hợp hậu cần và xử lý tình huống trong chương trình.</text>
+  <text x="45" y="428" fill="#111827" font-family="Arial,sans-serif" font-size="14" font-weight="700">Nhân viên phục vụ bán thời gian • Coffee House</text>
+  <text x="477" y="428" fill="#4b5563" font-family="Arial,sans-serif" font-size="12">2025</text>
+  <text x="58" y="457" fill="#374151" font-family="Arial,sans-serif" font-size="13">• Tiếp nhận đơn hàng, thanh toán và hỗ trợ khách hàng.</text>
+  <text x="58" y="480" fill="#374151" font-family="Arial,sans-serif" font-size="13">• Đảm bảo khu vực làm việc sạch sẽ trong suốt ca.</text>
+
+  <text x="45" y="535" fill="#111827" font-family="Arial,sans-serif" font-size="16" font-weight="700">HỌC VẤN</text>
+  <rect x="45" y="546" width="510" height="1" fill="#9ca3af"/>
+  <text x="45" y="578" fill="#111827" font-family="Arial,sans-serif" font-size="14" font-weight="700">Đại học Kinh tế Quốc dân</text>
+  <text x="475" y="578" fill="#4b5563" font-family="Arial,sans-serif" font-size="12">2023 – 2027</text>
+  <text x="45" y="603" fill="#374151" font-family="Arial,sans-serif" font-size="13">Quản trị kinh doanh • GPA 3.3/4.0</text>
+
+  <text x="45" y="657" fill="#111827" font-family="Arial,sans-serif" font-size="16" font-weight="700">KỸ NĂNG</text>
+  <rect x="45" y="668" width="510" height="1" fill="#9ca3af"/>
+  <text x="45" y="700" fill="#374151" font-family="Arial,sans-serif" font-size="13">Chăm sóc khách hàng  •  Giao tiếp  •  POS  •  Microsoft Office</text>
+
+  <text x="45" y="755" fill="#111827" font-family="Arial,sans-serif" font-size="16" font-weight="700">THÔNG TIN BỔ SUNG</text>
+  <rect x="45" y="766" width="510" height="1" fill="#9ca3af"/>
+  <text x="45" y="797" fill="#374151" font-family="Arial,sans-serif" font-size="13">Có thể làm việc buổi tối và cuối tuần.</text>
+</svg>

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="848" viewBox="0 0 600 848" role="img" aria-labelledby="title desc">
+  <title id="title">Mẫu CV Sinh viên hiện đại</title>
+  <desc id="desc">CV hai cột màu xanh dương dành cho sinh viên và thực tập sinh.</desc>
+  <rect width="600" height="848" fill="#fff"/>
+  <rect width="600" height="146" fill="#2563eb"/>
+  <circle cx="76" cy="73" r="40" fill="#dbeafe"/>
+  <text x="76" y="83" text-anchor="middle" fill="#1d4ed8" font-family="Arial,sans-serif" font-size="25" font-weight="700">LA</text>
+  <text x="140" y="64" fill="#fff" font-family="Arial,sans-serif" font-size="29" font-weight="700">LÊ HOÀNG ANH</text>
+  <text x="140" y="98" fill="#dbeafe" font-family="Arial,sans-serif" font-size="16">THỰC TẬP SINH FRONT-END</text>
+  <text x="140" y="124" fill="#fff" font-family="Arial,sans-serif" font-size="12">hoanganh@example.com  •  github.com/hoanganh  •  Đà Nẵng</text>
+
+  <rect x="0" y="146" width="205" height="702" fill="#eff6ff"/>
+  <text x="32" y="198" fill="#1d4ed8" font-family="Arial,sans-serif" font-size="16" font-weight="700">GIỚI THIỆU</text>
+  <rect x="32" y="210" width="140" height="2" fill="#93c5fd"/>
+  <text x="32" y="238" fill="#334155" font-family="Arial,sans-serif" font-size="12">Sinh viên CNTT yêu thích</text>
+  <text x="32" y="257" fill="#334155" font-family="Arial,sans-serif" font-size="12">giao diện web và trải</text>
+  <text x="32" y="276" fill="#334155" font-family="Arial,sans-serif" font-size="12">nghiệm người dùng.</text>
+
+  <text x="32" y="329" fill="#1d4ed8" font-family="Arial,sans-serif" font-size="16" font-weight="700">KỸ NĂNG</text>
+  <rect x="32" y="341" width="140" height="2" fill="#93c5fd"/>
+  <g font-family="Arial,sans-serif" font-size="12" fill="#334155">
+    <text x="32" y="373">HTML / CSS</text><rect x="32" y="384" width="135" height="6" rx="3" fill="#bfdbfe"/><rect x="32" y="384" width="116" height="6" rx="3" fill="#2563eb"/>
+    <text x="32" y="423">JavaScript</text><rect x="32" y="434" width="135" height="6" rx="3" fill="#bfdbfe"/><rect x="32" y="434" width="102" height="6" rx="3" fill="#2563eb"/>
+    <text x="32" y="473">Figma</text><rect x="32" y="484" width="135" height="6" rx="3" fill="#bfdbfe"/><rect x="32" y="484" width="88" height="6" rx="3" fill="#2563eb"/>
+  </g>
+
+  <text x="32" y="545" fill="#1d4ed8" font-family="Arial,sans-serif" font-size="16" font-weight="700">NGÔN NGỮ</text>
+  <rect x="32" y="557" width="140" height="2" fill="#93c5fd"/>
+  <text x="32" y="587" fill="#334155" font-family="Arial,sans-serif" font-size="12">Tiếng Anh • TOEIC 750</text>
+
+  <text x="239" y="198" fill="#1d4ed8" font-family="Arial,sans-serif" font-size="17" font-weight="700">HỌC VẤN</text>
+  <rect x="239" y="211" width="329" height="2" fill="#bfdbfe"/>
+  <text x="239" y="242" fill="#0f172a" font-family="Arial,sans-serif" font-size="14" font-weight="700">Đại học Bách khoa Đà Nẵng</text>
+  <text x="239" y="265" fill="#475569" font-family="Arial,sans-serif" font-size="12">Kỹ thuật phần mềm • 2022 – 2026</text>
+
+  <text x="239" y="322" fill="#1d4ed8" font-family="Arial,sans-serif" font-size="17" font-weight="700">DỰ ÁN NỔI BẬT</text>
+  <rect x="239" y="335" width="329" height="2" fill="#bfdbfe"/>
+  <rect x="239" y="360" width="5" height="118" rx="2" fill="#60a5fa"/>
+  <text x="260" y="380" fill="#0f172a" font-family="Arial,sans-serif" font-size="14" font-weight="700">Website tìm việc sinh viên</text>
+  <text x="260" y="406" fill="#475569" font-family="Arial,sans-serif" font-size="12">• Thiết kế giao diện responsive trên mobile</text>
+  <text x="260" y="428" fill="#475569" font-family="Arial,sans-serif" font-size="12">• Xây dựng bộ lọc công việc theo vị trí</text>
+  <text x="260" y="450" fill="#475569" font-family="Arial,sans-serif" font-size="12">• Công nghệ: JavaScript, PHP, MySQL</text>
+
+  <text x="239" y="535" fill="#1d4ed8" font-family="Arial,sans-serif" font-size="17" font-weight="700">HOẠT ĐỘNG</text>
+  <rect x="239" y="548" width="329" height="2" fill="#bfdbfe"/>
+  <text x="239" y="582" fill="#0f172a" font-family="Arial,sans-serif" font-size="14" font-weight="700">Ban kỹ thuật CLB Tin học</text>
+  <text x="239" y="607" fill="#475569" font-family="Arial,sans-serif" font-size="12">Hỗ trợ workshop lập trình cho hơn 100 sinh viên.</text>
+
+  <text x="239" y="674" fill="#1d4ed8" font-family="Arial,sans-serif" font-size="17" font-weight="700">CHỨNG CHỈ</text>
+  <rect x="239" y="687" width="329" height="2" fill="#bfdbfe"/>
+  <text x="239" y="721" fill="#334155" font-family="Arial,sans-serif" font-size="12">Google UX Design Foundations • 2025</text>
+</svg>

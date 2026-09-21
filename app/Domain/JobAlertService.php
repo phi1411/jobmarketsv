@@ -151,11 +151,37 @@ class JobAlertService
         }
 
         if (!empty($search["location_id"])) {
-            $value = (string)($job["location_id"] ?? "") === (string)$search["location_id"] ? 1.0 : 0.0;
-            if ($value === 0.0 && !empty($search["location_name"])) {
-                $jobLocation = $this->normalize(implode(" ", [$job["location"] ?? "", $job["city"] ?? "", $job["district"] ?? "", $job["address"] ?? ""]));
-                if (str_contains($jobLocation, $this->normalize((string)$search["location_name"]))) {
+            $searchLocIds = array_filter(array_map('trim', explode(",", (string)$search["location_id"])));
+            $jobLocId = (string)($job["location_id"] ?? ($job["location"] ?? ""));
+            $value = 0.0;
+            if ($jobLocId !== "" && in_array($jobLocId, $searchLocIds, true)) {
+                $value = 1.0;
+            }
+
+            if ($value === 0.0) {
+                $jobLocation = $this->normalize(implode(" ", [
+                    $job["location"] ?? "",
+                    $job["city"] ?? "",
+                    $job["district"] ?? "",
+                    $job["address"] ?? "",
+                    $job["title"] ?? ""
+                ]));
+
+                if (!empty($search["location_name"]) && str_contains($jobLocation, $this->normalize((string)$search["location_name"]))) {
                     $value = 0.85;
+                } elseif (!empty($job["work_locations"]) && is_array($job["work_locations"])) {
+                    foreach ($job["work_locations"] as $wl) {
+                        $wlText = $this->normalize(implode(" ", [
+                            $wl["province"] ?? "",
+                            $wl["commune"] ?? "",
+                            $wl["address"] ?? "",
+                            $wl["district"] ?? ""
+                        ]));
+                        if (!empty($search["location_name"]) && str_contains($wlText, $this->normalize((string)$search["location_name"]))) {
+                            $value = 0.85;
+                            break;
+                        }
+                    }
                 }
             }
             $add("location", "Đúng khu vực " . ($search["location_name"] ?? "đã chọn"), 15, $value);
