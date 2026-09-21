@@ -22,7 +22,7 @@
                 </div>
 
                 <div class="detail-actions" style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
-                    <button id="btn-report-job" class="btn btn-outline" onclick="openReportJobModal()" style="display:none;color:#b91c1c;border-color:#fecaca;">⚑ Báo cáo tin</button>
+                    <button id="btn-report-job" class="btn btn-outline" onclick="openReportJobModal()" style="display:none;color:#b91c1c;border-color:#fecaca;"><i class="ri-flag-line"></i> Báo cáo tin</button>
                     <button id="btn-favorite" class="btn btn-outline" onclick="handleToggleFavorite()">
                         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                         Lưu tin
@@ -106,7 +106,7 @@
                     <div id="company-info-box">
                         <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;flex-wrap:wrap;">
                             <div id="comp-sidebar-name" style="font-weight:700;font-size:1.05rem;color:var(--dark);">Công ty</div>
-                            <span id="comp-sidebar-verified" class="badge-loc badge-loc-verified" style="display:none;font-size:0.75rem;padding:0.2rem 0.5rem;">✓ Đã xác thực</span>
+                            <span id="comp-sidebar-verified" class="badge-loc badge-loc-verified" style="display:none;font-size:0.75rem;padding:0.2rem 0.5rem;"><i class="ri-checkbox-circle-fill"></i> Đã xác thực</span>
                         </div>
                         <p id="comp-sidebar-desc" style="font-size:0.88rem;color:var(--text-muted);line-height:1.6;margin-bottom:1rem;">Doanh nghiệp đối tác tuyển dụng sinh viên part-time trên hệ thống.</p>
                         <div id="comp-sidebar-details" style="display:flex;flex-direction:column;gap:0.6rem;font-size:0.85rem;border-top:1px solid var(--border);padding-top:0.85rem;">
@@ -158,17 +158,17 @@
         <div id="apply-cv-readiness" style="margin-bottom:1.25rem;">
             <!-- Loading State -->
             <div id="apply-cv-loading" style="display:flex;align-items:center;gap:0.6rem;font-size:0.88rem;color:var(--text-muted);padding:0.85rem 1rem;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);">
-                <span>⏳ Đang kiểm tra tệp CV trong hồ sơ của bạn...</span>
+                <span><i class="ri-loader-4-line ri-spin"></i> Đang kiểm tra tệp CV trong hồ sơ của bạn...</span>
             </div>
 
             <!-- Ready State (Active CV exists) -->
             <div id="apply-cv-ready" style="display:none;padding:0.85rem 1rem;background:#f0fdf4;border:1px solid #86efac;border-left:4px solid #10b981;border-radius:var(--radius-sm);">
                 <div style="font-size:0.9rem;font-weight:700;color:#166534;display:flex;align-items:center;gap:0.5rem;">
-                    <span>📄</span>
+                    <span><i class="ri-file-pdf-line"></i></span>
                     <span>CV đính kèm: <strong id="apply-cv-name" style="word-break:break-all;"></strong></span>
                 </div>
                 <div style="font-size:0.82rem;color:#15803d;margin-top:0.35rem;line-height:1.4;">
-                    ✓ Bản sao CV hiện tại của bạn sẽ được lưu giữ bất biến cùng đơn ứng tuyển này và chuyển tới nhà tuyển dụng.
+                    <i class="ri-check-line"></i> Bản sao CV hiện tại của bạn sẽ được lưu giữ bất biến cùng đơn ứng tuyển này và chuyển tới nhà tuyển dụng.
                 </div>
             </div>
 
@@ -391,7 +391,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
         document.getElementById("job-detail-loading").innerHTML = `
             <div class="empty-state" style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);margin-top:2rem;">
-                <div class="empty-icon">❌</div>
+                <div class="empty-icon"><i class="ri-close-circle-line"></i></div>
                 <h2>Việc làm không tồn tại hoặc đã đóng</h2>
                 <p>Tin tuyển dụng này có thể đã hết hạn nộp hoặc đã được nhà tuyển dụng tạm đóng.</p>
                 <a href="/viec-lam" class="btn btn-primary" style="margin-top:1.5rem;">Xem các việc làm khác</a>
@@ -477,8 +477,8 @@ function renderJobDetailLocations(locations) {
                 <div class="location-card-info">
                     <div class="location-card-title">
                         <span>${branchName}</span>
-                        ${isPrimary ? '<span class="badge-loc badge-loc-primary">★ Địa điểm chính</span>' : ''}
-                        ${isVerified ? '<span class="badge-loc badge-loc-verified">✓ Đã xác thực</span>' : '<span class="badge-loc badge-loc-manual">✎ Nhập thủ công</span>'}
+                        ${isPrimary ? '<span class="badge-loc badge-loc-primary"><i class="ri-star-fill"></i> Địa điểm chính</span>' : ''}
+                        ${isVerified ? '<span class="badge-loc badge-loc-verified"><i class="ri-checkbox-circle-fill"></i> Đã xác thực</span>' : '<span class="badge-loc badge-loc-manual"><i class="ri-edit-line"></i> Nhập thủ công</span>'}
                     </div>
                     <div class="location-card-address">${addressText}</div>
                     <div class="location-card-meta">
@@ -906,13 +906,13 @@ async function submitApplication(e) {
             const btnTop = document.getElementById("btn-apply-top");
             const btnBottom = document.getElementById("btn-apply-bottom");
             if (btnTop) {
-                btnTop.innerText = "✅ Đã Ứng Tuyển";
+                btnTop.innerHTML = '<i class="ri-check-line"></i> Đã Ứng Tuyển';
                 btnTop.disabled = true;
                 btnTop.classList.remove("btn-primary");
                 btnTop.classList.add("btn-secondary");
             }
             if (btnBottom) {
-                btnBottom.innerText = "✅ Đã Ứng Tuyển";
+                btnBottom.innerHTML = '<i class="ri-check-line"></i> Đã Ứng Tuyển';
                 btnBottom.disabled = true;
                 btnBottom.classList.remove("btn-primary");
                 btnBottom.classList.add("btn-secondary");
@@ -1026,7 +1026,7 @@ async function pollPostApplyMatchAnalysis(applicationId) {
             banner.innerHTML = `
                 <div style="background:#f8fafc;border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
                     <div style="font-size:0.88rem;color:var(--text);">
-                        ⏳ Phân tích độ phù hợp đang được xử lý trong nền. Bạn có thể theo dõi kết quả trong mục <a href="/student/applications" style="font-weight:600;text-decoration:underline;">Ứng tuyển của tôi</a>.
+                        <i class="ri-time-line"></i> Phân tích độ phù hợp đang được xử lý trong nền. Bạn có thể theo dõi kết quả trong mục <a href="/student/applications" style="font-weight:600;text-decoration:underline;">Ứng tuyển của tôi</a>.
                     </div>
                     <button type="button" class="btn btn-outline btn-sm" style="font-size:0.78rem;padding:0.25rem 0.5rem;" onclick="document.getElementById('apply-match-banner').style.display='none'">Đóng</button>
                 </div>
@@ -1081,7 +1081,7 @@ function renderPostApplyMatchResult(data) {
         <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:var(--radius);padding:1.25rem;box-shadow:var(--shadow-sm);">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:0.75rem;">
                 <div style="display:flex;align-items:center;gap:0.5rem;">
-                    <span style="font-size:1.25rem;">✨</span>
+                    <span style="font-size:1.25rem;color:#eab308;"><i class="ri-sparkling-fill"></i></span>
                     <strong style="color:#166534;font-size:1rem;">Kết quả đánh giá độ phù hợp (AI)</strong>
                     <span class="badge" style="background:#dcfce7;color:#15803d;font-weight:700;">${escapeHtml(classification)}</span>
                 </div>

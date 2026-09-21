@@ -342,7 +342,7 @@ function renderProfileReadiness(profile) {
 
     document.getElementById("profile-readiness").innerHTML = chips.map(([ready, label]) => `
         <span class="readiness-chip ${ready ? "ready" : ""}">
-            <span aria-hidden="true">${ready ? "✓" : "!"}</span>${escapeHtml(label)}
+            <span aria-hidden="true">${ready ? '<i class="ri-check-line"></i>' : '!'}</span>${escapeHtml(label)}
         </span>
     `).join("");
 }
@@ -371,7 +371,7 @@ function renderRecommendationCard(job, index) {
 
             <div class="job-meta">
                 ${job.category_name ? `<span class="badge" style="background:#f1f5f9;color:var(--text);">${escapeHtml(job.category_name)}</span>` : ""}
-                <span class="badge" style="background:#f1f5f9;color:var(--text);">📍 ${escapeHtml(location)}</span>
+                <span class="badge" style="background:#f1f5f9;color:var(--text);"><i class="ri-map-pin-line"></i> ${escapeHtml(location)}</span>
                 <span class="badge badge-shift">${escapeHtml(getShiftLabel(job.shift_type))}</span>
                 <span class="badge badge-salary">${escapeHtml(salary)}</span>
             </div>
@@ -394,7 +394,7 @@ function renderRecommendationCard(job, index) {
 
             <div class="recommendation-actions">
                 <a href="/viec-lam/${encodeURIComponent(job.id)}" class="btn btn-primary btn-sm">Xem Việc Làm &rarr;</a>
-                ${job.is_favorite ? `<span class="badge" style="background:#fef3c7;color:#92400e;white-space:nowrap;">★ Đã lưu</span>` : ""}
+                ${job.is_favorite ? `<span class="badge" style="background:#fef3c7;color:#92400e;white-space:nowrap;"><i class="ri-star-fill"></i> Đã lưu</span>` : ""}
             </div>
         </article>
     `;
@@ -437,7 +437,7 @@ function renderMatchExplanation(job) {
 
     const suggestionsHtml = suggestions.length ? `
         <div class="improvement-box">
-            <h5>💡 Nên cải thiện trước</h5>
+            <h5><i class="ri-lightbulb-line"></i> Nên cải thiện trước</h5>
             <ol class="improvement-list">
                 ${suggestions.map(item => `<li><strong>${escapeHtml(item.label || "Hồ sơ")}:</strong> ${escapeHtml(item.text || "")}</li>`).join("")}
             </ol>

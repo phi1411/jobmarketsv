@@ -10,13 +10,13 @@ require_once dirname(__DIR__) . "/student/nav.php";
             <div class="cv-manager-meta">
                 <span>Tạo tối đa 20 CV cho các vị trí ứng tuyển khác nhau.</span>
                 <span id="cv-active-count" class="cv-manager-count-badge">
-                    <span>📄</span> <span id="cv-count-num">0</span> / 20 CV
+                    <i class="ri-file-text-line"></i> <span id="cv-count-num">0</span> / 20 CV
                 </span>
             </div>
         </div>
         <div>
             <a href="/mau-cv-sinh-vien" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 700;">
-                <span>➕</span> Tạo CV Mới
+                <i class="ri-add-line"></i> Tạo CV Mới
             </a>
         </div>
     </div>
@@ -43,7 +43,7 @@ require_once dirname(__DIR__) . "/student/nav.php";
         <div class="cv-modal-footer">
             <button type="button" class="btn btn-outline btn-sm" onclick="closePreviewCvModal()">Đóng</button>
             <button type="button" id="btn-modal-download-pdf" class="btn btn-primary btn-sm">
-                📥 Tải Bản PDF A4
+                <i class="ri-download-2-line"></i> Tải Bản PDF A4
             </button>
         </div>
     </div>
@@ -80,7 +80,7 @@ require_once dirname(__DIR__) . "/student/nav.php";
     <div class="cv-modal-card" style="max-width: 500px;">
         <div class="cv-modal-header">
             <h3 id="modal-public-warning-title" style="display: flex; align-items: center; gap: 0.5rem;">
-                <span>🌐</span> Chia Sẻ CV Công Khai
+                <i class="ri-global-line"></i> Chia Sẻ CV Công Khai
             </h3>
             <button type="button" class="cv-modal-close-btn" onclick="closePublicWarningModal()" aria-label="Đóng">&times;</button>
         </div>

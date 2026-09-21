@@ -137,7 +137,7 @@
                 </div>
 
                 <button type="button" onclick="addExperienceRow()" class="btn btn-outline btn-sm" style="display:inline-flex;align-items:center;gap:0.35rem;">
-                    <span>➕</span> <span>Thêm kinh nghiệm / dự án</span>
+                    <i class="ri-add-line"></i> <span>Thêm kinh nghiệm / dự án</span>
                 </button>
             </div>
 
@@ -163,7 +163,7 @@
                         <!-- Dynamic Certificate Rows -->
                     </div>
                     <button type="button" onclick="addCertificateRow()" class="btn btn-outline btn-sm" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;">
-                        <span>➕</span> <span>Thêm chứng chỉ</span>
+                        <i class="ri-add-line"></i> <span>Thêm chứng chỉ</span>
                     </button>
                     <small class="form-help" style="display:block;margin-top:0.35rem;">Ví dụ: IELTS 6.5, TOEIC 750, Tin học MOS, JLPT N3...</small>
                 </div>
@@ -208,13 +208,13 @@
                             Tải lên tệp CV (định dạng PDF) để hoàn thiện hồ sơ và sẵn sàng nộp đơn ứng tuyển việc làm.
                         </p>
                         <div style="display:inline-flex;align-items:center;gap:0.5rem;font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem;">
-                            <span>📄 Định dạng: <strong>PDF (.pdf)</strong></span>
+                            <span><i class="ri-file-pdf-line"></i> Định dạng: <strong>PDF (.pdf)</strong></span>
                             <span>&bull;</span>
                             <span>Dung lượng tối đa: <strong>5 MB</strong></span>
                         </div>
                         <div>
                             <button type="button" class="btn btn-primary btn-sm" onclick="event.stopPropagation(); document.getElementById('cv-file-input').click();">
-                                📤 Chọn tệp PDF từ máy tính
+                                <i class="ri-upload-2-line"></i> Chọn tệp PDF từ máy tính
                             </button>
                         </div>
                     </div>
@@ -224,7 +224,7 @@
                         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
                             <div style="display:flex;align-items:center;gap:1rem;min-width:240px;">
                                 <div style="width:48px;height:56px;background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ef4444;flex-shrink:0;">
-                                    <span style="font-size:1.2rem;line-height:1;">📄</span>
+                                    <span style="font-size:1.4rem;line-height:1;"><i class="ri-file-pdf-line"></i></span>
                                     <span style="font-weight:800;font-size:0.7rem;margin-top:2px;">PDF</span>
                                 </div>
                                 <div>
@@ -236,14 +236,14 @@
                                     </div>
                                     <div style="margin-top:0.4rem;">
                                         <span style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.2rem 0.6rem;background:#d1fae5;color:#065f46;border-radius:4px;font-size:0.78rem;font-weight:600;">
-                                            ✓ CV đang hoạt động (Sẵn sàng ứng tuyển)
+                                            <i class="ri-checkbox-circle-fill"></i> CV đang hoạt động (Sẵn sàng ứng tuyển)
                                         </span>
                                     </div>
                                 </div>
                             </div>
                             <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
                                 <button type="button" id="btn-analyze-cv" class="btn btn-primary btn-sm" onclick="handleAnalyzeCv();" title="Gửi CV tới Google Gemini để trích xuất thông tin nghề nghiệp">
-                                    ✨ Đọc CV Bằng Gemini
+                                    <i class="ri-sparkling-fill" style="color:#fbbf24;margin-right:4px;"></i> Đọc CV Bằng Gemini
                                 </button>
                                 <button type="button" id="btn-replace-cv" class="btn btn-outline btn-sm" onclick="document.getElementById('cv-file-input').click();">
                                     Thay thế CV
@@ -275,7 +275,7 @@
                             <i class="ri-moon-line"></i> Rảnh tất cả ca tối
                         </button>
                         <button type="button" class="btn btn-outline btn-sm" onclick="clearAllSchedule();" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;color:#b91c1c;border-color:#fca5a5;background:#fef2f2;font-weight:600;">
-                            <span>🧹</span> Xóa chọn tất cả
+                            <i class="ri-brush-line"></i> Xóa chọn tất cả
                         </button>
                     </div>
                 </div>
@@ -330,7 +330,7 @@
                             <option value="50">50 km</option>
                         </select>
                         <button type="button" id="btn-add-pref-loc" class="btn btn-outline" style="padding:0.6rem 1rem;font-weight:600;white-space:nowrap;" onclick="handleAddPreferredLocation()">
-                            ➕ Thêm khu vực
+                            <i class="ri-add-line"></i> Thêm khu vực
                         </button>
                     </div>
                 </div>
@@ -359,7 +359,7 @@
     <div style="background:var(--surface,#fff);border-radius:16px;width:100%;max-width:720px;max-height:90vh;overflow:auto;box-shadow:0 24px 70px rgba(15,23,42,.28);">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);">
             <div>
-                <h3 id="cv-ai-modal-title" style="margin:0;color:var(--dark);font-size:1.18rem;">Gemini Đã Đọc CV</h3>
+                <h3 id="cv-ai-modal-title" style="margin:0;color:var(--dark);font-size:1.18rem;display:flex;align-items:center;gap:0.4rem;"><i class="ri-sparkling-fill" style="color:#fbbf24;"></i> Gemini Đã Đọc CV</h3>
                 <p style="margin:.35rem 0 0;color:var(--text-muted);font-size:.82rem;">Kiểm tra các phần muốn điền vào hồ sơ. Hệ thống chưa lưu cho đến khi bạn bấm “Lưu Hồ Sơ Sinh Viên”.</p>
             </div>
             <button type="button" onclick="closeCvAiModal()" class="modal-close-btn" aria-label="Đóng">&times;</button>
@@ -824,7 +824,7 @@ function addExperienceRow(item = {}) {
     row.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
             <span style="font-weight:700;font-size:0.9rem;color:var(--dark);">Vị trí / Dự án</span>
-            <button type="button" onclick="removeExperienceRow(this)" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:0.8rem;padding:0.2rem 0.5rem;">✕ Xóa mục này</button>
+            <button type="button" onclick="removeExperienceRow(this)" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:0.8rem;padding:0.2rem 0.5rem;display:inline-flex;align-items:center;gap:0.25rem;"><i class="ri-close-line"></i> Xóa mục này</button>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.75rem;margin-bottom:0.75rem;">
             <div class="form-group" style="margin:0;">
@@ -1271,7 +1271,7 @@ async function handleAnalyzeCv() {
     if (!btn) return;
     const original = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = "⏳ Gemini đang đọc CV...";
+    btn.innerHTML = '<i class="ri-loader-4-line ri-spin" style="margin-right:4px;"></i> Gemini đang đọc CV...';
     showCvFeedback("CV sẽ được gửi an toàn tới Google Gemini để trích xuất thông tin nghề nghiệp. Hệ thống không tự lưu thay đổi.", "success");
 
     try {

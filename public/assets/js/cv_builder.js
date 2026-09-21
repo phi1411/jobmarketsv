@@ -77,7 +77,7 @@ window.CvTemplatesApp = {
             const key = escapeHtml(t.key);
             const name = escapeHtml(t.name);
             const desc = escapeHtml(t.description || '');
-            const atsBadge = t.ats_friendly ? `<span class="cv-badge-ats">✓ Chuẩn ATS</span>` : '';
+            const atsBadge = t.ats_friendly ? `<span class="cv-badge-ats"><i class="ri-check-line"></i> Chuẩn ATS</span>` : '';
             const color = escapeHtml(t.default_accent_color || '#0f766e');
             const previewImage = escapeHtml(t.preview_image || `/assets/images/cv-templates/${key}.svg`);
 
@@ -116,10 +116,10 @@ window.CvTemplatesApp = {
                         <p class="cv-card-desc">${desc}</p>
                         <div class="cv-card-actions">
                             <button type="button" class="btn btn-outline btn-sm" onclick="window.CvTemplatesApp.openPreviewModal('${key}')">
-                                👁️ Xem Mẫu
+                                <i class="ri-eye-line"></i> Xem Mẫu
                             </button>
                             <button type="button" class="btn btn-primary btn-sm" onclick="window.CvTemplatesApp.startCreateWithTemplate('${key}', '${name}')">
-                                ⚡ Dùng Mẫu Này
+                                <i class="ri-flashlight-line"></i> Dùng Mẫu Này
                             </button>
                         </div>
                     </div>
@@ -154,7 +154,7 @@ window.CvTemplatesApp = {
                     <h3 style="margin:0 0 0.5rem;color:var(--dark,#0f172a);">${name}</h3>
                     <p style="color:var(--text-muted,#64748b);font-size:0.9rem;line-height:1.5;margin-bottom:0.75rem;">${desc}</p>
                     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:0.75rem;font-size:0.85rem;color:#166534;margin-bottom:0.75rem;">
-                        <strong>🤖 Tối ưu hóa ATS:</strong> ${atsText}
+                        <strong><i class="ri-robot-2-line"></i> Tối ưu hóa ATS:</strong> ${atsText}
                     </div>
                     <ul style="margin:0;padding-left:1.2rem;font-size:0.85rem;color:var(--text,#1e293b);line-height:1.6;">
                         <li>Hỗ trợ khổ giấy chuẩn A4 chuẩn quốc tế</li>
@@ -244,7 +244,7 @@ window.handleCreateCvSubmit = async function(e) {
     } else {
         if (btn) {
             btn.disabled = false;
-            btn.textContent = '🚀 Bắt Đầu Soạn CV';
+            btn.innerHTML = '<i class="ri-file-add-line"></i> Bắt Đầu Soạn CV';
         }
         showToast((res && res.message) ? res.message : 'Không thể tạo CV. Vui lòng thử lại.', 'error');
     }
@@ -294,13 +294,13 @@ window.CvManagerApp = {
         if (this.cvList.length === 0) {
             container.innerHTML = `
                 <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1.5rem; background: var(--surface,#fff); border-radius: var(--radius, 16px); border: 1px dashed var(--border,#e2e8f0);">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+                    <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary);"><i class="ri-file-text-line"></i></div>
                     <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--dark, #0f172a); margin: 0 0 0.5rem;">Bạn chưa có bản CV online nào</h3>
                     <p style="color: var(--text-muted, #64748b); max-width: 480px; margin: 0 auto 1.5rem; line-height: 1.6;">
                         Tạo một bản CV chuẩn sinh viên và tối ưu ATS để sẵn sàng ứng tuyển các việc làm bán thời gian hấp dẫn nhất.
                     </p>
                     <a href="/mau-cv-sinh-vien" class="btn btn-primary" style="font-weight: 700;">
-                        ✨ Khám Phá Kho Mẫu CV
+                        <i class="ri-sparkling-fill" style="color:#fbbf24;margin-right:4px;"></i> Khám Phá Kho Mẫu CV
                     </a>
                 </div>
             `;
@@ -318,12 +318,12 @@ window.CvManagerApp = {
             const updated = cv.updated_at ? this.formatDate(cv.updated_at) : '';
 
             const primaryBadge = isPrimary 
-                ? `<span class="badge-cv-primary">⭐ CV Chính</span>` 
+                ? `<span class="badge-cv-primary"><i class="ri-star-fill" style="color:#fbbf24;margin-right:2px;"></i> CV Chính</span>` 
                 : `<button type="button" class="btn btn-outline btn-sm" style="font-size:0.75rem;padding:0.2rem 0.5rem;" onclick="window.CvManagerApp.setPrimary('${id}', ${cv.version})">Đặt CV chính</button>`;
 
             const publicBadge = isPublic
-                ? `<span class="badge-cv-public">🌐 Công khai</span>`
-                : `<span class="badge-cv-private">🔒 Riêng tư</span>`;
+                ? `<span class="badge-cv-public"><i class="ri-global-line"></i> Công khai</span>`
+                : `<span class="badge-cv-private"><i class="ri-lock-line"></i> Riêng tư</span>`;
 
             return `
                 <article class="cv-item-card ${isPrimary ? 'is-primary' : ''}" id="cv-card-${id}">
@@ -353,18 +353,18 @@ window.CvManagerApp = {
 
                     <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem;">
                         <button type="button" class="btn btn-outline btn-sm" onclick="window.CvManagerApp.activateCv('${id}', ${cv.version})" title="Tạo bản snapshot PDF và dùng làm CV ứng tuyển trực tiếp">
-                            🚀 Dùng để ứng tuyển
+                            <i class="ri-send-plane-fill"></i> Dùng để ứng tuyển
                         </button>
                         <button type="button" class="btn btn-outline btn-sm" onclick="window.CvManagerApp.duplicateCv('${id}')" title="Tạo một bản sao mới từ CV này">
-                            📋 Nhân bản
+                            <i class="ri-file-copy-line"></i> Nhân bản
                         </button>
                         ${isPublic && cv.public_slug ? `
                             <button type="button" class="btn btn-outline btn-sm" onclick="window.CvManagerApp.copyShareLink('${escapeHtml(cv.public_slug)}')" title="Sao chép đường dẫn xem công khai">
-                                🔗 Link chia sẻ
+                                <i class="ri-share-line"></i> Link chia sẻ
                             </button>
                         ` : ''}
                         <button type="button" class="btn btn-outline btn-sm" onclick="window.CvManagerApp.togglePublicPrompt('${id}', ${!isPublic}, ${cv.version})">
-                            ${isPublic ? '🔒 Tắt chia sẻ' : '🌐 Bật chia sẻ'}
+                            ${isPublic ? '<i class="ri-lock-line"></i> Tắt chia sẻ' : '<i class="ri-global-line"></i> Bật chia sẻ'}
                         </button>
                     </div>
 
@@ -372,16 +372,16 @@ window.CvManagerApp = {
                         <span>Cập nhật: ${updated}</span>
                         <div class="cv-item-main-actions">
                             <button type="button" class="btn btn-outline btn-sm" onclick="window.CvManagerApp.openPreview('${id}')">
-                                👁️ Xem
+                                <i class="ri-eye-line"></i> Xem
                             </button>
                             <button type="button" class="btn btn-outline btn-sm" onclick="window.CvManagerApp.downloadPdf('${id}', '${title}')">
-                                📥 PDF
+                                <i class="ri-download-2-line"></i> PDF
                             </button>
                             <a href="/student/cvs/${id}/edit" class="btn btn-primary btn-sm">
-                                ✏️ Sửa
+                                <i class="ri-edit-line"></i> Sửa
                             </a>
                             <button type="button" class="btn btn-outline btn-sm" style="color:var(--danger);border-color:#fca5a5;" onclick="window.CvManagerApp.confirmDelete('${id}', '${title}')" title="Xóa CV này">
-                                🗑️
+                                <i class="ri-delete-bin-line"></i>
                             </button>
                         </div>
                     </div>
@@ -754,10 +754,10 @@ window.CvEditorApp = {
                     </div>
                     <div style="display:flex;align-items:center;gap:0.25rem;">
                         ${!isPersonal ? `
-                            <button type="button" class="cv-mini-btn" title="Chuyển lên trên" onclick="window.CvEditorApp.moveSection(${idx}, -1)">▲</button>
-                            <button type="button" class="cv-mini-btn" title="Chuyển xuống dưới" onclick="window.CvEditorApp.moveSection(${idx}, 1)">▼</button>
+                            <button type="button" class="cv-mini-btn" title="Chuyển lên trên" onclick="window.CvEditorApp.moveSection(${idx}, -1)"><i class="ri-arrow-up-s-line"></i></button>
+                            <button type="button" class="cv-mini-btn" title="Chuyển xuống dưới" onclick="window.CvEditorApp.moveSection(${idx}, 1)"><i class="ri-arrow-down-s-line"></i></button>
                             <button type="button" class="cv-mini-btn" title="${isHidden ? 'Hiện mục này' : 'Ẩn mục này'}" onclick="window.CvEditorApp.toggleSectionVisibility('${sec}')">
-                                ${isHidden ? '👁️' : '🚫'}
+                                ${isHidden ? '<i class="ri-eye-line"></i>' : '<i class="ri-eye-off-line"></i>'}
                             </button>
                         ` : '<span style="font-size:0.75rem;color:var(--text-muted);">Cố định</span>'}
                     </div>
@@ -819,7 +819,7 @@ window.CvEditorApp = {
             case 'summary':
                 return this.buildSummarySection(data || '');
             case 'education':
-                return this.buildListSection('education', '🎓 Học Vấn & Bằng Cấp', data || [], [
+                return this.buildListSection('education', '<i class="ri-graduation-cap-line" style="margin-right:6px;"></i>Học Vấn & Bằng Cấp', data || [], [
                     { id: 'school', label: 'Trường / Cơ sở đào tạo', type: 'text', placeholder: 'VD: Đại học Bách Khoa Hà Nội' },
                     { id: 'degree', label: 'Bằng cấp / Trình độ', type: 'text', placeholder: 'VD: Cử nhân' },
                     { id: 'major', label: 'Chuyên ngành', type: 'text', placeholder: 'VD: Khoa học máy tính' },
@@ -829,12 +829,12 @@ window.CvEditorApp = {
                     { id: 'description', label: 'Mô tả thêm / Thành tích', type: 'textarea', placeholder: 'Học bổng khuyến khích học tập...' }
                 ]);
             case 'skills':
-                return this.buildListSection('skills', '⚡ Kỹ Năng Chuyên Môn', data || [], [
+                return this.buildListSection('skills', '<i class="ri-tools-line" style="margin-right:6px;"></i>Kỹ Năng Chuyên Môn', data || [], [
                     { id: 'name', label: 'Tên kỹ năng', type: 'text', placeholder: 'VD: PHP / MySQL / Giao tiếp' },
                     { id: 'level', label: 'Mức độ', type: 'text', placeholder: 'VD: Thành thạo, Khá, Cơ bản' }
                 ]);
             case 'projects':
-                return this.buildListSection('projects', '🚀 Dự Án Thực Hiện', data || [], [
+                return this.buildListSection('projects', '<i class="ri-rocket-line" style="margin-right:6px;"></i>Dự Án Thực Hiện', data || [], [
                     { id: 'name', label: 'Tên dự án', type: 'text', placeholder: 'VD: Website Bán Hàng Trực Tuyến' },
                     { id: 'role', label: 'Vai trò trong dự án', type: 'text', placeholder: 'VD: Lập trình viên Backend' },
                     { id: 'technologies', label: 'Công nghệ sử dụng', type: 'text', placeholder: 'VD: PHP, MySQL, Git, Docker' },
@@ -844,7 +844,7 @@ window.CvEditorApp = {
                     { id: 'description', label: 'Mô tả kết quả và đóng góp', type: 'textarea', placeholder: 'Xây dựng API xác thực người dùng, tích hợp cổng thanh toán...' }
                 ]);
             case 'experience':
-                return this.buildListSection('experience', '💼 Kinh Nghiệm Làm Việc', data || [], [
+                return this.buildListSection('experience', '<i class="ri-briefcase-line" style="margin-right:6px;"></i>Kinh Nghiệm Làm Việc', data || [], [
                     { id: 'organization', label: 'Công ty / Cửa hàng', type: 'text', placeholder: 'VD: The Coffee House, Highlands Coffee' },
                     { id: 'position', label: 'Vị trí đảm nhiệm', type: 'text', placeholder: 'VD: Nhân viên phục vụ part-time' },
                     { id: 'start_date', label: 'Bắt đầu', type: 'text', placeholder: 'VD: 06/2023' },
@@ -852,7 +852,7 @@ window.CvEditorApp = {
                     { id: 'description', label: 'Mô tả công việc & kỹ năng', type: 'textarea', placeholder: 'Chăm sóc khách hàng, phối hợp làm việc nhóm theo ca...' }
                 ]);
             case 'activities':
-                return this.buildListSection('activities', '🤝 Hoạt Động & Câu Lạc Bộ', data || [], [
+                return this.buildListSection('activities', '<i class="ri-team-line" style="margin-right:6px;"></i>Hoạt Động & Câu Lạc Bộ', data || [], [
                     { id: 'organization', label: 'Tổ chức / CLB', type: 'text', placeholder: 'VD: CLB Tình Nguyện Sinh Viên' },
                     { id: 'role', label: 'Vai trò', type: 'text', placeholder: 'VD: Trưởng ban Truyền thông' },
                     { id: 'start_date', label: 'Bắt đầu', type: 'text', placeholder: 'VD: 09/2022' },
@@ -860,21 +860,21 @@ window.CvEditorApp = {
                     { id: 'description', label: 'Mô tả hoạt động', type: 'textarea', placeholder: 'Tổ chức các sự kiện tiếp sức mùa thi...' }
                 ]);
             case 'certifications':
-                return this.buildListSection('certifications', '📜 Chứng Chỉ & Khóa Học', data || [], [
+                return this.buildListSection('certifications', '<i class="ri-award-line" style="margin-right:6px;"></i>Chứng Chỉ & Khóa Học', data || [], [
                     { id: 'name', label: 'Tên chứng chỉ', type: 'text', placeholder: 'VD: TOEIC 750 / AWS Certified' },
                     { id: 'issuer', label: 'Đơn vị cấp', type: 'text', placeholder: 'VD: IIG Vietnam / Amazon Web Services' },
                     { id: 'issued_date', label: 'Ngày cấp', type: 'text', placeholder: 'VD: 10/2023' },
                     { id: 'url', label: 'Đường dẫn xác minh', type: 'text', placeholder: 'https://...' }
                 ]);
             case 'awards':
-                return this.buildListSection('awards', '🏆 Giải Thưởng & Khen Thưởng', data || [], [
+                return this.buildListSection('awards', '<i class="ri-trophy-line" style="margin-right:6px;"></i>Giải Thưởng & Khen Thưởng', data || [], [
                     { id: 'name', label: 'Tên giải thưởng', type: 'text', placeholder: 'VD: Giải Ba Olympic Tin Học Sinh Viên' },
                     { id: 'issuer', label: 'Đơn vị trao giải', type: 'text', placeholder: 'VD: Hội Tin Học Việt Nam' },
                     { id: 'issued_date', label: 'Năm / Tháng', type: 'text', placeholder: 'VD: 2023' },
                     { id: 'description', label: 'Mô tả chi tiết', type: 'textarea', placeholder: 'Thi đấu thuật toán theo đội...' }
                 ]);
             case 'languages':
-                return this.buildListSection('languages', '🌐 Ngoại Ngữ', data || [], [
+                return this.buildListSection('languages', '<i class="ri-global-line" style="margin-right:6px;"></i>Ngoại Ngữ', data || [], [
                     { id: 'name', label: 'Tên ngoại ngữ', type: 'text', placeholder: 'VD: Tiếng Anh, Tiếng Nhật' },
                     { id: 'level', label: 'Trình độ', type: 'text', placeholder: 'VD: Giao tiếp tốt / N3 / IELTS 6.5' }
                 ]);
@@ -892,10 +892,10 @@ window.CvEditorApp = {
             <section class="cv-section-box">
                 <div class="cv-section-header" onclick="window.CvEditorApp.toggleAccordion('section-personal-body')">
                     <div class="cv-section-title-wrap">
-                        <span class="cv-section-icon">👤</span>
+                        <span class="cv-section-icon"><i class="ri-user-3-line"></i></span>
                         <h3>Thông Tin Cá Nhân</h3>
                     </div>
-                    <span id="icon-toggle-personal-body">▼</span>
+                    <i id="icon-toggle-personal-body" class="ri-arrow-down-s-line"></i>
                 </div>
                 <div class="cv-section-body" id="section-personal-body">
                     <div class="cv-form-row">
@@ -948,10 +948,10 @@ window.CvEditorApp = {
             <section class="cv-section-box">
                 <div class="cv-section-header" onclick="window.CvEditorApp.toggleAccordion('section-summary-body')">
                     <div class="cv-section-title-wrap">
-                        <span class="cv-section-icon">🎯</span>
+                        <span class="cv-section-icon"><i class="ri-focus-2-line"></i></span>
                         <h3>Mục Tiêu Nghề Nghiệp / Tóm Tắt</h3>
                     </div>
-                    <span id="icon-toggle-summary-body">▼</span>
+                    <i id="icon-toggle-summary-body" class="ri-arrow-down-s-line"></i>
                 </div>
                 <div class="cv-section-body" id="section-summary-body">
                     <div class="cv-form-group">
@@ -989,9 +989,9 @@ window.CvEditorApp = {
                     <div class="cv-item-repeater-header">
                         <span class="cv-item-num">Mục #${idx + 1}</span>
                         <div class="cv-item-tools">
-                            ${idx > 0 ? `<button type="button" class="cv-mini-btn" title="Lên trên" onclick="window.CvEditorApp.moveListItem('${sectionKey}', ${idx}, -1)">▲</button>` : ''}
-                            ${idx < items.length - 1 ? `<button type="button" class="cv-mini-btn" title="Xuống dưới" onclick="window.CvEditorApp.moveListItem('${sectionKey}', ${idx}, 1)">▼</button>` : ''}
-                            <button type="button" class="cv-mini-btn btn-delete" title="Xóa mục này" onclick="window.CvEditorApp.deleteListItem('${sectionKey}', ${idx})">✕</button>
+                            ${idx > 0 ? `<button type="button" class="cv-mini-btn" title="Lên trên" onclick="window.CvEditorApp.moveListItem('${sectionKey}', ${idx}, -1)"><i class="ri-arrow-up-s-line"></i></button>` : ''}
+                            ${idx < items.length - 1 ? `<button type="button" class="cv-mini-btn" title="Xuống dưới" onclick="window.CvEditorApp.moveListItem('${sectionKey}', ${idx}, 1)"><i class="ri-arrow-down-s-line"></i></button>` : ''}
+                            <button type="button" class="cv-mini-btn btn-delete" title="Xóa mục này" onclick="window.CvEditorApp.deleteListItem('${sectionKey}', ${idx})"><i class="ri-close-line"></i></button>
                         </div>
                     </div>
                     <div class="cv-form-row">
@@ -1007,14 +1007,14 @@ window.CvEditorApp = {
                     <div class="cv-section-title-wrap">
                         <h3>${title}</h3>
                     </div>
-                    <span id="icon-toggle-${sectionKey}-body">▼</span>
+                    <i id="icon-toggle-${sectionKey}-body" class="ri-arrow-down-s-line"></i>
                 </div>
                 <div class="cv-section-body" id="section-${sectionKey}-body">
                     <div id="list-container-${sectionKey}">
                         ${itemsHtml}
                     </div>
                     <button type="button" class="cv-btn-add-item" onclick="window.CvEditorApp.addListItem('${sectionKey}')">
-                        <span>➕</span> Thêm một mục mới
+                        <i class="ri-add-line"></i> Thêm một mục mới
                     </button>
                 </div>
             </section>
@@ -1026,10 +1026,10 @@ window.CvEditorApp = {
             <section class="cv-section-box">
                 <div class="cv-section-header" onclick="window.CvEditorApp.toggleAccordion('section-interests-body')">
                     <div class="cv-section-title-wrap">
-                        <span class="cv-section-icon">☕</span>
+                        <span class="cv-section-icon"><i class="ri-cup-line"></i></span>
                         <h3>Sở Thích Cá Nhân</h3>
                     </div>
-                    <span id="icon-toggle-interests-body">▼</span>
+                    <i id="icon-toggle-interests-body" class="ri-arrow-down-s-line"></i>
                 </div>
                 <div class="cv-section-body" id="section-interests-body">
                     <div class="cv-form-group">
@@ -1049,7 +1049,7 @@ window.CvEditorApp = {
                         <div class="cv-item-repeater-header">
                             <span class="cv-item-num">Nội dung #${itemIdx + 1}</span>
                             <div class="cv-item-tools">
-                                <button type="button" class="cv-mini-btn btn-delete" onclick="window.CvEditorApp.deleteCustomSectionItem(${secIdx}, ${itemIdx})">✕</button>
+                                <button type="button" class="cv-mini-btn btn-delete" onclick="window.CvEditorApp.deleteCustomSectionItem(${secIdx}, ${itemIdx})"><i class="ri-close-line"></i></button>
                             </div>
                         </div>
                         <div class="cv-form-row">
@@ -1086,7 +1086,7 @@ window.CvEditorApp = {
                         ${itemsHtml}
                     </div>
                     <button type="button" class="btn btn-outline btn-sm" style="margin-top:0.5rem;" onclick="window.CvEditorApp.addCustomSectionItem(${secIdx})">
-                        ➕ Thêm dòng nội dung
+                        <i class="ri-add-line"></i> Thêm dòng nội dung
                     </button>
                 </div>
             `;
@@ -1096,15 +1096,15 @@ window.CvEditorApp = {
             <section class="cv-section-box">
                 <div class="cv-section-header" onclick="window.CvEditorApp.toggleAccordion('section-custom_sections-body')">
                     <div class="cv-section-title-wrap">
-                        <span class="cv-section-icon">➕</span>
+                        <span class="cv-section-icon"><i class="ri-folder-add-line"></i></span>
                         <h3>Mục Tùy Chọn Thêm</h3>
                     </div>
-                    <span id="icon-toggle-custom_sections-body">▼</span>
+                    <i id="icon-toggle-custom_sections-body" class="ri-arrow-down-s-line"></i>
                 </div>
                 <div class="cv-section-body" id="section-custom_sections-body">
                     ${sectionsHtml}
                     <button type="button" class="cv-btn-add-item" onclick="window.CvEditorApp.addCustomSection()">
-                        <span>➕</span> Thêm một danh mục tùy chọn mới
+                        <i class="ri-add-line"></i> Thêm một danh mục tùy chọn mới
                     </button>
                 </div>
             </section>
@@ -1286,11 +1286,11 @@ window.CvEditorApp = {
         indicator.className = `cv-autosave-status ${status}`;
         textEl.textContent = text;
         if (status === 'saving') {
-            icon.textContent = '⏳';
+            icon.innerHTML = '<i class="ri-loader-4-line ri-spin"></i>';
         } else if (status === 'saved') {
-            icon.textContent = '✓';
+            icon.innerHTML = '<i class="ri-check-line" style="color:var(--success,#10b981);"></i>';
         } else {
-            icon.textContent = '⚠️';
+            icon.innerHTML = '<i class="ri-error-warning-line" style="color:var(--danger,#ef4444);"></i>';
         }
     },
 

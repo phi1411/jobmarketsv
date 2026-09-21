@@ -1,7 +1,7 @@
 <div class="cv-templates-hero">
     <div class="container">
         <div class="cv-hero-badge">
-            <span>✨ Kho Mẫu CV Chuẩn Sinh Viên & ATS</span>
+            <span><i class="ri-sparkling-fill" style="color:#fbbf24;margin-right:4px;"></i> Kho Mẫu CV Chuẩn Sinh Viên & ATS</span>
         </div>
         <h1 class="cv-hero-title">Tạo CV Chuyên Nghiệp Dành Riêng Cho Sinh Viên</h1>
         <p class="cv-hero-subtitle">
@@ -18,13 +18,13 @@
                 <span><i class="ri-graduation-cap-line"></i> Sinh Viên</span>
             </button>
             <button type="button" class="cv-filter-pill" data-filter="ats" role="tab" aria-selected="false">
-                <span>🤖 Chuẩn ATS</span>
+                <span><i class="ri-robot-2-line"></i> Chuẩn ATS</span>
             </button>
             <button type="button" class="cv-filter-pill" data-filter="simple" role="tab" aria-selected="false">
-                <span>📄 Tối Giản</span>
+                <span><i class="ri-file-text-line"></i> Tối Giản</span>
             </button>
             <button type="button" class="cv-filter-pill" data-filter="modern" role="tab" aria-selected="false">
-                <span>🎨 Hiện Đại</span>
+                <span><i class="ri-palette-line"></i> Hiện Đại</span>
             </button>
         </div>
     </div>
@@ -62,15 +62,15 @@
                 <div class="cv-form-group">
                     <label class="cv-form-label" for="create-cv-language">Ngôn ngữ viết CV</label>
                     <select id="create-cv-language" class="cv-select">
-                        <option value="vi" selected>🇻🇳 Tiếng Việt</option>
-                        <option value="en">🇬🇧 English</option>
+                        <option value="vi" selected>Tiếng Việt</option>
+                        <option value="en">English</option>
                     </select>
                 </div>
             </div>
             <div class="cv-modal-footer">
                 <button type="button" class="btn btn-outline btn-sm" onclick="closeCreateCvModal()">Hủy Bỏ</button>
                 <button type="submit" id="btn-submit-create-cv" class="btn btn-primary btn-sm">
-                    🚀 Bắt Đầu Soạn CV
+                    <i class="ri-file-add-line"></i> Bắt Đầu Soạn CV
                 </button>
             </div>
         </form>
