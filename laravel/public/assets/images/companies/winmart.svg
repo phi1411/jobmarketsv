@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+        <rect width="200" height="200" rx="30" fill="#da251c"/>
+        <!-- Yellow Star Accent -->
+        <polygon points="100,35 106,53 125,53 109,64 115,82 100,71 85,82 91,64 75,53 94,53" fill="#ffde00"/>
+        <text x="100" y="132" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="900" fill="#ffffff" text-anchor="middle">WinMart<tspan fill="#ffde00">+</tspan></text>
+        <text x="100" y="162" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle" letter-spacing="1">TƯƠI NGON THƯỢNG HẠNG</text>
+    </svg>
