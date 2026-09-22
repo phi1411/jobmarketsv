@@ -2819,6 +2819,8 @@ textarea[disabled],
    SMART TOGGLEABLE TOP FILTER TOOLBAR
    ========================================================================== */
 .top-filter-toolbar {
+    position: relative;
+    z-index: 100;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
@@ -2935,14 +2937,14 @@ textarea[disabled],
     margin-top: 1rem;
     padding-top: 1.25rem;
     border-top: 1px dashed var(--border);
-    animation: slideDown 0.25s ease forwards;
 }
 .advanced-filter-panel.open {
     display: block;
+    animation: filterPanelFade 0.2s ease forwards;
 }
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes filterPanelFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 .filter-grid-options {
     display: grid;
@@ -3410,6 +3412,9 @@ textarea[disabled],
     display: inline-block;
     width: 100%;
     vertical-align: middle;
+}
+.custom-select-wrapper.open {
+    z-index: 1050;
 }
 
 /* Khi select có style width: auto hoặc display inline */

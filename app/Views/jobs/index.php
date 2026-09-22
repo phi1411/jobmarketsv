@@ -103,7 +103,7 @@
     <div id="nearby-filter-bar" class="nearby-filter-bar" style="display:none;">
         <div style="display:flex;align-items:center;gap:0.65rem;flex-wrap:wrap;">
             <div class="nearby-chips-group">
-                <span class="nearby-radius-label">📍 Bán kính:</span>
+                <span class="nearby-radius-label"><i class="ri-radar-line"></i> Bán kính:</span>
                 <button type="button" class="radius-chip" data-radius="2" onclick="setNearbyRadius(2)">2 km</button>
                 <button type="button" class="radius-chip" data-radius="5" onclick="setNearbyRadius(5)">5 km</button>
                 <button type="button" class="radius-chip active" data-radius="10" onclick="setNearbyRadius(10)">10 km</button>
@@ -117,7 +117,7 @@
             </div>
 
             <button type="button" id="btn-save-preferred-loc" class="btn btn-outline btn-sm" style="display:none;font-size:0.78rem;padding:0.25rem 0.65rem;border-color:#10b981;color:#059669;font-weight:700;" onclick="saveCurrentNearbyToPreferred()">
-                💾 Lưu làm khu vực mong muốn
+                <i class="ri-save-line"></i> Lưu làm khu vực mong muốn
             </button>
         </div>
 
@@ -126,7 +126,7 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 <span>Vị trí chỉ dùng cho lần tìm kiếm này và không tự động lưu.</span>
             </div>
-            <button type="button" class="btn-exit-nearby" onclick="exitNearbyMode()">✕ Bỏ lọc gần tôi</button>
+            <button type="button" class="btn-exit-nearby" onclick="exitNearbyMode()"><i class="ri-close-line"></i> Bỏ lọc gần tôi</button>
         </div>
     </div>
 
@@ -595,7 +595,7 @@ function applyStudentNearbySearch() {
         const user = (typeof TokenStorage !== "undefined" && TokenStorage.isLoggedIn()) ? TokenStorage.getUser() : null;
         if (user && (user.role === "student" || user.role === "developer")) {
             savePrefBtn.style.display = "inline-flex";
-            savePrefBtn.innerHTML = "💾 Lưu làm khu vực mong muốn";
+            savePrefBtn.innerHTML = '<i class="ri-save-line"></i> Lưu làm khu vực mong muốn';
             savePrefBtn.disabled = false;
         } else {
             savePrefBtn.style.display = "none";
@@ -949,7 +949,7 @@ async function loadJobs(page = null) {
             if (jobs.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state" style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);grid-column:1/-1;padding:3rem 1.5rem;">
-                        <div class="empty-icon" style="font-size:2.5rem;margin-bottom:0.75rem;">📍</div>
+                        <div class="empty-icon" style="font-size:2.5rem;margin-bottom:0.75rem;color:var(--text-muted);"><i class="ri-map-pin-line"></i></div>
                         <h3 style="font-size:1.2rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không tìm thấy việc làm trong bán kính ${nearbyRadiusKm} km</h3>
                         <p style="color:var(--text-muted);max-width:460px;margin:0 auto 1rem;">Hãy thử mở rộng bán kính tìm kiếm (20 km) hoặc chuyển sang tìm việc theo tỉnh thành.</p>
                         <button type="button" class="btn btn-primary btn-sm" onclick="setNearbyRadius(20)">Mở rộng bán kính 20 km</button>
@@ -1072,7 +1072,7 @@ async function loadJobs(page = null) {
         if (jobs.length === 0) {
             container.innerHTML = `
                 <div class="empty-state" style="background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);grid-column:1/-1;padding:3rem 1.5rem;">
-                    <div class="empty-icon" style="font-size:2.5rem;margin-bottom:0.75rem;">📂</div>
+                    <div class="empty-icon" style="font-size:2.5rem;margin-bottom:0.75rem;color:var(--text-muted);"><i class="ri-folder-open-line"></i></div>
                     <h3 style="font-size:1.2rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem;">Không tìm thấy việc làm nào</h3>
                     <p style="color:var(--text-muted);max-width:460px;margin:0 auto;">Hãy thử thay đổi từ khóa tìm kiếm hoặc bấm nút "Đặt lại" để xem toàn bộ danh sách.</p>
                 </div>
