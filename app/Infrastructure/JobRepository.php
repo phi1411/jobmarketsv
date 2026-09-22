@@ -80,7 +80,7 @@ class JobRepository implements JobRepositoryInterface
     {
         [$whereSql, $params] = $this->buildWhereClause($filters);
 
-        $sql = "SELECT COUNT(*) FROM `jobs` j WHERE {$whereSql}";
+        $sql = "SELECT COUNT(*) FROM `jobs` j LEFT JOIN `categories` cat ON (j.category_id = cat.id OR j.category = cat.id) WHERE {$whereSql}";
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
 
@@ -113,11 +113,15 @@ class JobRepository implements JobRepositoryInterface
             $params[] = $filters["company_id"];
         }
 
-        // Filter: Category ID
+        // Filter: Category ID or custom category
         if (!empty($filters["category_id"])) {
-            $sql .= " AND (j.category_id = ? OR j.category = ?)";
-            $params[] = $filters["category_id"];
-            $params[] = $filters["category_id"];
+            $catVal = (string)$filters["category_id"];
+            $sql .= " AND (j.category_id = ? OR j.category = ? OR j.category LIKE ? OR cat.name LIKE ?)";
+            $escapedLike = "%" . QueryHelper::escapeLike($catVal) . "%";
+            $params[] = $catVal;
+            $params[] = $catVal;
+            $params[] = $escapedLike;
+            $params[] = $escapedLike;
         }
 
         // Filter: one or many broad locations selected from the hierarchy picker.

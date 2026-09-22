@@ -145,9 +145,22 @@ class JobAlertService
         }
 
         if (!empty($search["category_id"])) {
-            $jobCategory = $job["category_id"] ?? ($job["category"] ?? null);
-            $value = (string)$jobCategory === (string)$search["category_id"] ? 1.0 : 0.0;
-            $add("category", "Đúng ngành " . ($search["category_name"] ?? "đã chọn"), 20, $value);
+            $jobCategory = (string)($job["category_id"] ?? ($job["category"] ?? ""));
+            $searchCat = (string)$search["category_id"];
+            $searchName = (string)($search["category_name"] ?? "");
+            $jobCatName = (string)($job["category_name"] ?? "");
+
+            $value = 0.0;
+            if ($jobCategory !== "" && $jobCategory === $searchCat) {
+                $value = 1.0;
+            } elseif ($searchName !== "" && ($jobCategory === $searchName || $jobCatName === $searchName)) {
+                $value = 1.0;
+            } elseif ($searchCat !== "" && stripos($jobCatName, $searchCat) !== false) {
+                $value = 1.0;
+            } elseif ($searchCat !== "" && stripos($jobCategory, $searchCat) !== false) {
+                $value = 1.0;
+            }
+            $add("category", "Đúng ngành " . ($search["category_name"] ?: $search["category_id"]), 20, $value);
         }
 
         if (!empty($search["location_id"])) {

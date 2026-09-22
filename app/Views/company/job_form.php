@@ -41,7 +41,7 @@ $editingJobId = $jobId ?? "";
             <div class="form-grid-2" style="margin-bottom:1.25rem;">
                 <div class="form-group">
                     <label class="form-label" for="job-category">Ngành nghề / Lĩnh vực <span style="color:var(--danger)">*</span></label>
-                    <select id="job-category" class="form-control" required>
+                    <select id="job-category" class="form-control" required data-searchable="true" data-allow-custom="true" data-placeholder-search="Tìm hoặc gõ ngành nghề...">
                         <option value="">-- Chọn ngành nghề --</option>
                     </select>
                 </div>
@@ -475,12 +475,19 @@ async function loadCategories() {
     const res = await apiRequest("/categories");
     if (res && res.success && Array.isArray(res.data)) {
         const sel = document.getElementById("job-category");
+        const currentVal = sel.value;
         res.data.forEach(c => {
-            const opt = document.createElement("option");
-            opt.value = c.id;
-            opt.textContent = c.name;
-            sel.appendChild(opt);
+            if (!Array.from(sel.options).some(o => o.value === c.id)) {
+                const opt = document.createElement("option");
+                opt.value = c.id;
+                opt.textContent = c.name;
+                sel.appendChild(opt);
+            }
         });
+        if (currentVal) {
+            sel.value = currentVal;
+            window.refreshCustomSelect?.(sel);
+        }
     }
 }
 
@@ -1028,7 +1035,19 @@ async function loadJobForEditing(id) {
         const j = res.data;
 
         document.getElementById("job-title").value = j.title || "";
-        document.getElementById("job-category").value = j.category_id || "";
+        const catVal = j.category_id || j.category || "";
+        const catSel = document.getElementById("job-category");
+        if (catSel && catVal) {
+            let opt = Array.from(catSel.options).find(o => o.value === catVal || o.textContent === catVal);
+            if (!opt) {
+                opt = document.createElement("option");
+                opt.value = catVal;
+                opt.textContent = catVal;
+                catSel.appendChild(opt);
+            }
+            catSel.value = opt.value;
+            window.refreshCustomSelect?.(catSel);
+        }
         document.getElementById("job-location").value = j.location_id || "";
         if (companyLocationPicker && j.location_id) {
             companyLocationPicker.setSelected([j.location_id]);
@@ -1132,6 +1151,7 @@ async function handleSubmitJob(e) {
     const payload = {
         title: document.getElementById("job-title").value.trim(),
         category_id: document.getElementById("job-category").value || null,
+        category: document.getElementById("job-category").value || null,
         location_id: document.getElementById("job-location").value || null,
         work_type: document.getElementById("job-work-type").value,
         work_mode: workMode,

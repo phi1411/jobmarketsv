@@ -58,7 +58,10 @@ class SavedSearchRepository implements SavedSearchRepositoryInterface
     public function findById(string $id): ?array
     {
         $stmt = $this->db->prepare(
-            "SELECT * FROM `saved_searches` WHERE `id` = ? LIMIT 1"
+            "SELECT ss.*, cat.name AS category_name
+             FROM `saved_searches` ss
+             LEFT JOIN `categories` cat ON (ss.category_id = cat.id)
+             WHERE ss.`id` = ? LIMIT 1"
         );
         $stmt->execute([$id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -68,7 +71,11 @@ class SavedSearchRepository implements SavedSearchRepositoryInterface
 
     public function getByUser(string $userId, ?Pagination $pagination = null): array
     {
-        $sql = "SELECT * FROM `saved_searches` WHERE `user_id` = ? ORDER BY `created_at` DESC";
+        $sql = "SELECT ss.*, cat.name AS category_name
+                FROM `saved_searches` ss
+                LEFT JOIN `categories` cat ON (ss.category_id = cat.id)
+                WHERE ss.`user_id` = ?
+                ORDER BY ss.`created_at` DESC";
 
         if ($pagination !== null) {
             $sql .= " LIMIT " . $pagination->getLimit() . " OFFSET " . $pagination->getOffset();
