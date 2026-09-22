@@ -184,7 +184,7 @@ async function loadApplications(page = 1) {
 
                             ${app.has_cv_snapshot ? `
                                 <div style="font-size:0.82rem;color:var(--text);margin-top:0.35rem;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
-                                    <span>📄 CV đã nộp:</span>
+                                    <span><i class="ri-file-pdf-line"></i> CV đã nộp:</span>
                                     <strong style="color:var(--dark);word-break:break-all;">${escapeHtml(app.cv_file_name || 'Bản sao PDF')}</strong>
                                     ${app.cv_file_size ? `<span style="color:var(--text-muted);font-size:0.78rem;">(${typeof formatBytes === 'function' ? formatBytes(app.cv_file_size) : app.cv_file_size + ' B'})</span>` : ''}
                                 </div>
@@ -207,12 +207,12 @@ async function loadApplications(page = 1) {
                             <div style="margin-top:0.6rem;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
                                 <span style="font-size:0.8rem;color:var(--text-muted);font-weight:600;">Độ phù hợp (AI):</span>
                                 ${app.ai_match_consent ? `
-                                    <span class="badge btn-open-match-modal" style="background:var(--primary-light);color:var(--primary-text);border:1px solid var(--primary-border);font-size:0.75rem;cursor:pointer;" data-app-id="${escapeHtml(app.id)}">
-                                        🤖 Đã cấp quyền (Xem chi tiết)
+                                    <span class="badge btn-open-match-modal" style="background:var(--primary-light);color:var(--primary-text);border:1px solid var(--primary-border);font-size:0.75rem;cursor:pointer;display:inline-flex;align-items:center;gap:0.25rem;" data-app-id="${escapeHtml(app.id)}">
+                                        <i class="ri-brain-line"></i> Đã cấp quyền (Xem chi tiết)
                                     </span>
                                 ` : `
-                                    <span class="badge btn-open-match-modal" style="background:#f1f5f9;color:#64748b;font-size:0.75rem;cursor:pointer;" data-app-id="${escapeHtml(app.id)}">
-                                        🔒 Chưa phân tích (Chưa cấp quyền)
+                                    <span class="badge btn-open-match-modal" style="background:#f1f5f9;color:#64748b;font-size:0.75rem;cursor:pointer;display:inline-flex;align-items:center;gap:0.25rem;" data-app-id="${escapeHtml(app.id)}">
+                                        <i class="ri-lock-line"></i> Chưa phân tích (Chưa cấp quyền)
                                     </span>
                                 `}
                             </div>
@@ -220,11 +220,11 @@ async function loadApplications(page = 1) {
 
                         <div class="row-actions student-app-actions">
                             <button type="button" class="btn btn-outline btn-sm row-action-btn btn-open-match-modal" data-app-id="${escapeHtml(app.id)}" style="border-color:var(--primary-border);color:var(--primary-text);background:var(--primary-light);display:inline-flex;align-items:center;gap:0.35rem;">
-                                <span>🤖</span> <span>Độ phù hợp (AI)</span>
+                                <i class="ri-brain-line"></i> <span>Độ phù hợp (AI)</span>
                             </button>
                             ${app.has_cv_snapshot ? `
                                 <button type="button" class="btn btn-outline btn-sm row-action-btn btn-view-cv" data-app-id="${escapeHtml(app.id)}" style="display:inline-flex;align-items:center;gap:0.35rem;">
-                                    📄 Xem CV đã nộp
+                                    <i class="ri-file-pdf-line"></i> Xem CV đã nộp
                                 </button>
                             ` : ''}
                             <a href="/viec-lam/${encodeURIComponent(app.job_id)}" class="btn btn-outline btn-sm row-action-btn">
@@ -435,13 +435,13 @@ function renderMatchModalConsentDeclined() {
     if (!body) return;
     body.innerHTML = `
         <div style="text-align:center;padding:2rem 1rem;">
-            <div style="font-size:2.5rem;margin-bottom:0.75rem;">🔒</div>
+            <div style="font-size:2.5rem;margin-bottom:0.75rem;color:var(--text-muted);"><i class="ri-lock-line"></i></div>
             <h4 style="color:var(--dark);margin-bottom:0.5rem;font-size:1.1rem;">Chưa Cấp Quyền Phân Tích AI</h4>
             <p style="font-size:0.88rem;color:var(--text-muted);max-width:440px;margin:0 auto 1.5rem;line-height:1.5;">
                 Đơn ứng tuyển này không được bật quyền phân tích bằng AI lúc nộp đơn hoặc quyền phân tích đã bị bạn thu hồi trước đó.
             </p>
             <div style="font-size:0.82rem;color:#64748b;background:#f8fafc;padding:0.75rem 1rem;border-radius:var(--radius-sm);border:1px solid #e2e8f0;line-height:1.5;text-align:left;margin-bottom:1.5rem;">
-                ⚠️ <strong>Lưu ý:</strong> Điểm phù hợp chỉ phản ánh mức độ khớp giữa dữ liệu hồ sơ hiện có và yêu cầu công việc. Đây không phải xác suất được tuyển và không thay thế quyết định của nhà tuyển dụng.
+                <i class="ri-alert-line" style="color:#f59e0b;margin-right:4px;"></i> <strong>Lưu ý:</strong> Điểm phù hợp chỉ phản ánh mức độ khớp giữa dữ liệu hồ sơ hiện có và yêu cầu công việc. Đây không phải xác suất được tuyển và không thay thế quyết định của nhà tuyển dụng.
             </div>
             <button type="button" class="btn btn-outline btn-sm btn-close-match-modal">Đóng</button>
         </div>
@@ -453,13 +453,13 @@ function renderMatchModalRevoked() {
     if (!body) return;
     body.innerHTML = `
         <div style="text-align:center;padding:2rem 1rem;">
-            <div style="font-size:2.5rem;margin-bottom:0.75rem;">🛡️</div>
+            <div style="font-size:2.5rem;margin-bottom:0.75rem;color:var(--primary);"><i class="ri-shield-check-line"></i></div>
             <h4 style="color:var(--dark);margin-bottom:0.5rem;font-size:1.1rem;">Quyền Phân Tích AI Đã Thu Hồi</h4>
             <p style="font-size:0.88rem;color:var(--text-muted);max-width:440px;margin:0 auto 1.5rem;line-height:1.5;">
                 Toàn bộ dữ liệu snapshot và kết quả phân tích AI của đơn này đã được xóa an toàn khỏi hệ thống.
             </p>
             <div style="font-size:0.82rem;color:#64748b;background:#f8fafc;padding:0.75rem 1rem;border-radius:var(--radius-sm);border:1px solid #e2e8f0;line-height:1.5;text-align:left;margin-bottom:1.5rem;">
-                ⚠️ <strong>Lưu ý:</strong> Điểm phù hợp chỉ phản ánh mức độ khớp giữa dữ liệu hồ sơ hiện có và yêu cầu công việc. Đây không phải xác suất được tuyển và không thay thế quyết định của nhà tuyển dụng.
+                <i class="ri-alert-line" style="color:#f59e0b;margin-right:4px;"></i> <strong>Lưu ý:</strong> Điểm phù hợp chỉ phản ánh mức độ khớp giữa dữ liệu hồ sơ hiện có và yêu cầu công việc. Đây không phải xác suất được tuyển và không thay thế quyết định của nhà tuyển dụng.
             </div>
             <button type="button" class="btn btn-outline btn-sm btn-close-match-modal">Đóng</button>
         </div>
@@ -471,7 +471,7 @@ function renderMatchModalNotStarted() {
     if (!body) return;
     body.innerHTML = `
         <div style="text-align:center;padding:2rem 1rem;">
-            <div style="font-size:2.5rem;margin-bottom:0.75rem;">🤖</div>
+            <div style="font-size:2.5rem;margin-bottom:0.75rem;color:var(--primary);"><i class="ri-robot-2-line"></i></div>
             <h4 style="color:var(--dark);margin-bottom:0.5rem;font-size:1.1rem;">Chưa Có Kết Quả Đánh Giá</h4>
             <p style="font-size:0.88rem;color:var(--text-muted);max-width:440px;margin:0 auto 1.5rem;line-height:1.5;">
                 Đơn ứng tuyển của bạn đã sẵn sàng phân tích. Hãy nhấn nút bên dưới để bắt đầu đánh giá độ phù hợp với công việc.
@@ -480,7 +480,7 @@ function renderMatchModalNotStarted() {
                 Bắt Đầu Phân Tích Bằng AI
             </button>
             <div style="font-size:0.82rem;color:#64748b;background:#f8fafc;padding:0.75rem 1rem;border-radius:var(--radius-sm);border:1px solid #e2e8f0;line-height:1.5;text-align:left;margin-top:1.5rem;">
-                ⚠️ <strong>Lưu ý:</strong> Điểm phù hợp chỉ phản ánh mức độ khớp giữa dữ liệu hồ sơ hiện có và yêu cầu công việc. Đây không phải xác suất được tuyển và không thay thế quyết định của nhà tuyển dụng.
+                <i class="ri-alert-line" style="color:#f59e0b;margin-right:4px;"></i> <strong>Lưu ý:</strong> Điểm phù hợp chỉ phản ánh mức độ khớp giữa dữ liệu hồ sơ hiện có và yêu cầu công việc. Đây không phải xác suất được tuyển và không thay thế quyết định của nhà tuyển dụng.
             </div>
         </div>
     `;
@@ -513,7 +513,7 @@ function renderMatchModalRateLimited(retryAfterSeconds, applicationId) {
 
     body.innerHTML = `
         <div style="text-align:center;padding:2.5rem 1rem;">
-            <div style="font-size:2.2rem;margin-bottom:0.5rem;color:#b45309;">⏳</div>
+            <div style="font-size:2.2rem;margin-bottom:0.5rem;color:#b45309;"><i class="ri-time-line"></i></div>
             <h4 style="color:var(--dark);margin-bottom:0.5rem;font-size:1.1rem;">Thao Tác Quá Nhanh</h4>
             <p style="font-size:0.88rem;color:var(--text-muted);max-width:440px;margin:0 auto 1.25rem;line-height:1.5;">
                 Bạn đã gửi yêu cầu phân tích quá nhiều lần trong thời gian ngắn.
@@ -560,7 +560,7 @@ function renderMatchModalProcessing(isTimeout = false) {
     if (isTimeout) {
         body.innerHTML = `
             <div aria-live="polite" style="text-align:center;padding:2.5rem 1rem;">
-                <div style="font-size:2.2rem;margin-bottom:0.75rem;">⏳</div>
+                <div style="font-size:2.2rem;margin-bottom:0.75rem;color:var(--primary);"><i class="ri-loader-4-line ri-spin"></i></div>
                 <h4 style="color:var(--dark);margin-bottom:0.5rem;font-size:1.1rem;">Đang Xử Lý Trong Nền</h4>
                 <p style="font-size:0.88rem;color:var(--text-muted);max-width:440px;margin:0 auto 1.5rem;line-height:1.5;">
                     Quá trình phân tích đang mất nhiều thời gian hơn dự kiến hoặc đang xếp hàng xử lý. Bạn có thể nhấn kiểm tra lại hoặc quay lại sau ít phút.
@@ -640,7 +640,7 @@ async function loadMatchAnalysisData(applicationId, isPolling = false) {
             clearMatchPolling();
             body.innerHTML = `
                 <div style="text-align:center;padding:2rem 1rem;">
-                    <div style="font-size:2rem;margin-bottom:0.5rem;color:var(--danger);">⚠️</div>
+                    <div style="font-size:2rem;margin-bottom:0.5rem;color:var(--danger);"><i class="ri-error-warning-line"></i></div>
                     <h4 style="color:var(--dark);margin-bottom:0.5rem;">Không thể tải kết quả phân tích</h4>
                     <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:1rem;">${escapeHtml(res?.message || 'Đã có lỗi xảy ra.')}</p>
                     <button type="button" class="btn btn-outline btn-sm btn-retry-match">Thử lại</button>
@@ -652,7 +652,7 @@ async function loadMatchAnalysisData(applicationId, isPolling = false) {
         clearMatchPolling();
         body.innerHTML = `
             <div style="text-align:center;padding:2rem 1rem;">
-                <div style="font-size:2rem;margin-bottom:0.5rem;color:var(--danger);">⚠️</div>
+                <div style="font-size:2rem;margin-bottom:0.5rem;color:var(--danger);"><i class="ri-error-warning-line"></i></div>
                 <h4 style="color:var(--dark);margin-bottom:0.5rem;">Lỗi kết nối máy chủ</h4>
                 <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:1rem;">Không thể lấy dữ liệu phân tích lúc này.</p>
                 <button type="button" class="btn btn-outline btn-sm btn-retry-match">Thử lại</button>
@@ -697,11 +697,11 @@ function renderMatchModalContent(data, applicationId) {
 
     // 5 published criteria used consistently across student and employer views.
     const MVP_CRITERIA = [
-        { key: "age", label: "Độ Tuổi", icon: "🎂", weight: 10 },
-        { key: "experience", label: "Kinh Nghiệm", icon: "💼", weight: 15 },
-        { key: "skills", label: "Kỹ Năng", icon: "🛠️", weight: 30 },
-        { key: "education", label: "Học Vấn", icon: "🎓", weight: 15 },
-        { key: "availability", label: "Lịch Làm Việc", icon: "⏰", weight: 30 }
+        { key: "age", label: "Độ Tuổi", icon: '<i class="ri-user-heart-line"></i>', weight: 10 },
+        { key: "experience", label: "Kinh Nghiệm", icon: '<i class="ri-briefcase-line"></i>', weight: 15 },
+        { key: "skills", label: "Kỹ Năng", icon: '<i class="ri-tools-line"></i>', weight: 30 },
+        { key: "education", label: "Học Vấn", icon: '<i class="ri-graduation-cap-line"></i>', weight: 15 },
+        { key: "availability", label: "Lịch Làm Việc", icon: '<i class="ri-calendar-schedule-line"></i>', weight: 30 }
     ];
 
     const criteriaMap = {};
@@ -723,8 +723,8 @@ function renderMatchModalContent(data, applicationId) {
         <!-- Stale Data Warning Banner -->
         ${isStale ? `
             <div style="background:#fff7ed;border:1px solid #ffedd5;border-left:4px solid #ea580c;padding:0.75rem 1rem;border-radius:var(--radius-sm);margin-bottom:1rem;font-size:0.85rem;color:#9a3412;display:flex;align-items:center;justify-content:space-between;flex-wrap:gap;gap:0.5rem;">
-                <div>⚠️ <strong>Hồ sơ hoặc JD đã thay đổi:</strong> Dữ liệu hồ sơ của bạn hoặc nội dung tin tuyển dụng đã được chỉnh sửa kể từ lần phân tích trước. Vui lòng phân tích lại để có kết quả mới nhất.</div>
-                <button type="button" class="btn btn-sm btn-reanalyze-match" style="background:#ea580c;color:#fff;border:none;font-weight:600;">🔄 Phân tích lại ngay</button>
+                <div><i class="ri-alert-line" style="color:#ea580c;margin-right:4px;"></i> <strong>Hồ sơ hoặc JD đã thay đổi:</strong> Dữ liệu hồ sơ của bạn hoặc nội dung tin tuyển dụng đã được chỉnh sửa kể từ lần phân tích trước. Vui lòng phân tích lại để có kết quả mới nhất.</div>
+                <button type="button" class="btn btn-sm btn-reanalyze-match" style="background:#ea580c;color:#fff;border:none;font-weight:600;"><i class="ri-refresh-line"></i> Phân tích lại ngay</button>
             </div>
         ` : ''}
 
@@ -735,7 +735,7 @@ function renderMatchModalContent(data, applicationId) {
                     <span style="font-size:0.82rem;color:var(--text-muted);text-transform:uppercase;font-weight:700;letter-spacing:0.5px;">Điểm Phù Hợp Tổng Thể</span>
                     ${isInsufficient ? `
                         <div style="font-size:1.1rem;font-weight:700;color:#b45309;margin-top:0.4rem;display:flex;align-items:center;gap:0.35rem;">
-                            <span>⚠️</span> <span>Chưa đủ dữ liệu để tính điểm tổng thể</span>
+                            <i class="ri-alert-line"></i> <span>Chưa đủ dữ liệu để tính điểm tổng thể</span>
                         </div>
                     ` : `
                         <div style="display:flex;align-items:baseline;gap:0.5rem;margin-top:0.25rem;">
@@ -766,7 +766,7 @@ function renderMatchModalContent(data, applicationId) {
             <!-- Score Progress Bar or Insufficient Notice -->
             ${isInsufficient ? `
                 <div style="background:#fffbeb;border:1px solid #fef3c7;border-radius:var(--radius-sm);padding:0.75rem 1rem;font-size:0.84rem;color:#92400e;line-height:1.5;margin-bottom:0.75rem;">
-                    ℹ️ <strong>Cần bổ sung hồ sơ:</strong> Độ bao phủ dữ liệu hiện tại chỉ đạt <strong>${escapeHtml(String(coverage))}%</strong> (&lt; 60%). Để hệ thống đưa ra điểm số tổng thể chính xác, vui lòng bổ sung thêm kỹ năng, kinh nghiệm, học vấn và lịch làm việc trong hồ sơ cá nhân của bạn.
+                    <i class="ri-information-line" style="margin-right:4px;"></i> <strong>Cần bổ sung hồ sơ:</strong> Độ bao phủ dữ liệu hiện tại chỉ đạt <strong>${escapeHtml(String(coverage))}%</strong> (&lt; 60%). Để hệ thống đưa ra điểm số tổng thể chính xác, vui lòng bổ sung thêm kỹ năng, kinh nghiệm, học vấn và lịch làm việc trong hồ sơ cá nhân của bạn.
                 </div>
             ` : `
                 <div style="background:#e2e8f0;height:8px;border-radius:4px;overflow:hidden;margin-bottom:0.75rem;">
@@ -782,13 +782,13 @@ function renderMatchModalContent(data, applicationId) {
 
             ${status === 'partial' ? `
                 <div style="margin-top:0.5rem;font-size:0.8rem;color:#b45309;background:#fef3c7;padding:0.4rem 0.65rem;border-radius:var(--radius-sm);">
-                    ⚠️ Đánh giá hoàn tất một phần dựa trên thuật toán và dữ liệu hồ sơ có sẵn.
+                    <i class="ri-alert-line" style="margin-right:4px;"></i> Đánh giá hoàn tất một phần dựa trên thuật toán và dữ liệu hồ sơ có sẵn.
                 </div>
             ` : ''}
 
             ${(failureCode || status === 'failed') ? `
                 <div style="margin-top:0.75rem;font-size:0.84rem;color:#b91c1c;background:#fee2e2;padding:0.6rem 0.85rem;border-radius:var(--radius-sm);border:1px solid #fecdd3;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
-                    <div>⚠️ <strong>Thông báo:</strong> ${escapeHtml(getFailureExplanation(failureCode || 'GENERAL_ERROR'))}</div>
+                    <div><i class="ri-alert-line" style="margin-right:4px;"></i> <strong>Thông báo:</strong> ${escapeHtml(getFailureExplanation(failureCode || 'GENERAL_ERROR'))}</div>
                     <button type="button" class="btn btn-sm btn-reanalyze-match" style="background:#dc2626;color:#fff;border:none;font-size:0.8rem;padding:0.25rem 0.6rem;cursor:pointer;">Thử lại</button>
                 </div>
             ` : ''}
@@ -832,7 +832,7 @@ function renderMatchModalContent(data, applicationId) {
                         ${noteText ? `<div style="font-size:0.8rem;color:var(--text-muted);line-height:1.4;">${escapeHtml(noteText)}</div>` : ''}
                         ${evidenceCount !== null && evidenceCount > 0 ? `
                             <div style="font-size:0.75rem;color:#15803d;margin-top:0.25rem;">
-                                ✓ Khớp ${escapeHtml(String(evidenceCount))} mục dữ liệu
+                                <i class="ri-check-line" style="margin-right:2px;"></i> Khớp ${escapeHtml(String(evidenceCount))} mục dữ liệu
                             </div>
                         ` : ''}
                         ${missingList.length > 0 ? `
@@ -851,7 +851,7 @@ function renderMatchModalContent(data, applicationId) {
             ${strengths.length > 0 ? `
                 <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--radius-sm);padding:0.85rem 1rem;">
                     <div style="font-size:0.88rem;font-weight:700;color:#166534;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.35rem;">
-                        <span>✅</span> <span>Điểm Mạnh Nổi Bật</span>
+                        <i class="ri-checkbox-circle-fill" style="color:#16a34a;"></i> <span>Điểm Mạnh Nổi Bật</span>
                     </div>
                     <ul style="margin:0;padding-left:1.25rem;font-size:0.82rem;color:#14532d;line-height:1.5;">
                         ${strengths.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
@@ -862,7 +862,7 @@ function renderMatchModalContent(data, applicationId) {
             ${considerations.length > 0 ? `
                 <div style="background:#fffbeb;border:1px solid #fef3c7;border-radius:var(--radius-sm);padding:0.85rem 1rem;">
                     <div style="font-size:0.88rem;font-weight:700;color:#92400e;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.35rem;">
-                        <span>💡</span> <span>Điểm Cần Bổ Sung / Lưu Ý</span>
+                        <i class="ri-lightbulb-line" style="color:#d97706;"></i> <span>Điểm Cần Bổ Sung / Lưu Ý</span>
                     </div>
                     <ul style="margin:0;padding-left:1.25rem;font-size:0.82rem;color:#78350f;line-height:1.5;">
                         ${considerations.map(c => `<li>${escapeHtml(c)}</li>`).join('')}
@@ -875,7 +875,7 @@ function renderMatchModalContent(data, applicationId) {
         ${coverage < 100 ? `
             <div style="background:#f8fafc;border:1px dashed #cbd5e1;border-radius:var(--radius-sm);padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;margin-bottom:1rem;">
                 <div style="font-size:0.82rem;color:var(--text-muted);line-height:1.4;">
-                    📝 Hồ sơ của bạn còn thiếu một số mục (kinh nghiệm, bằng cấp/chứng chỉ, lịch làm việc). Cập nhật hồ sơ để tăng độ chính xác đánh giá phù hợp.
+                    <i class="ri-file-edit-line" style="margin-right:4px;"></i> Hồ sơ của bạn còn thiếu một số mục (kinh nghiệm, bằng cấp/chứng chỉ, lịch làm việc). Cập nhật hồ sơ để tăng độ chính xác đánh giá phù hợp.
                 </div>
                 <a href="/student/profile" target="_blank" class="btn btn-outline btn-sm" style="font-size:0.78rem;padding:0.25rem 0.55rem;background:#fff;">
                     Cập nhật hồ sơ &rarr;
@@ -890,7 +890,7 @@ function renderMatchModalContent(data, applicationId) {
             </div>
             <div style="display:flex;align-items:center;gap:0.5rem;">
                 <button type="button" class="btn btn-outline btn-sm btn-reanalyze-match" style="font-size:0.8rem;">
-                    🔄 Phân tích lại
+                    <i class="ri-refresh-line"></i> Phân tích lại
                 </button>
                 <button type="button" class="btn btn-sm btn-revoke-consent" style="font-size:0.78rem;color:var(--danger);background:#fff;border:1px solid #fecdd3;">
                     Thu hồi quyền phân tích AI
@@ -900,7 +900,7 @@ function renderMatchModalContent(data, applicationId) {
 
         <!-- BẮT BUỘC - Mandatory Disclaimer -->
         <div style="font-size:0.8rem;color:#64748b;background:#f8fafc;padding:0.75rem 1rem;border-radius:var(--radius-sm);border:1px solid #e2e8f0;margin-top:1rem;line-height:1.5;">
-            ⚠️ <strong>Lưu ý:</strong> Điểm phù hợp chỉ phản ánh mức độ khớp giữa dữ liệu hồ sơ hiện có và yêu cầu công việc. Đây không phải xác suất được tuyển và không thay thế quyết định của nhà tuyển dụng.
+            <i class="ri-alert-line" style="color:#f59e0b;margin-right:4px;"></i> <strong>Lưu ý:</strong> Điểm phù hợp chỉ phản ánh mức độ khớp giữa dữ liệu hồ sơ hiện có và yêu cầu công việc. Đây không phải xác suất được tuyển và không thay thế quyết định của nhà tuyển dụng.
         </div>
     `;
 }

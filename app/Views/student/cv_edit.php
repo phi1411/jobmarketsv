@@ -3,11 +3,11 @@
     <header class="cv-editor-topbar">
         <div class="cv-editor-title-box">
             <a href="/student/cvs" class="btn btn-outline btn-sm" title="Quay lại danh sách CV">
-                ← Quay lại
+                <i class="ri-arrow-left-line"></i> Quay lại
             </a>
             <input type="text" id="cv-editor-title" class="cv-editor-title-input" value="Đang tải..." aria-label="Tiêu đề CV" maxlength="150">
             <div id="cv-autosave-indicator" class="cv-autosave-status saved" aria-live="polite">
-                <span id="cv-autosave-icon">✓</span>
+                <span id="cv-autosave-icon"><i class="ri-check-line"></i></span>
                 <span id="cv-autosave-text">Đã lưu</span>
             </div>
             <span id="cv-completion-badge" class="badge-cv-primary">0%</span>
@@ -15,13 +15,13 @@
 
         <div class="cv-editor-top-actions">
             <button type="button" class="btn btn-outline btn-sm" id="btn-topbar-share" onclick="window.CvEditorApp.toggleShareModal()" title="Bật hoặc tắt chia sẻ công khai">
-                🌐 Chia sẻ
+                <i class="ri-share-line"></i> Chia sẻ
             </button>
             <button type="button" class="btn btn-outline btn-sm" id="btn-topbar-download-pdf" onclick="window.CvEditorApp.downloadPdf()" title="Tải file PDF chuẩn A4">
-                📥 Tải PDF
+                <i class="ri-download-2-line"></i> Tải PDF
             </button>
             <button type="button" class="btn btn-primary btn-sm" id="btn-topbar-activate" onclick="window.CvEditorApp.activateForApplication()" title="Dùng CV này làm hồ sơ ứng tuyển chính trong hệ thống">
-                🚀 Dùng ứng tuyển
+                <i class="ri-send-plane-fill"></i> Dùng ứng tuyển
             </button>
         </div>
     </header>
@@ -29,7 +29,7 @@
     <!-- Mobile Switch Tabs (< 1024px) -->
     <nav class="cv-editor-mobile-tabs" role="tablist" aria-label="Chế độ xem editor">
         <button type="button" id="tab-btn-form" class="cv-tab-btn active" role="tab" aria-selected="true" onclick="window.CvEditorApp.switchMobileTab('form')">
-            <span>📝</span> Nội Dung Chỉnh Sửa
+            <i class="ri-edit-line"></i> Nội Dung Chỉnh Sửa
         </button>
         <button type="button" id="tab-btn-preview" class="cv-tab-btn" role="tab" aria-selected="false" onclick="window.CvEditorApp.switchMobileTab('preview')">
             <i class="ri-eye-line"></i> Xem Trước (A4)
@@ -44,10 +44,10 @@
             <section class="cv-section-box" id="section-design-settings">
                 <div class="cv-section-header" onclick="window.CvEditorApp.toggleAccordion('section-design-body')">
                     <div class="cv-section-title-wrap">
-                        <span class="cv-section-icon">🎨</span>
+                        <span class="cv-section-icon"><i class="ri-palette-line"></i></span>
                         <h3>Giao Diện & Định Dạng (Thiết Kế)</h3>
                     </div>
-                    <span id="icon-toggle-design-body">▼</span>
+                    <i id="icon-toggle-design-body" class="ri-arrow-down-s-line"></i>
                 </div>
                 <div class="cv-section-body" id="section-design-body">
                     <div class="cv-form-row">
@@ -110,14 +110,14 @@
             <section class="cv-section-box" id="section-order-manager">
                 <div class="cv-section-header" onclick="window.CvEditorApp.toggleAccordion('section-order-body')">
                     <div class="cv-section-title-wrap">
-                        <span class="cv-section-icon">📑</span>
+                        <span class="cv-section-icon"><i class="ri-file-list-3-line"></i></span>
                         <h3>Quản Lý Mục & Đổi Thứ Tự (Sections)</h3>
                     </div>
-                    <span id="icon-toggle-order-body">▼</span>
+                    <i id="icon-toggle-order-body" class="ri-arrow-down-s-line"></i>
                 </div>
                 <div class="cv-section-body" id="section-order-body">
                     <p style="margin: 0 0 0.85rem; font-size: 0.82rem; color: var(--text-muted, #64748b);">
-                        Nhấn <strong>▲ / ▼</strong> để đổi thứ tự hiển thị của từng mục. Nhấn biểu tượng <strong>👁️</strong> để ẩn/hiện mục mà không làm mất dữ liệu đã nhập.
+                        Nhấn <i class="ri-arrow-up-s-line"></i> / <i class="ri-arrow-down-s-line"></i> để đổi thứ tự hiển thị của từng mục. Nhấn biểu tượng <i class="ri-eye-line"></i> / <i class="ri-eye-off-line"></i> để ẩn/hiện mục mà không làm mất dữ liệu đã nhập.
                     </p>
                     <div id="section-reorder-list" style="display: flex; flex-direction: column; gap: 0.4rem;">
                         <!-- Rendered by JS -->
@@ -135,14 +135,14 @@
         <aside class="cv-editor-preview-col" id="cv-editor-preview-column" aria-label="Xem trước bản in CV">
             <div class="cv-preview-toolbar">
                 <span style="font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem;">
-                    <span>📄</span> Bản Xem Trước A4
+                    <i class="ri-file-text-line"></i> Bản Xem Trước A4
                 </span>
                 <div class="cv-zoom-controls">
                     <button type="button" class="cv-zoom-btn" onclick="window.CvEditorApp.changeZoom(-0.1)" title="Thu nhỏ" aria-label="Thu nhỏ">−</button>
                     <span id="zoom-level-text" style="font-size: 0.8rem; min-width: 44px; text-align: center;">90%</span>
                     <button type="button" class="cv-zoom-btn" onclick="window.CvEditorApp.changeZoom(0.1)" title="Phóng to" aria-label="Phóng to">+</button>
                     <button type="button" class="cv-zoom-btn" style="width: auto; padding: 0 8px; font-size: 0.78rem;" onclick="window.CvEditorApp.resetZoom()" title="Vừa chiều ngang">Fit</button>
-                    <button type="button" class="cv-zoom-btn" onclick="window.CvEditorApp.reloadPreviewIframe()" title="Tải lại preview" aria-label="Tải lại">🔄</button>
+                    <button type="button" class="cv-zoom-btn" onclick="window.CvEditorApp.reloadPreviewIframe()" title="Tải lại preview" aria-label="Tải lại"><i class="ri-refresh-line"></i></button>
                 </div>
             </div>
 
@@ -171,15 +171,15 @@
                 Để đảm bảo tính toàn vẹn dữ liệu, hệ thống đã tạm dừng tự động lưu để tránh ghi đè mất thông tin mới trên máy chủ.
             </p>
             <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; font-size: 0.82rem;">
-                👉 <strong>Khuyến nghị:</strong> Bạn có thể chọn <em>"Tải lại từ máy chủ"</em> để nhận phiên bản mới nhất, hoặc <em>"Giữ bản nháp để sao chép"</em> để copy nội dung vừa gõ ra ngoài trước.
+                <i class="ri-lightbulb-line" style="color:var(--primary);margin-right:4px;"></i> <strong>Khuyến nghị:</strong> Bạn có thể chọn <em>"Tải lại từ máy chủ"</em> để nhận phiên bản mới nhất, hoặc <em>"Giữ bản nháp để sao chép"</em> để copy nội dung vừa gõ ra ngoài trước.
             </div>
         </div>
         <div class="cv-modal-footer">
             <button type="button" class="btn btn-outline btn-sm" onclick="window.CvEditorApp.dismissConflictModal()">
-                📋 Giữ Bản Nháp Để Sao Chép
+                <i class="ri-file-copy-line"></i> Giữ Bản Nháp Để Sao Chép
             </button>
             <button type="button" class="btn btn-primary btn-sm" onclick="window.CvEditorApp.reloadLatestFromServer()">
-                🔄 Tải Lại Bản Mới Từ Máy Chủ
+                <i class="ri-refresh-line"></i> Tải Lại Bản Mới Từ Máy Chủ
             </button>
         </div>
     </div>
@@ -190,7 +190,7 @@
     <div class="cv-modal-card" style="max-width: 520px;">
         <div class="cv-modal-header">
             <h3 id="modal-editor-share-title" style="display: flex; align-items: center; gap: 0.5rem;">
-                <span>🌐</span> Chia Sẻ CV Trực Tuyến
+                <i class="ri-global-line"></i> Chia Sẻ CV Trực Tuyến
             </h3>
             <button type="button" class="cv-modal-close-btn" onclick="window.CvEditorApp.closeShareModal()" aria-label="Đóng">&times;</button>
         </div>
@@ -210,11 +210,11 @@
                 <div style="display: flex; gap: 0.5rem; margin-top: 0.35rem;">
                     <input type="text" id="share-public-url" class="cv-input" readonly>
                     <button type="button" class="btn btn-outline btn-sm" onclick="window.CvEditorApp.copyShareLink()">
-                        Sao Chép
+                        <i class="ri-file-copy-line"></i> Sao Chép
                     </button>
                 </div>
                 <small style="display: block; margin-top: 0.5rem; color: #059669;">
-                    ✓ Ai có liên kết này đều có thể xem và tải bản in PDF của bạn.
+                    <i class="ri-check-line" style="color:#059669;margin-right:4px;"></i> Ai có liên kết này đều có thể xem và tải bản in PDF của bạn.
                 </small>
             </div>
         </div>

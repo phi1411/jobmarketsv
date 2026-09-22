@@ -294,7 +294,7 @@
         let prompts = [];
 
         if (currentRole === "company") {
-            title.textContent = "👋 Xin chào Quý Doanh nghiệp!";
+            title.innerHTML = '<i class="ri-user-smile-line" style="color:var(--primary);margin-right:4px;"></i> Xin chào Quý Doanh nghiệp!';
             desc.textContent = "Tôi là trợ lý hỗ trợ nhà tuyển dụng JobMarketSV. Tôi có thể hướng dẫn bạn cách đăng tin, quản lý hồ sơ ứng viên và quy trình xác minh tài khoản.";
             prompts = [
                 "Hướng dẫn đăng tin tuyển dụng",
@@ -302,7 +302,7 @@
                 "Quản lý trạng thái ứng viên"
             ];
         } else {
-            title.textContent = "👋 Xin chào bạn!";
+            title.innerHTML = '<i class="ri-user-smile-line" style="color:var(--primary);margin-right:4px;"></i> Xin chào bạn!';
             desc.textContent = "Tôi là trợ lý tìm việc JobMarketSV. Tôi có thể hỗ trợ bạn tìm kiếm việc làm theo ca, hướng dẫn quy trình nộp đơn và cách chuẩn bị CV.";
             prompts = [
                 "Tìm việc theo ca",
@@ -453,7 +453,11 @@
                 if (job.salary) {
                     const salaryEl = document.createElement("div");
                     salaryEl.className = "chatbot-job-salary";
-                    salaryEl.textContent = "💰 " + job.salary;
+                    const icon = document.createElement("i");
+                    icon.className = "ri-money-dollar-circle-line";
+                    icon.style.marginRight = "3px";
+                    salaryEl.appendChild(icon);
+                    salaryEl.appendChild(document.createTextNode(" " + job.salary));
                     card.appendChild(salaryEl);
                 }
 
@@ -477,13 +481,13 @@
         upBtn.type = "button";
         upBtn.className = "chatbot-feedback-btn chatbot-feedback-btn--up";
         upBtn.setAttribute("aria-label", "Đánh giá câu trả lời hữu ích");
-        upBtn.textContent = "👍";
+        upBtn.innerHTML = '<i class="ri-thumb-up-line"></i>';
 
         const downBtn = document.createElement("button");
         downBtn.type = "button";
         downBtn.className = "chatbot-feedback-btn chatbot-feedback-btn--down";
         downBtn.setAttribute("aria-label", "Đánh giá câu trả lời chưa hữu ích");
-        downBtn.textContent = "👎";
+        downBtn.innerHTML = '<i class="ri-thumb-down-line"></i>';
 
         const handleRating = async (rating) => {
             upBtn.disabled = true;
