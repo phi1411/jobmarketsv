@@ -2,12 +2,15 @@
 
 /**
  * Phase Frontend FE-2C: Admin Portal & Moderation UI Automated Verification Suite
- * Tests against real Laragon domain: http://manguonmo.test
+ * Tests against the Laravel-mounted application.
  */
+
+$fe2cBaseUrl = rtrim((string)(getenv("JOBMARKET_BASE_URL") ?: "http://127.0.0.1:8001"), "/");
 
 function fe2cReq(string $method, string $url, ?array $headers = null, ?array $body = null): array
 {
-    $ch = curl_init("http://manguonmo.test" . $url);
+    global $fe2cBaseUrl;
+    $ch = curl_init($fe2cBaseUrl . $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
@@ -39,7 +42,7 @@ function fe2cReq(string $method, string $url, ?array $headers = null, ?array $bo
 
 echo "================================================================" . PHP_EOL;
 echo "   BẮT ĐẦU CHẠY BỘ KIỂM THỬ ADMIN PORTAL (PHASE FE-2C)          " . PHP_EOL;
-echo "   (KIỂM TRA TRỰC TIẾP TRÊN LARAGON: http://manguonmo.test)     " . PHP_EOL;
+echo "   (KIỂM TRA TRÊN BẢN LARAVEL: {$fe2cBaseUrl})                 " . PHP_EOL;
 echo "================================================================" . PHP_EOL . PHP_EOL;
 
 $passCount = 0;
@@ -70,27 +73,27 @@ $studentLoginRes = fe2cReq("POST", "/login", ["Content-Type: application/json"],
 ]);
 $studentToken = json_decode($studentLoginRes["body"], true)["data"]["token"] ?? "";
 
-// TEST 1: Phục vụ 5 trang Web HTML5 của Admin Portal
-echo "[TEST 1] Phục vụ 5 trang Web HTML5 Admin Portal (Accept: text/html)" . PHP_EOL;
+// TEST 1: Phục vụ 5 trang Web HTML5 dành cho quản trị viên
+echo "[TEST 1] Phục vụ 5 trang Web HTML5 quản trị viên (Accept: text/html)" . PHP_EOL;
 $adminPages = [
-    "/admin/dashboard"  => "Cổng Quản Trị Hệ Thống",
-    "/admin/users"      => "Quản Lý Người Dùng",
-    "/admin/companies"  => "Kiểm Duyệt Doanh Nghiệp",
+    "/admin/dashboard"  => "Tổng Người Dùng",
+    "/admin/users"      => "Tất cả vai trò",
+    "/admin/companies"  => "Tất cả trạng thái",
     "/admin/jobs"       => "Kiểm Duyệt Tin Tuyển Dụng",
-    "/admin/audit-logs" => "Nhật Ký Thao Tác Quản Trị"
+    "/admin/audit-logs" => "Tất cả hành động"
 ];
 
 $allPagesOk = true;
 foreach ($adminPages as $pageUrl => $keyword) {
     $res = fe2cReq("GET", $pageUrl, ["Accept: text/html"]);
-    if ($res["status"] !== 200 || !str_contains($res["body"], "<!DOCTYPE html>") || !str_contains($res["body"], "Cổng Quản Trị Hệ Thống")) {
+    if ($res["status"] !== 200 || !str_contains($res["body"], "<!DOCTYPE html>") || !str_contains($res["body"], $keyword)) {
         $allPagesOk = false;
         echo "  -> Lỗi tại trang: {$pageUrl} (Status: {$res['status']})" . PHP_EOL;
         break;
     }
 }
 if ($allPagesOk) {
-    echo "  -> PASS: Cả 5 trang web HTML5 Admin Portal trả về HTTP 200 OK kèm layout và tab navigation." . PHP_EOL;
+    echo "  -> PASS: Cả 5 trang web HTML5 quản trị trả về HTTP 200 OK kèm layout chung." . PHP_EOL;
     $passCount++;
 } else {
     echo "  -> FAIL: Có trang web không trả về đúng HTML5." . PHP_EOL;

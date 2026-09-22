@@ -2,12 +2,15 @@
 
 /**
  * Phase Frontend FE-2B: Company Portal Automated Verification Suite
- * Tests against real Laragon domain: http://manguonmo.test
+ * Tests against the Laravel-mounted application.
  */
+
+$fe2bBaseUrl = rtrim((string)(getenv("JOBMARKET_BASE_URL") ?: "http://127.0.0.1:8001"), "/");
 
 function fe2bReq(string $method, string $url, ?array $headers = null, ?array $body = null): array
 {
-    $ch = curl_init("http://manguonmo.test" . $url);
+    global $fe2bBaseUrl;
+    $ch = curl_init($fe2bBaseUrl . $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
@@ -39,7 +42,7 @@ function fe2bReq(string $method, string $url, ?array $headers = null, ?array $bo
 
 echo "================================================================" . PHP_EOL;
 echo "   BẮT ĐẦU CHẠY BỘ KIỂM THỬ COMPANY PORTAL (PHASE FE-2B)        " . PHP_EOL;
-echo "   (KIỂM TRA TRỰC TIẾP TRÊN LARAGON: http://manguonmo.test)     " . PHP_EOL;
+echo "   (KIỂM TRA TRÊN BẢN LARAVEL: {$fe2bBaseUrl})                 " . PHP_EOL;
 echo "================================================================" . PHP_EOL . PHP_EOL;
 
 $passCount = 0;
@@ -70,29 +73,29 @@ $studentLoginRes = fe2bReq("POST", "/login", ["Content-Type: application/json"],
 ]);
 $studentToken = json_decode($studentLoginRes["body"], true)["data"]["token"] ?? "";
 
-// TEST 1: Phục vụ 7 trang Web HTML5 của Company Portal
-echo "[TEST 1] Phục vụ 7 trang Web HTML5 Company Portal (Accept: text/html)" . PHP_EOL;
+// TEST 1: Phục vụ 7 trang Web HTML5 dành cho nhà tuyển dụng
+echo "[TEST 1] Phục vụ 7 trang Web HTML5 nhà tuyển dụng (Accept: text/html)" . PHP_EOL;
 $companyPages = [
-    "/company/dashboard"            => "Tổng Quan Nhà Tuyển Dụng",
-    "/company/profile"              => "Hồ Sơ Doanh Nghiệp",
-    "/company/jobs"                 => "Quản Lý Tin Tuyển Dụng",
+    "/company/dashboard"            => "Xin chào",
+    "/company/profile"              => "Thông Tin Hồ Sơ Doanh Nghiệp",
+    "/company/jobs"                 => "Tạo Tin Tuyển Dụng",
     "/company/jobs/create"          => "Đăng Tin Tuyển Dụng Mới",
     "/company/jobs/job-001/edit"    => "Chỉnh Sửa Tin Tuyển Dụng",
-    "/company/applications"         => "Hồ Sơ Ứng Tuyển",
-    "/company/notifications"        => "Thông Báo Doanh Nghiệp"
+    "/company/applications"         => "Bộ Lọc Ứng Viên",
+    "/company/notifications"        => "Thông Báo Nhà Tuyển Dụng"
 ];
 
 $allPagesOk = true;
 foreach ($companyPages as $pageUrl => $keyword) {
     $res = fe2bReq("GET", $pageUrl, ["Accept: text/html"]);
-    if ($res["status"] !== 200 || !str_contains($res["body"], "<!DOCTYPE html>") || !str_contains($res["body"], "Cổng Nhà Tuyển Dụng")) {
+    if ($res["status"] !== 200 || !str_contains($res["body"], "<!DOCTYPE html>") || !str_contains($res["body"], $keyword)) {
         $allPagesOk = false;
         echo "  -> Lỗi tại trang: {$pageUrl} (Status: {$res['status']})" . PHP_EOL;
         break;
     }
 }
 if ($allPagesOk) {
-    echo "  -> PASS: Cả 7 trang web HTML5 Company Portal trả về HTTP 200 OK kèm layout và tab navigation." . PHP_EOL;
+    echo "  -> PASS: Cả 7 trang web HTML5 nhà tuyển dụng trả về HTTP 200 OK kèm layout chung." . PHP_EOL;
     $passCount++;
 } else {
     echo "  -> FAIL: Có trang web không trả về đúng HTML5." . PHP_EOL;

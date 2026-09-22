@@ -57,9 +57,6 @@ function updateNavbarAuthState(force = false) {
 
     const isCurrentHome = path === "/" || path === "";
     const isCurrentJobs = path.startsWith("/viec-lam");
-    const isCurrentStudent = path.startsWith("/student");
-    const isCurrentCompany = path.startsWith("/company");
-    const isCurrentAdmin = path.startsWith("/admin");
     const brandLogo = document.querySelector(".brand-logo");
     if (brandLogo) {
         if (token && user && user.role === "admin") {
@@ -73,15 +70,17 @@ function updateNavbarAuthState(force = false) {
 
     if (token && user) {
         if (navbar) {
-            navbar.classList.add("navbar--auth");
+            navbar.classList.add("navbar--auth", "navbar--role");
         }
 
         if (user.role === "student" || user.role === "developer") {
-            // STUDENT: Global header keeps job discovery (Tìm việc làm) and portal entry (Cổng Sinh Viên), notification utility, account/logout
+            // Student: keep daily job actions visible; place personal data and settings in the account menu.
             if (navLinks) {
                 navLinks.innerHTML = `
-                    <li><a href="/viec-lam" class="nav-link ${isCurrentJobs ? 'active' : ''}">Tìm Việc Làm</a></li>
-                    <li><a href="/student/dashboard" class="nav-link ${isCurrentStudent ? 'active' : ''}">Cổng Sinh Viên</a></li>
+                    <li><a href="/viec-lam" class="nav-link ${isCurrentJobs ? 'active' : ''}">Tìm việc</a></li>
+                    <li><a href="/student/recommendations" class="nav-link ${path.startsWith('/student/recommendations') ? 'active' : ''}">Gợi ý phù hợp</a></li>
+                    <li><a href="/student/applications" class="nav-link ${path.startsWith('/student/applications') ? 'active' : ''}">Đơn ứng tuyển</a></li>
+                    <li><a href="/student/favorites" class="nav-link ${path.startsWith('/student/favorites') ? 'active' : ''}">Việc đã lưu</a></li>
                 `;
                 navLinks.style.display = "";
             }
@@ -118,26 +117,14 @@ function updateNavbarAuthState(force = false) {
 
                             <div class="profile-dropdown-body">
                                 <div class="profile-menu-section">
-                                    <div class="profile-section-title">Quản lý tìm việc</div>
-                                    <a href="/viec-lam" class="profile-menu-item">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                                        <span>Bảng tin việc làm</span>
-                                    </a>
+                                    <div class="profile-section-title">Không gian của bạn</div>
                                     <a href="/student/dashboard" class="profile-menu-item">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
-                                        <span>Cổng Sinh Viên</span>
+                                        <span>Tổng quan hoạt động</span>
                                     </a>
-                                    <a href="/student/applications" class="profile-menu-item">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                                        <span>Việc đã ứng tuyển</span>
-                                    </a>
-                                    <a href="/student/favorites" class="profile-menu-item">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                                        <span>Việc đã lưu</span>
-                                    </a>
-                                    <a href="/student/recommendations" class="profile-menu-item">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 4.6L5 9.5l4 3.3L8.5 18l3.5-2.3 3.5 2.3-.5-5.2 4-3.3-5.1-1.9z"/><path d="M19 3v4M21 5h-4"/></svg>
-                                        <span>Gợi ý việc làm AI</span>
+                                    <a href="/student/saved-searches" class="profile-menu-item">
+                                        <i class="ri-notification-3-line"></i>
+                                        <span>Bộ lọc và cảnh báo việc làm</span>
                                     </a>
                                 </div>
 
@@ -145,7 +132,15 @@ function updateNavbarAuthState(force = false) {
                                     <div class="profile-section-title">Hồ sơ & CV</div>
                                     <a href="/student/profile" class="profile-menu-item">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                        <span>Hồ sơ cá nhân & CV</span>
+                                        <span>Hồ sơ cá nhân</span>
+                                    </a>
+                                    <a href="/student/cvs" class="profile-menu-item">
+                                        <i class="ri-file-user-line"></i>
+                                        <span>CV của tôi</span>
+                                    </a>
+                                    <a href="/mau-cv-sinh-vien" class="profile-menu-item">
+                                        <i class="ri-layout-4-line"></i>
+                                        <span>Tạo CV từ mẫu</span>
                                     </a>
                                 </div>
 
@@ -172,14 +167,21 @@ function updateNavbarAuthState(force = false) {
             initProfileDropdown();
             fetchUnreadCount();
         } else if (user.role === "company") {
-            // COMPANY: Remove global Trang Chủ & Tìm Việc Làm, provide Cổng Tuyển Dụng entry, notification & account/logout
+            // Employer: expose recruitment operations directly in the global header.
             if (navLinks) {
-                navLinks.innerHTML = "";
-                navLinks.style.display = "none";
+                navLinks.innerHTML = `
+                    <li><a href="/company/dashboard" class="nav-link ${path === '/company/dashboard' ? 'active' : ''}">Tổng quan</a></li>
+                    <li><a href="/company/jobs" class="nav-link ${path.startsWith('/company/jobs') && !path.endsWith('/create') ? 'active' : ''}">Tin tuyển dụng</a></li>
+                    <li><a href="/company/applications" class="nav-link ${path.startsWith('/company/applications') ? 'active' : ''}">Ứng viên</a></li>
+                    <li><a href="/company/jobs/create" class="nav-link nav-link--accent ${path === '/company/jobs/create' ? 'active' : ''}"><i class="ri-add-line"></i> Đăng tin</a></li>
+                `;
+                navLinks.style.display = "";
             }
             if (menuToggle) {
-                menuToggle.style.display = "none";
+                menuToggle.style.display = "";
             }
+
+            const initial = (user.name ? user.name.charAt(0) : (user.email ? user.email.charAt(0) : "D")).toUpperCase();
 
             navActions.innerHTML = `
                 <div class="nav-user-cluster">
@@ -187,51 +189,93 @@ function updateNavbarAuthState(force = false) {
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                         <span id="nav-unread-badge" class="nav-unread-badge" style="display:none;">0</span>
                     </a>
-                    <a href="/company/dashboard" class="btn btn-outline btn-sm nav-portal-btn" title="Vào Cổng Tuyển Dụng" aria-label="Cổng Tuyển Dụng">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                        <span>Cổng Tuyển Dụng</span>
-                    </a>
-                    <a href="/company/dashboard" class="nav-user-info" title="Vào Cổng Tuyển Dụng">
-                        <div class="nav-user-name">${escapeHtml(user.name || user.email)}</div>
-                        <div class="nav-user-role"><span class="status-badge status-badge--success">Nhà tuyển dụng</span></div>
-                    </a>
-                    <button onclick="handleLogout()" class="btn btn-outline btn-sm nav-logout-btn" title="Đăng xuất" aria-label="Đăng xuất">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        <span>Đăng xuất</span>
-                    </button>
+                    <div class="user-profile-menu-wrapper" id="nav-user-menu-wrapper">
+                        <button type="button" class="user-avatar-btn" id="nav-user-avatar-btn" aria-haspopup="true" aria-expanded="false" title="Tài khoản nhà tuyển dụng">
+                            <span class="user-avatar-circle user-avatar-circle--company">${escapeHtml(initial)}</span>
+                            <span class="user-avatar-name">${escapeHtml(user.name || user.email)}</span>
+                            <svg class="theme-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div class="user-profile-dropdown" id="nav-user-profile-dropdown">
+                            <div class="profile-dropdown-header">
+                                <div class="profile-header-avatar user-avatar-circle--company">${escapeHtml(initial)}</div>
+                                <div class="profile-header-info">
+                                    <div class="profile-header-name">${escapeHtml(user.name || "Nhà tuyển dụng")}</div>
+                                    <div class="profile-header-sub">${escapeHtml(user.email || "")}</div>
+                                    <div style="margin-top:.3rem"><span id="nav-company-verify-badge" class="status-badge status-badge--warning">Đang kiểm tra</span></div>
+                                </div>
+                            </div>
+                            <div class="profile-dropdown-body">
+                                <div class="profile-menu-section">
+                                    <div class="profile-section-title">Doanh nghiệp</div>
+                                    <a href="/company/profile" class="profile-menu-item"><i class="ri-building-line"></i><span>Hồ sơ công ty</span></a>
+                                    <a href="/company/notifications" class="profile-menu-item"><i class="ri-notification-3-line"></i><span>Thông báo tuyển dụng</span></a>
+                                </div>
+                                <div class="profile-menu-section">
+                                    <div class="profile-section-title">Tài khoản</div>
+                                    <button type="button" onclick="openPasswordSecurityModal()" class="profile-menu-item profile-menu-button"><i class="ri-lock-password-line"></i><span>Đổi mật khẩu</span></button>
+                                    <a href="javascript:void(0)" onclick="handleLogout()" class="profile-menu-item logout-item"><i class="ri-logout-box-r-line"></i><span>Đăng xuất</span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
+            initProfileDropdown();
             fetchUnreadCount();
+            fetchCompanyVerificationBadge();
         } else if (user.role === "admin") {
-            // ADMIN: Remove global Trang Chủ & Tìm Việc Làm, provide Cổng Quản Trị entry, account/logout only
+            // Admin: all moderation areas remain one click away in the global header.
             if (navLinks) {
-                navLinks.innerHTML = "";
-                navLinks.style.display = "none";
+                navLinks.innerHTML = `
+                    <li><a href="/admin/dashboard" class="nav-link ${path === '/admin/dashboard' ? 'active' : ''}">Tổng quan</a></li>
+                    <li><a href="/admin/companies" class="nav-link ${path.startsWith('/admin/companies') ? 'active' : ''}">Doanh nghiệp</a></li>
+                    <li><a href="/admin/jobs" class="nav-link ${path === '/admin/jobs' ? 'active' : ''}">Tin tuyển dụng</a></li>
+                    <li><a href="/admin/job-reports" class="nav-link ${path.startsWith('/admin/job-reports') ? 'active' : ''}">Báo cáo tin</a></li>
+                    <li><a href="/admin/users" class="nav-link ${path.startsWith('/admin/users') ? 'active' : ''}">Người dùng</a></li>
+                    <li><a href="/admin/audit-logs" class="nav-link ${path.startsWith('/admin/audit-logs') ? 'active' : ''}">Nhật ký</a></li>
+                    <li><a href="/admin/support" class="nav-link ${path.startsWith('/admin/support') ? 'active' : ''}">Hỗ trợ</a></li>
+                `;
+                navLinks.style.display = "";
             }
             if (menuToggle) {
-                menuToggle.style.display = "none";
+                menuToggle.style.display = "";
             }
+
+            const initial = (user.name ? user.name.charAt(0) : (user.email ? user.email.charAt(0) : "A")).toUpperCase();
 
             navActions.innerHTML = `
                 <div class="nav-user-cluster">
-                    <a href="/admin/dashboard" class="btn btn-outline btn-sm nav-portal-btn nav-portal-btn--admin" title="Vào Cổng Quản Trị" aria-label="Cổng Quản Trị">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        <span>Cổng Quản Trị</span>
-                    </a>
-                    <a href="/admin/dashboard" class="nav-user-info" title="Vào Cổng Quản Trị">
-                        <div class="nav-user-name">${escapeHtml(user.name || user.email)}</div>
-                        <div class="nav-user-role"><span class="status-badge status-badge--danger">Quản trị viên</span></div>
-                    </a>
-                    <button onclick="handleLogout()" class="btn btn-outline btn-sm nav-logout-btn" title="Đăng xuất" aria-label="Đăng xuất">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        <span>Đăng xuất</span>
-                    </button>
+                    <div class="user-profile-menu-wrapper" id="nav-user-menu-wrapper">
+                        <button type="button" class="user-avatar-btn user-avatar-btn--admin" id="nav-user-avatar-btn" aria-haspopup="true" aria-expanded="false" title="Tài khoản quản trị">
+                            <span class="user-avatar-circle user-avatar-circle--admin">${escapeHtml(initial)}</span>
+                            <span class="user-avatar-name">${escapeHtml(user.name || user.email)}</span>
+                            <svg class="theme-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div class="user-profile-dropdown" id="nav-user-profile-dropdown">
+                            <div class="profile-dropdown-header">
+                                <div class="profile-header-avatar user-avatar-circle--admin">${escapeHtml(initial)}</div>
+                                <div class="profile-header-info">
+                                    <div class="profile-header-name">${escapeHtml(user.name || "Quản trị viên")}</div>
+                                    <div class="profile-header-sub">${escapeHtml(user.email || "")}</div>
+                                    <div style="margin-top:.3rem"><span class="status-badge status-badge--danger">Quản trị viên</span></div>
+                                </div>
+                            </div>
+                            <div class="profile-dropdown-body">
+                                <div class="profile-menu-section">
+                                    <div class="profile-section-title">Tài khoản</div>
+                                    <button type="button" onclick="openPasswordSecurityModal()" class="profile-menu-item profile-menu-button"><i class="ri-lock-password-line"></i><span>Đổi mật khẩu</span></button>
+                                    <a href="javascript:void(0)" onclick="handleLogout()" class="profile-menu-item logout-item"><i class="ri-logout-box-r-line"></i><span>Đăng xuất</span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
+            initProfileDropdown();
         }
     } else {
         if (navbar) {
-            navbar.classList.remove("navbar--auth");
+            navbar.classList.remove("navbar--auth", "navbar--role");
         }
         // GUEST: Public discovery navigation
         if (navLinks) {
@@ -264,6 +308,32 @@ async function fetchUnreadCount() {
             }
         }
     } catch (_) {}
+}
+
+async function fetchCompanyVerificationBadge() {
+    const badge = document.getElementById("nav-company-verify-badge");
+    if (!badge) return;
+
+    try {
+        const res = await apiRequest("/company/profile");
+        const status = res && res.success && res.data
+            ? (res.data.verification_status || "pending")
+            : "pending";
+
+        if (status === "verified") {
+            badge.className = "status-badge status-badge--success";
+            badge.textContent = "Đã xác minh";
+        } else if (status === "rejected") {
+            badge.className = "status-badge status-badge--danger";
+            badge.textContent = "Cần cập nhật hồ sơ";
+        } else {
+            badge.className = "status-badge status-badge--warning";
+            badge.textContent = "Chờ xác minh";
+        }
+    } catch (_) {
+        badge.className = "status-badge status-badge--warning";
+        badge.textContent = "Chưa xác minh";
+    }
 }
 
 function handleLogout() {

@@ -179,6 +179,7 @@ img {
     justify-content: space-between;
     align-items: center;
     height: 70px;
+    position: relative;
 }
 
 .brand-logo {
@@ -221,6 +222,29 @@ img {
 .nav-link:hover, .nav-link.active {
     color: var(--primary);
     background-color: var(--primary-light);
+}
+
+.navbar--role .nav-links {
+    gap: 0.2rem;
+}
+
+.navbar--role .nav-link {
+    padding: 0.48rem 0.62rem;
+    font-size: 0.84rem;
+    white-space: nowrap;
+}
+
+.nav-link--accent {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--primary);
+    border: 1px solid var(--primary-border);
+    background: var(--primary-light);
+}
+
+.role-content-offset {
+    height: 2rem;
 }
 
 .nav-actions {
@@ -1247,6 +1271,37 @@ textarea[disabled],
 }
 
 /* Responsive Media Queries */
+@media (max-width: 1180px) {
+    .navbar--role .menu-toggle {
+        display: block;
+    }
+    .navbar--role .nav-links {
+        display: none;
+        position: absolute;
+        top: calc(100% + 1px);
+        left: 0;
+        right: 0;
+        z-index: 1200;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.3rem;
+        padding: 0.8rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 0 0 var(--radius-md) var(--radius-md);
+        box-shadow: var(--shadow-md);
+    }
+    .navbar--role .nav-links.active {
+        display: flex;
+    }
+    .navbar--role .nav-link {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.72rem 0.9rem;
+        font-size: 0.9rem;
+    }
+}
+
 @media (max-width: 992px) {
     .page-layout {
         grid-template-columns: 1fr;
@@ -3216,6 +3271,16 @@ textarea[disabled],
     align-items: center;
     justify-content: center;
 }
+.user-avatar-circle--company {
+    background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+}
+.user-avatar-circle--admin {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+}
+.user-avatar-btn--admin:hover {
+    border-color: var(--danger-border);
+    background: var(--danger-light);
+}
 .user-avatar-name {
     font-weight: 600;
     font-size: 0.875rem;
@@ -3266,6 +3331,12 @@ textarea[disabled],
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+}
+.profile-header-avatar.user-avatar-circle--company {
+    background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+}
+.profile-header-avatar.user-avatar-circle--admin {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
 }
 .profile-header-info {
     min-width: 0;
@@ -3325,7 +3396,17 @@ textarea[disabled],
     color: var(--text-muted);
     flex-shrink: 0;
 }
+.profile-menu-item i {
+    width: 16px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    font-size: 1rem;
+    line-height: 1;
+}
 .profile-menu-item:hover svg {
+    color: var(--primary);
+}
+.profile-menu-item:hover i {
     color: var(--primary);
 }
 .profile-menu-item.logout-item {
@@ -3333,6 +3414,9 @@ textarea[disabled],
 }
 .profile-menu-button{width:100%;border:0;background:transparent;font:inherit;text-align:left;cursor:pointer}
 .profile-menu-item.logout-item svg {
+    color: var(--danger);
+}
+.profile-menu-item.logout-item i {
     color: var(--danger);
 }
 .profile-menu-item.logout-item:hover {
