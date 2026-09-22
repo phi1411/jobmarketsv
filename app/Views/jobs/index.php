@@ -50,13 +50,23 @@
                 <div class="filter-grid-options">
                     <div class="form-group" style="margin:0;">
                         <label class="form-label" for="filter-category" style="font-size:0.84rem;font-weight:600;">Ngành nghề</label>
-                        <select id="filter-category" name="category_id" class="form-control" style="font-size:0.875rem;">
+                        <select id="filter-category" name="category_id" class="form-control" style="font-size:0.875rem;" data-searchable="true" data-allow-custom="true" data-placeholder-search="Tìm hoặc gõ ngành nghề...">
                             <option value="">Tất cả ngành nghề</option>
-                            <option value="cat-001">F&B - Phục Vụ & Pha Chế</option>
-                            <option value="cat-002">Bán Lẻ & Thu Ngân</option>
-                            <option value="cat-003">Gia Sư & Trợ Giảng</option>
-                            <option value="cat-004">Hành Chính & Văn Phòng</option>
-                            <option value="cat-005">Sự Kiện & Tiếp Thị</option>
+                            <option value="cat-001">F&B - Nhà hàng / Quán cà phê / Pha chế</option>
+                            <option value="cat-002">Bán lẻ / Cửa hàng tiện lợi / Thu ngân</option>
+                            <option value="cat-003">Gia sư / Trợ giảng / Giáo dục</option>
+                            <option value="cat-004">Sự kiện / PG - PB / Hoạt náo viên</option>
+                            <option value="cat-005">Văn phòng / Hành chính / Nhập liệu</option>
+                            <option value="cat-006">Giao hàng / Vận chuyển / Kho bãi</option>
+                            <option value="cat-007">Sáng tạo nội dung / Copywriter / Dịch thuật</option>
+                            <option value="cat-008">Thiết kế đồ họa / Video Editor / Multimedia</option>
+                            <option value="cat-009">IT / Lập trình / Hỗ trợ kỹ thuật</option>
+                            <option value="cat-010">Chăm sóc khách hàng / Telesale / Trực chat</option>
+                            <option value="cat-011">Làm đẹp / Spa / Phụ salon tóc</option>
+                            <option value="cat-012">Giúp việc theo giờ / Tạp vụ / Buồng phòng</option>
+                            <option value="cat-013">Bảo vệ / Giữ xe / Giám sát an ninh</option>
+                            <option value="cat-014">E-commerce / Quản lý shop Online / Livestream</option>
+                            <option value="cat-015">Ngành nghề khác (Tự nhập)</option>
                         </select>
                     </div>
 
@@ -758,7 +768,21 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1. Parse initial query params from URL
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("keyword")) document.getElementById("filter-keyword").value = urlParams.get("keyword");
-    if (urlParams.has("category_id")) document.getElementById("filter-category").value = urlParams.get("category_id");
+    if (urlParams.has("category_id")) {
+        const catVal = urlParams.get("category_id");
+        const catSel = document.getElementById("filter-category");
+        if (catSel) {
+            let opt = Array.from(catSel.options).find(o => o.value === catVal || o.textContent === catVal);
+            if (!opt) {
+                opt = document.createElement("option");
+                opt.value = catVal;
+                opt.textContent = catVal;
+                catSel.appendChild(opt);
+            }
+            catSel.value = opt.value;
+            window.refreshCustomSelect?.(catSel);
+        }
+    }
     if (urlParams.has("location_ids")) {
         const locIds = urlParams.get("location_ids");
         document.getElementById("filter-location").value = locIds;
@@ -864,9 +888,48 @@ document.addEventListener("DOMContentLoaded", () => {
         loadJobs();
     });
 
+    // 7. Auto-reload on Category and Shift Changes
+    ["filter-category", "filter-shift"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener("change", () => {
+                updateFilterBadge();
+                currentPage = 1;
+                loadJobs();
+            });
+        }
+    });
+
+    syncCategoriesList();
     updateFilterBadge();
     loadJobs();
 });
+
+async function syncCategoriesList() {
+    try {
+        const res = await apiRequest("/categories");
+        if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+            const catSelect = document.getElementById("filter-category");
+            if (!catSelect) return;
+            const currentVal = catSelect.value;
+            
+            let html = '<option value="">Tất cả ngành nghề</option>';
+            res.data.forEach(c => {
+                html += `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`;
+            });
+            
+            if (currentVal && !res.data.some(c => c.id === currentVal)) {
+                html += `<option value="${escapeHtml(currentVal)}">${escapeHtml(currentVal)}</option>`;
+            }
+            
+            catSelect.innerHTML = html;
+            catSelect.value = currentVal;
+            window.refreshCustomSelect?.(catSelect);
+        }
+    } catch (e) {
+        console.warn("syncCategoriesList fallback to static list:", e);
+    }
+}
 
 function updateFilterBadge() {
     const category = document.getElementById("filter-category").value;

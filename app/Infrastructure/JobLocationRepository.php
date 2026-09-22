@@ -162,9 +162,13 @@ class JobLocationRepository
             $whereParams[] = str_replace("-", "_", (string)$filters["work_type"]);
         }
         if (!empty($filters["category_id"])) {
-            $where[] = "(j.category_id = ? OR j.category = ?)";
-            $whereParams[] = $filters["category_id"];
-            $whereParams[] = $filters["category_id"];
+            $catVal = (string)$filters["category_id"];
+            $where[] = "(j.category_id = ? OR j.category = ? OR j.category LIKE ? OR j.category_id IN (SELECT c_sub.id FROM categories c_sub WHERE c_sub.name LIKE ?))";
+            $escapedLike = "%" . QueryHelper::escapeLike($catVal) . "%";
+            $whereParams[] = $catVal;
+            $whereParams[] = $catVal;
+            $whereParams[] = $escapedLike;
+            $whereParams[] = $escapedLike;
         }
         if (!empty($filters["shift_type"])) {
             $where[] = "j.shift_type = ?";

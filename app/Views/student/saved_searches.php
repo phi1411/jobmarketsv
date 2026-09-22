@@ -72,7 +72,7 @@
             <div class="form-grid-2" style="margin-bottom:1rem;">
                 <div class="form-group">
                     <label class="form-label">Ngành nghề</label>
-                    <select id="ss-category" class="form-control">
+                    <select id="ss-category" class="form-control" data-searchable="true" data-allow-custom="true" data-placeholder-search="Tìm hoặc gõ ngành nghề...">
                         <option value="">Tất cả ngành</option>
                     </select>
                 </div>
@@ -191,12 +191,19 @@ async function loadCategories() {
     const res = await apiRequest("/categories");
     if (res && res.success && Array.isArray(res.data)) {
         const sel = document.getElementById("ss-category");
+        const currentVal = sel.value;
         res.data.forEach(c => {
-            const opt = document.createElement("option");
-            opt.value = c.id;
-            opt.textContent = c.name;
-            sel.appendChild(opt);
+            if (!Array.from(sel.options).some(o => o.value === c.id)) {
+                const opt = document.createElement("option");
+                opt.value = c.id;
+                opt.textContent = c.name;
+                sel.appendChild(opt);
+            }
         });
+        if (currentVal) {
+            sel.value = currentVal;
+        }
+        window.refreshCustomSelect?.(sel);
     }
 }
 
@@ -263,6 +270,7 @@ async function loadSavedSearches() {
                             </h3>
                             <div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;">
                                 ${item.keyword ? `<span class="badge" style="background:#f1f5f9;color:var(--text);">"${escapeHtml(item.keyword)}"</span>` : ''}
+                                ${item.category_id ? `<span class="badge" style="background:#eff6ff;color:#1d4ed8;display:inline-flex;align-items:center;gap:3px;"><i class="ri-briefcase-line"></i> ${escapeHtml(item.category_name || item.category_id)}</span>` : ''}
                                 ${locBadge}
                                 ${item.shift_type ? `<span class="badge badge-shift">${getShiftLabel(item.shift_type)}</span>` : ''}
                                 ${item.salary_min ? `<span class="badge badge-salary">&ge; ${formatCurrency(item.salary_min)}/h</span>` : ''}
@@ -305,6 +313,7 @@ function openCreateModal() {
     document.getElementById("ss-name").value = "";
     document.getElementById("ss-keyword").value = "";
     document.getElementById("ss-category").value = "";
+    window.refreshCustomSelect?.(document.getElementById("ss-category"));
     document.getElementById("ss-location").value = "";
     if (ssLocationPicker) {
         ssLocationPicker.setSelected([], true);
