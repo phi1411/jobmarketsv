@@ -40,6 +40,7 @@ return [
     ["GET", "/cv/templates", [OnlineCvController::class, "templates"]],
     ["GET", "/student/cvs", [OnlineCvController::class, "index"]],
     ["POST", "/student/cvs", [OnlineCvController::class, "store"]],
+    ["GET", "/student/cvs/sources", [OnlineCvController::class, "sources"]],
     ["GET", "/student/cvs/{id:[0-9a-zA-Z\-_]+}", [OnlineCvController::class, "show"]],
     ["PATCH", "/student/cvs/{id:[0-9a-zA-Z\-_]+}", [OnlineCvController::class, "update"]],
     ["PUT", "/student/cvs/{id:[0-9a-zA-Z\-_]+}", [OnlineCvController::class, "update"]],

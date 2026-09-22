@@ -66,6 +66,47 @@
                         <option value="en">English</option>
                     </select>
                 </div>
+
+                <fieldset class="cv-source-fieldset">
+                    <legend>Nội dung ban đầu</legend>
+                    <div id="create-cv-source-loading" class="cv-source-loading">
+                        <i class="ri-loader-4-line ri-spin"></i> Đang kiểm tra dữ liệu hồ sơ...
+                    </div>
+                    <div id="create-cv-source-options" class="cv-source-options" hidden>
+                        <label class="cv-source-option" id="create-cv-source-profile-card">
+                            <input type="radio" name="create-cv-source" value="profile" id="create-cv-source-profile">
+                            <span class="cv-source-option-copy">
+                                <span class="cv-source-option-title">
+                                    <i class="ri-user-3-line"></i> Dùng hồ sơ cá nhân
+                                    <span class="cv-source-recommended">Khuyên dùng</span>
+                                </span>
+                                <span class="cv-source-option-description" id="create-cv-profile-description">
+                                    Điền sẵn thông tin đã lưu trên trang cá nhân.
+                                </span>
+                            </span>
+                        </label>
+
+                        <label class="cv-source-option" id="create-cv-source-existing-card">
+                            <input type="radio" name="create-cv-source" value="existing_cv" id="create-cv-source-existing">
+                            <span class="cv-source-option-copy">
+                                <span class="cv-source-option-title"><i class="ri-file-copy-2-line"></i> Dùng nội dung từ CV đã có</span>
+                                <span class="cv-source-option-description">Sao chép nội dung thành một CV mới độc lập.</span>
+                                <select id="create-cv-source-id" class="cv-select cv-source-select" aria-label="Chọn CV nguồn" disabled>
+                                    <option value="">Chọn một CV...</option>
+                                </select>
+                            </span>
+                        </label>
+
+                        <label class="cv-source-option">
+                            <input type="radio" name="create-cv-source" value="blank" id="create-cv-source-blank" checked>
+                            <span class="cv-source-option-copy">
+                                <span class="cv-source-option-title"><i class="ri-file-add-line"></i> Tạo CV trống</span>
+                                <span class="cv-source-option-description">Chỉ điền sẵn họ tên và email tài khoản.</span>
+                            </span>
+                        </label>
+                    </div>
+                    <p class="cv-source-note"><i class="ri-information-line"></i> Dữ liệu chỉ được sao chép một lần. Chỉnh sửa CV này sẽ không làm thay đổi hồ sơ cá nhân hoặc CV gốc.</p>
+                </fieldset>
             </div>
             <div class="cv-modal-footer">
                 <button type="button" class="btn btn-outline btn-sm" onclick="closeCreateCvModal()">Hủy Bỏ</button>

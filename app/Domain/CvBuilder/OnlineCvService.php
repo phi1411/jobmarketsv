@@ -7,17 +7,27 @@ use JobMarket\Exceptions\AuthorizationException;
 use JobMarket\Exceptions\NotFoundException;
 use JobMarket\Exceptions\ValidationException;
 use JobMarket\Facades\Config;
+use JobMarket\Domain\Profile\ProfileRepositoryInterface;
 use JobMarket\Infrastructure\OnlineCvRepository;
+use JobMarket\Infrastructure\ProfileRepository;
 
 class OnlineCvService
 {
     public const MAX_CVS_PER_USER = 20;
 
     private OnlineCvRepositoryInterface $repository;
+    private ?ProfileRepositoryInterface $profileRepository;
+    private ProfileCvContentMapper $profileMapper;
 
-    public function __construct(?OnlineCvRepositoryInterface $repository = null)
+    public function __construct(
+        ?OnlineCvRepositoryInterface $repository = null,
+        ?ProfileRepositoryInterface $profileRepository = null,
+        ?ProfileCvContentMapper $profileMapper = null
+    )
     {
         $this->repository = $repository ?? new OnlineCvRepository();
+        $this->profileRepository = $profileRepository;
+        $this->profileMapper = $profileMapper ?? new ProfileCvContentMapper();
     }
 
     public function templates(): array
@@ -29,6 +39,45 @@ class OnlineCvService
     {
         $userId = $this->studentId($user);
         return array_map([$this, 'toClient'], $this->repository->listByUser($userId));
+    }
+
+    public function sourceOptions(array $user): array
+    {
+        $userId = $this->studentId($user);
+        $profile = $this->profiles()->findByUserId($userId);
+        $profileOption = [
+            'available' => false,
+            'completion_percent' => 0,
+            'sections' => [],
+            'updated_at' => null,
+            'source_file' => null,
+        ];
+
+        if ($profile !== null) {
+            $content = $this->profileMapper->map($profile, $user);
+            $sections = $this->profileMapper->populatedSections($content);
+            $profileOption = [
+                'available' => $sections !== [],
+                'completion_percent' => CvSchema::completionPercent($content),
+                'sections' => $sections,
+                'updated_at' => $profile['updated_at'] ?? null,
+                'source_file' => $profile['cv_original_name'] ?? null,
+            ];
+        }
+
+        $cvs = array_map(static fn(array $cv): array => [
+            'id' => (string)$cv['id'],
+            'title' => (string)$cv['title'],
+            'template_key' => (string)$cv['template_key'],
+            'completion_percent' => (int)($cv['completion_percent'] ?? 0),
+            'updated_at' => $cv['updated_at'] ?? null,
+        ], $this->repository->listByUser($userId));
+
+        return [
+            'profile' => $profileOption,
+            'cvs' => $cvs,
+            'default_source' => !empty($profileOption['available']) ? 'profile' : 'blank',
+        ];
     }
 
     public function get(array $user, string $id): array
@@ -46,15 +95,17 @@ class OnlineCvService
 
         $this->assertOnlyKeys($input, [
             'title', 'template_key', 'language', 'content', 'style',
-            'section_order', 'hidden_sections', 'is_primary', 'is_public'
+            'section_order', 'hidden_sections', 'is_primary', 'is_public',
+            'source_type', 'source_cv_id'
         ]);
 
         $templateKey = $this->normalizeTemplate($input['template_key'] ?? CvTemplateCatalog::DEFAULT_TEMPLATE);
         $template = CvTemplateCatalog::find($templateKey);
         $language = $this->normalizeLanguage($input['language'] ?? 'vi');
+        $source = $this->initialSnapshot($user, $input);
         $content = CvSchema::normalizeContent(
             $input['content'] ?? [],
-            CvSchema::emptyContent($user)
+            $source['content']
         );
         $style = CvSchema::normalizeStyle(
             $input['style'] ?? [],
@@ -62,10 +113,10 @@ class OnlineCvService
         );
         $sectionOrder = array_key_exists('section_order', $input)
             ? CvSchema::normalizeSectionOrder($input['section_order'])
-            : CvSchema::DEFAULT_SECTION_ORDER;
+            : $source['section_order'];
         $hiddenSections = array_key_exists('hidden_sections', $input)
             ? CvSchema::normalizeHiddenSections($input['hidden_sections'])
-            : [];
+            : $source['hidden_sections'];
         $isPrimary = $this->repository->countByUser($userId) === 0
             || $this->normalizeBool($input['is_primary'] ?? false, 'is_primary');
         $isPublic = $this->normalizeBool($input['is_public'] ?? false, 'is_public');
@@ -243,6 +294,51 @@ class OnlineCvService
             throw new NotFoundException('CV không tồn tại hoặc bạn không có quyền truy cập.');
         }
         return $cv;
+    }
+
+    private function initialSnapshot(array $user, array $input): array
+    {
+        $sourceType = strtolower(trim((string)($input['source_type'] ?? 'blank')));
+        if (!in_array($sourceType, ['blank', 'profile', 'existing_cv'], true)) {
+            throw new ValidationException(['source_type' => ['Nguồn dữ liệu CV không hợp lệ.']]);
+        }
+
+        $snapshot = [
+            'content' => CvSchema::emptyContent($user),
+            'section_order' => CvSchema::DEFAULT_SECTION_ORDER,
+            'hidden_sections' => [],
+        ];
+
+        if ($sourceType === 'blank') {
+            return $snapshot;
+        }
+
+        $userId = $this->studentId($user);
+        if ($sourceType === 'profile') {
+            $profile = $this->profiles()->findByUserId($userId);
+            if ($profile === null) {
+                throw new ValidationException([
+                    'source_type' => ['Bạn chưa có hồ sơ cá nhân để dùng làm nội dung CV.'],
+                ]);
+            }
+            $snapshot['content'] = $this->profileMapper->map($profile, $user);
+            return $snapshot;
+        }
+
+        $sourceCvId = trim((string)($input['source_cv_id'] ?? ''));
+        if ($sourceCvId === '') {
+            throw new ValidationException(['source_cv_id' => ['Hãy chọn CV muốn dùng làm nội dung ban đầu.']]);
+        }
+        $sourceCv = $this->findOwned($userId, $sourceCvId);
+        $snapshot['content'] = CvSchema::normalizeContent($sourceCv['content'] ?? []);
+        $snapshot['section_order'] = CvSchema::normalizeSectionOrder($sourceCv['section_order'] ?? []);
+        $snapshot['hidden_sections'] = CvSchema::normalizeHiddenSections($sourceCv['hidden_sections'] ?? []);
+        return $snapshot;
+    }
+
+    private function profiles(): ProfileRepositoryInterface
+    {
+        return $this->profileRepository ??= new ProfileRepository();
     }
 
     private function findPublic(string $slug): array

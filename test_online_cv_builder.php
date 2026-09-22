@@ -3,13 +3,19 @@
 declare(strict_types=1);
 
 define('BASE_PATH', __DIR__);
-require_once __DIR__ . '/vendor/autoload.php';
+$autoload = is_file(__DIR__ . '/vendor/autoload.php')
+    ? __DIR__ . '/vendor/autoload.php'
+    : __DIR__ . '/laravel/vendor/autoload.php';
+require_once $autoload;
 
 use Dompdf\Dompdf;
 use JobMarket\Domain\CvBuilder\CvHtmlRenderer;
 use JobMarket\Domain\CvBuilder\OnlineCvRepositoryInterface;
 use JobMarket\Domain\CvBuilder\OnlineCvService;
+use JobMarket\Domain\Profile\Profile;
+use JobMarket\Domain\Profile\ProfileRepositoryInterface;
 use JobMarket\Exceptions\AppException;
+use JobMarket\Support\Pagination;
 
 final class InMemoryOnlineCvRepository implements OnlineCvRepositoryInterface
 {
@@ -106,6 +112,41 @@ final class InMemoryOnlineCvRepository implements OnlineCvRepositoryInterface
     }
 }
 
+final class InMemoryProfileRepository implements ProfileRepositoryInterface
+{
+    public function __construct(private ?array $profile = null)
+    {
+    }
+
+    public function findByUserId(string $userId): ?array
+    {
+        return ($this->profile['user_id'] ?? null) === $userId ? $this->profile : null;
+    }
+
+    public function findById(string $id): ?array
+    {
+        return ($this->profile['id'] ?? null) === $id ? $this->profile : null;
+    }
+
+    public function upsert(Profile $profile): void
+    {
+    }
+
+    public function updateCvMetadata(string $userId, ?array $cvData): void
+    {
+    }
+
+    public function searchPublic(array $filters = [], ?Pagination $pagination = null): array
+    {
+        return $this->profile ? [$this->profile] : [];
+    }
+
+    public function countPublic(array $filters = []): int
+    {
+        return $this->profile ? 1 : 0;
+    }
+}
+
 function assertTrue(bool $condition, string $message): void
 {
     if (!$condition) {
@@ -177,4 +218,53 @@ assertTrue(str_starts_with($pdf, '%PDF-'), 'Kết quả xuất phải là tệp 
 $service->delete($user, $copy['id']);
 assertTrue(count($service->list($user)) === 1, 'Xóa mềm phải loại CV khỏi danh sách.');
 
-echo "PASS: create, autosave-version, publish, duplicate, primary, XSS-escape, PDF, soft-delete" . PHP_EOL;
+$sourceRepo = new InMemoryOnlineCvRepository();
+$profileRepo = new InMemoryProfileRepository([
+    'id' => 'profile-student-test',
+    'user_id' => 'student-test',
+    'full_name' => 'Nguyễn An',
+    'email' => 'an@example.test',
+    'phone' => '0901234567',
+    'date_of_birth' => '2004-08-12',
+    'university' => 'Đại học Mở',
+    'major' => 'Công nghệ thông tin',
+    'bio' => 'Sinh viên định hướng phát triển web.',
+    'skills' => 'PHP, MySQL, Giao tiếp',
+    'education' => json_encode([
+        'degree' => 'Cử nhân',
+        'grad_year' => '2027',
+        'description' => 'GPA 3.4/4',
+    ], JSON_UNESCAPED_UNICODE),
+    'work_experience' => json_encode([[
+        'title' => 'Thực tập sinh',
+        'company' => 'Công ty ABC',
+        'duration' => '06/2026 - hiện tại',
+        'description' => 'Hỗ trợ xây dựng API.',
+    ]], JSON_UNESCAPED_UNICODE),
+    'certificates' => json_encode([['name' => 'TOEIC 750', 'year' => '2025']], JSON_UNESCAPED_UNICODE),
+    'cv_original_name' => 'cv-nguyen-an.pdf',
+    'updated_at' => '2026-09-22 10:00:00',
+]);
+$sourceService = new OnlineCvService($sourceRepo, $profileRepo);
+$options = $sourceService->sourceOptions($user);
+assertTrue($options['profile']['available'] === true, 'Hồ sơ có dữ liệu phải được đề xuất làm nguồn tạo CV.');
+assertTrue($options['default_source'] === 'profile', 'Hồ sơ cá nhân phải là nguồn mặc định khi đã có dữ liệu.');
+
+$profileCv = $sourceService->create($user, [
+    'title' => 'CV từ hồ sơ cá nhân',
+    'source_type' => 'profile',
+]);
+assertTrue($profileCv['content']['personal']['phone'] === '0901234567', 'CV mới phải lấy số điện thoại từ hồ sơ.');
+assertTrue(count($profileCv['content']['skills']) === 3, 'CV mới phải lấy danh sách kỹ năng từ hồ sơ.');
+assertTrue(($profileCv['content']['education'][0]['school'] ?? '') === 'Đại học Mở', 'CV mới phải lấy học vấn từ hồ sơ.');
+
+$copiedCv = $sourceService->create($user, [
+    'title' => 'CV sao chép nội dung',
+    'template_key' => 'student-modern',
+    'source_type' => 'existing_cv',
+    'source_cv_id' => $profileCv['id'],
+]);
+assertTrue($copiedCv['content'] === $profileCv['content'], 'Nguồn CV cũ phải sao chép toàn bộ nội dung sang snapshot mới.');
+assertTrue($copiedCv['template_key'] === 'student-modern', 'CV mới vẫn phải sử dụng mẫu người dùng vừa chọn.');
+
+echo "PASS: create, sources, profile snapshot, existing CV snapshot, autosave-version, publish, duplicate, primary, XSS-escape, PDF, soft-delete" . PHP_EOL;

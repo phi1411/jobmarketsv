@@ -11,6 +11,7 @@ window.CvTemplatesApp = {
     templates: [],
     activeFilter: 'all',
     selectedTemplateKey: 'student-simple',
+    createSources: null,
 
     async init() {
         this.bindFilters();
@@ -198,6 +199,81 @@ window.CvTemplatesApp = {
             setTimeout(() => titleInput.focus(), 100);
         }
         if (modal) modal.style.display = 'flex';
+        this.loadCreateSources();
+    },
+
+    async loadCreateSources() {
+        const loading = document.getElementById('create-cv-source-loading');
+        const options = document.getElementById('create-cv-source-options');
+        if (!loading || !options) return;
+
+        loading.hidden = false;
+        options.hidden = true;
+        const res = await apiRequest('/student/cvs/sources');
+        this.createSources = res && res.success && res.data ? res.data : null;
+        this.renderCreateSources();
+    },
+
+    renderCreateSources() {
+        const loading = document.getElementById('create-cv-source-loading');
+        const options = document.getElementById('create-cv-source-options');
+        const profileRadio = document.getElementById('create-cv-source-profile');
+        const profileCard = document.getElementById('create-cv-source-profile-card');
+        const profileDescription = document.getElementById('create-cv-profile-description');
+        const existingRadio = document.getElementById('create-cv-source-existing');
+        const existingCard = document.getElementById('create-cv-source-existing-card');
+        const sourceSelect = document.getElementById('create-cv-source-id');
+        const blankRadio = document.getElementById('create-cv-source-blank');
+        if (!loading || !options || !profileRadio || !existingRadio || !sourceSelect || !blankRadio) return;
+
+        loading.hidden = true;
+        options.hidden = false;
+        const data = this.createSources || { profile: { available: false }, cvs: [], default_source: 'blank' };
+        const profile = data.profile || {};
+        const cvs = Array.isArray(data.cvs) ? data.cvs : [];
+
+        profileRadio.disabled = !profile.available;
+        profileCard?.classList.toggle('is-disabled', !profile.available);
+        if (profileDescription) {
+            if (profile.available) {
+                const sections = Array.isArray(profile.sections) ? profile.sections.join(', ') : '';
+                const file = profile.source_file ? ` Dữ liệu đã được lưu từ ${profile.source_file}.` : '';
+                profileDescription.textContent = `Điền sẵn ${sections || 'thông tin đã lưu'} (${parseInt(profile.completion_percent || 0, 10)}% nội dung CV).${file}`;
+            } else {
+                profileDescription.textContent = 'Hồ sơ chưa có dữ liệu. Hãy cập nhật trang cá nhân hoặc đọc CV bằng Gemini trước.';
+            }
+        }
+
+        existingRadio.disabled = cvs.length === 0;
+        existingCard?.classList.toggle('is-disabled', cvs.length === 0);
+        sourceSelect.innerHTML = '<option value="">Chọn một CV...</option>' + cvs.map(cv => {
+            const title = escapeHtml(cv.title || 'CV chưa đặt tên');
+            const id = escapeHtml(cv.id || '');
+            const percent = parseInt(cv.completion_percent || 0, 10);
+            return `<option value="${id}">${title} (${percent}%)</option>`;
+        }).join('');
+
+        const defaultSource = data.default_source === 'profile' && profile.available ? 'profile' : 'blank';
+        profileRadio.checked = defaultSource === 'profile';
+        blankRadio.checked = defaultSource === 'blank';
+        existingRadio.checked = false;
+        sourceSelect.disabled = true;
+
+        const syncExistingSelect = () => {
+            sourceSelect.disabled = !existingRadio.checked || existingRadio.disabled;
+            if (!sourceSelect.disabled && !sourceSelect.value && sourceSelect.options.length > 1) {
+                sourceSelect.selectedIndex = 1;
+            }
+        };
+        options.querySelectorAll('input[name="create-cv-source"]').forEach(input => {
+            input.onchange = syncExistingSelect;
+        });
+        sourceSelect.onchange = () => {
+            if (sourceSelect.value) {
+                existingRadio.checked = true;
+                syncExistingSelect();
+            }
+        };
     }
 };
 
@@ -216,13 +292,23 @@ window.handleCreateCvSubmit = async function(e) {
     const titleInput = document.getElementById('create-cv-title');
     const tplKeyInput = document.getElementById('create-cv-template-key');
     const langInput = document.getElementById('create-cv-language');
+    const sourceInput = document.querySelector('input[name="create-cv-source"]:checked');
+    const sourceCvInput = document.getElementById('create-cv-source-id');
 
     const title = titleInput ? titleInput.value.trim() : '';
     const template_key = tplKeyInput ? tplKeyInput.value : 'student-simple';
     const language = langInput ? langInput.value : 'vi';
+    const source_type = sourceInput ? sourceInput.value : 'blank';
+    const source_cv_id = source_type === 'existing_cv' && sourceCvInput ? sourceCvInput.value : '';
 
     if (!title) {
         showToast('Vui lòng nhập tên cho CV của bạn.', 'error');
+        return;
+    }
+
+    if (source_type === 'existing_cv' && !source_cv_id) {
+        showToast('Vui lòng chọn CV muốn dùng làm nội dung ban đầu.', 'error');
+        sourceCvInput?.focus();
         return;
     }
 
@@ -233,7 +319,7 @@ window.handleCreateCvSubmit = async function(e) {
 
     const res = await apiRequest('/student/cvs', {
         method: 'POST',
-        body: { title, template_key, language }
+        body: { title, template_key, language, source_type, source_cv_id }
     });
 
     if (res && res.success && res.data && res.data.id) {

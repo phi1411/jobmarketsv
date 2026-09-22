@@ -16,7 +16,11 @@ class PlatformRoutesTest extends TestCase
 
         $this->get('/mau-cv-sinh-vien')
             ->assertOk()
-            ->assertSee('Mẫu CV');
+            ->assertSee('Mẫu CV')
+            ->assertSee('Nội dung ban đầu')
+            ->assertSee('create-cv-source-profile', false)
+            ->assertSee('create-cv-source-existing', false)
+            ->assertSee('create-cv-source-blank', false);
 
         $this->get('/login')->assertOk();
         $this->get('/register')->assertOk();

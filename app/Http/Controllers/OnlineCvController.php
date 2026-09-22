@@ -34,6 +34,14 @@ class OnlineCvController extends Controller
         return Response::success($this->service->list($this->student($request)), 'Danh sách CV của bạn.');
     }
 
+    public function sources(Request $request): Response
+    {
+        return Response::success(
+            $this->service->sourceOptions($this->student($request)),
+            'Các nguồn dữ liệu có thể dùng để tạo CV.'
+        );
+    }
+
     public function store(Request $request): Response
     {
         $cv = $this->service->create($this->student($request), $request->all());
